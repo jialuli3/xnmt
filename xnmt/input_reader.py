@@ -144,7 +144,7 @@ class BaseTextReader(InputReader):
 
 class SegmentationTextReader(PlainTextReader):
   yaml_tag = '!SegmentationTextReader'
-  
+
   # TODO: document me
 
   @serializable_init
@@ -316,7 +316,7 @@ class NpzReader(InputReader, Serializable):
 class IDReader(BaseTextReader, Serializable):
   """
   Handles the case where we need to read in a single ID (like retrieval problems).
-  
+
   Files must be text files containing a single integer per line.
   """
   yaml_tag = "!IDReader"
@@ -362,6 +362,7 @@ def read_parallel_corpus(src_reader, trg_reader, src_file, trg_file,
   trg_train_iterator = trg_reader.read_sents(trg_file, filter_ids)
   for src_sent, trg_sent in zip_longest(src_train_iterator, trg_train_iterator):
     if src_sent is None or trg_sent is None:
+      print(src_sent,trg_sent)
       raise RuntimeError(f"training src sentences don't match trg sentences: {src_len or src_reader.count_sents(src_file)} != {trg_len or trg_reader.count_sents(trg_file)}!")
     if max_num_sents and (max_num_sents <= len(src_data)):
       break

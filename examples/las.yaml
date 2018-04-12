@@ -14,9 +14,9 @@ speech: !Experiment
     tasks:
     - !PreprocExtract
       in_files:
-      - examples/data/LDC94S13A.yaml
+      - /media/jialu/New Volume/libri/LibriSpeech/training.yaml
       out_files:
-      - examples/data/LDC94S13A.h5
+      - /media/jialu/New Volume/libri/LibriSpeech/training.h5
       specs: !MelFiltExtractor {}
   model: !DefaultTranslator
     src_embedder: !NoopEmbedder
@@ -42,7 +42,7 @@ speech: !Experiment
     src_reader: !H5Reader
       transpose: True
     trg_reader: !PlainTextReader
-      vocab: !Vocab {vocab_file: examples/data/head.en.vocab}
+      vocab: !Vocab {vocab_file: /media/jialu/New Volume/libri/LibriSpeech/training_vocab.en.vocab}
   train: !SimpleTrainingRegimen
     run_for_epochs: 2
     batcher: !SrcBatcher
@@ -50,24 +50,24 @@ speech: !Experiment
       batch_size: 3
       src_pad_token: ~
     trainer: !AdamTrainer {}
-    src_file: examples/data/LDC94S13A.h5
-    trg_file: examples/data/LDC94S13A.char
+    src_file: /media/jialu/New Volume/libri/LibriSpeech/training.h5
+    trg_file: /media/jialu/New Volume/libri/LibriSpeech/training_transcripts.char
     dev_tasks:
       - !LossEvalTask
-        src_file: examples/data/LDC94S13A.h5
-        ref_file: examples/data/LDC94S13A.char
+        src_file: /media/jialu/New Volume/libri/LibriSpeech/training.h5
+        ref_file: /media/jialu/New Volume/libri/LibriSpeech/training_transcripts.char
       - !AccuracyEvalTask
         eval_metrics: cer,wer
-        src_file: examples/data/LDC94S13A.h5
-        ref_file: examples/data/LDC94S13A.char
+        src_file: /media/jialu/New Volume/libri/LibriSpeech/training.h5
+        ref_file: /media/jialu/New Volume/libri/LibriSpeech/training_transcripts.char
         hyp_file: examples/output/{EXP}.dev_hyp
         inference: !SimpleInference
           post_process: join-char
   evaluate:
     - !AccuracyEvalTask
       eval_metrics: cer,wer
-      src_file: examples/data/LDC94S13A.h5
-      ref_file: examples/data/LDC94S13A.words
+      src_file: /media/jialu/New Volume/libri/LibriSpeech/testing.h5
+      ref_file: /media/jialu/New Volume/libri/LibriSpeech/testing_transcripts.words
       hyp_file: examples/output/{EXP}.test_hyp
       inference: !SimpleInference
         post_process: join-char

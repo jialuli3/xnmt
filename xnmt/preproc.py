@@ -380,14 +380,14 @@ class MelFiltExtractor(Extractor, Serializable):
       db = yaml.load(in_stream)
       db_by_speaker = defaultdict(list)
       for db_index, db_item in enumerate(db):
-        speaker_id = db_item.get("speaker", db_item["wav"].split("/")[-1])
+        speaker_id = db_item.get("speaker", db_item["flac"].split("/")[-1])
         db_item["index"] = db_index
         db_by_speaker[speaker_id].append(db_item)
       for speaker_id in db_by_speaker.keys():
         data = []
         for db_item in db_by_speaker[speaker_id]:
-          y, sr = librosa.load(db_item["wav"], sr=16000, 
-                               offset=db_item.get("offset", 0.0), 
+          y, sr = librosa.load(db_item["flac"], sr=16000,
+                               offset=db_item.get("offset", 0.0),
                                duration=db_item.get("duration", None))
           if len(y)==0: raise ValueError(f"encountered an empty or out of bounds segment: {db_item}")
           logmel = logfbank(y, samplerate=sr, nfilt=self.nfilt)

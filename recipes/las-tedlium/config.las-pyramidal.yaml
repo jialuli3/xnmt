@@ -3,7 +3,7 @@ las-pyramidal: !Experiment
     dropout: 0.2
     default_layer_dim: 512
     placeholders:
-      DATA_DIR: { set to same directory as the 'datadir' directory in prep-data.sh }
+      DATA_DIR: /home/jialu/tedlium/db
   preproc: !PreprocRunner
     overwrite: False
     tasks:

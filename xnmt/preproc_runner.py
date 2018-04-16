@@ -27,7 +27,7 @@ class PreprocRunner(Serializable):
   @serializable_init
   def __init__(self, tasks:List[PreprocTask]=[], overwrite:bool=False):
     logger.info("> Preprocessing")
-    
+
     for task in tasks:
 
       # Sanity check

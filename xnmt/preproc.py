@@ -11,6 +11,8 @@ with warnings.catch_warnings():
   warnings.simplefilter("ignore", lineno=36)
   import h5py
 import yaml
+import soundfile as sf
+
 
 from xnmt import logger
 from xnmt.persistence import serializable_init, Serializable
@@ -380,15 +382,20 @@ class MelFiltExtractor(Extractor, Serializable):
       db = yaml.load(in_stream)
       db_by_speaker = defaultdict(list)
       for db_index, db_item in enumerate(db):
-        speaker_id = db_item.get("speaker", db_item["flac"].split("/")[-1])
+        speaker_id = db_item.get("speaker_id", db_item["flac"].split("/")[-1])
         db_item["index"] = db_index
         db_by_speaker[speaker_id].append(db_item)
+      print(db_index)
       for speaker_id in db_by_speaker.keys():
         data = []
         for db_item in db_by_speaker[speaker_id]:
-          y, sr = librosa.load(db_item["flac"], sr=16000,
+          '''y, sr = librosa.load(db_item["flac"], sr=16000,
                                offset=db_item.get("offset", 0.0),
-                               duration=db_item.get("duration", None))
+                               duration=db_item.get("duration", None))'''
+          #simple read the flac file
+          curr_f=open(db_item["flac"],'rb')
+          y,sr=sf.read(curr_f)
+          curr_f.close()
           if len(y)==0: raise ValueError(f"encountered an empty or out of bounds segment: {db_item}")
           logmel = logfbank(y, samplerate=sr, nfilt=self.nfilt)
           if self.delta:
@@ -396,6 +403,7 @@ class MelFiltExtractor(Extractor, Serializable):
             features = np.concatenate([logmel, delta], axis=1)
           else:
             features = logmel
+          #print(features)
           data.append(features)
         mean, std = get_mean_std(np.concatenate(data))
         for features, db_item in zip(data, db_by_speaker[speaker_id]):

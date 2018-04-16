@@ -67,7 +67,7 @@ def main(argv=None):
             if o in ["-h", "--help"]:
                 usage()
                 exit(2)
-            
+
         if len(args) != 2:
             raise Usage("must contain two non-optional parameters")
         tedlium_path = args[0]
@@ -76,20 +76,20 @@ def main(argv=None):
         ###########################
         ## MAIN PROGRAM ###########
         ###########################
-    
-        extract(mypath=tedlium_path + "/dev/stm/", 
-                out_yaml=data_path + "/db/dev.yaml", 
-                out_text=data_path + "/transcript/dev.char", 
+
+        extract(mypath=tedlium_path + "/dev/stm/",
+                out_yaml=data_path + "/db/dev.yaml",
+                out_text=data_path + "/transcript/dev.char",
                 wavdir=data_path + "/wav/dev")
-            
-        extract(mypath=tedlium_path + "/test/stm/", 
-                out_yaml=data_path + "/db/test.yaml", 
-                out_text=data_path + "/transcript/test.char", 
+
+        extract(mypath=tedlium_path + "/test/stm/",
+                out_yaml=data_path + "/db/test.yaml",
+                out_text=data_path + "/transcript/test.char",
                 wavdir=data_path + "/wav/test")
-            
+
         extract(mypath=tedlium_path + "/train/stm/",
-                out_yaml=data_path + "/db/train.yaml", 
-                out_text=data_path + "/transcript/train.char", 
+                out_yaml=data_path + "/db/train.yaml",
+                out_text=data_path + "/transcript/train.char",
                 wavdir=data_path + "/wav/train")
         ###########################
         ###########################
@@ -102,4 +102,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
-

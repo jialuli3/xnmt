@@ -4,19 +4,25 @@
 # instead directly read in a feature vector the pyramidal LSTM reduces length of
 # the input sequence by a factor of 2 per layer (except for the first layer).
 # Output units should be characters according to the paper.
+
+#define home directory here
 speech: !Experiment
   exp_global: !ExpGlobal
     save_num_checkpoints: 2
     default_layer_dim: 32
     dropout: 0.4
+    placeholders:
+      DATA_DIR: /home/jialu
   preproc: !PreprocRunner
     overwrite: False
     tasks:
     - !PreprocExtract
       in_files:
-      - /media/jialu/New Volume/libri/LibriSpeech/training.yaml
+      - '{DATA_DIR}/libri/training.yaml'
+      - '{DATA_DIR}/libri/testing.yaml'
       out_files:
-      - /media/jialu/New Volume/libri/LibriSpeech/training.h5
+      - '{DATA_DIR}/libri/training.h5'
+      - '{DATA_DIR}/libri/testing.h5'
       specs: !MelFiltExtractor {}
   model: !DefaultTranslator
     src_embedder: !NoopEmbedder
@@ -42,7 +48,8 @@ speech: !Experiment
     src_reader: !H5Reader
       transpose: True
     trg_reader: !PlainTextReader
-      vocab: !Vocab {vocab_file: /media/jialu/New Volume/libri/LibriSpeech/training_vocab.en.vocab}
+      vocab: !Vocab
+        vocab_file: examples/data/vocab.char
   train: !SimpleTrainingRegimen
     run_for_epochs: 2
     batcher: !SrcBatcher
@@ -50,24 +57,24 @@ speech: !Experiment
       batch_size: 3
       src_pad_token: ~
     trainer: !AdamTrainer {}
-    src_file: /media/jialu/New Volume/libri/LibriSpeech/training.h5
-    trg_file: /media/jialu/New Volume/libri/LibriSpeech/training_transcripts.char
+    src_file: '{DATA_DIR}/libri/training.h5'
+    trg_file: '{DATA_DIR}/libri/training_transcripts.char'
     dev_tasks:
       - !LossEvalTask
-        src_file: /media/jialu/New Volume/libri/LibriSpeech/training.h5
-        ref_file: /media/jialu/New Volume/libri/LibriSpeech/training_transcripts.char
+        src_file: '{DATA_DIR} libri/training.h5'
+        ref_file: '{DATA_DIR} libri/training_transcripts.char'
       - !AccuracyEvalTask
         eval_metrics: cer,wer
-        src_file: /media/jialu/New Volume/libri/LibriSpeech/training.h5
-        ref_file: /media/jialu/New Volume/libri/LibriSpeech/training_transcripts.char
+        src_file: '{DATA_DIR}/libri/training.h5'
+        ref_file: '{DATA_DIR}/libri/training_transcripts.char'
         hyp_file: examples/output/{EXP}.dev_hyp
         inference: !SimpleInference
           post_process: join-char
   evaluate:
     - !AccuracyEvalTask
       eval_metrics: cer,wer
-      src_file: /media/jialu/New Volume/libri/LibriSpeech/testing.h5
-      ref_file: /media/jialu/New Volume/libri/LibriSpeech/testing_transcripts.words
+      src_file: '{DATA_DIR}/libri/testing.h5'
+      ref_file: '{DATA_DIR}/libri/testing_transcripts.words'
       hyp_file: examples/output/{EXP}.test_hyp
       inference: !SimpleInference
         post_process: join-char

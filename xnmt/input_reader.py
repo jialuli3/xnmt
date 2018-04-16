@@ -238,6 +238,7 @@ class H5Reader(InputReader, Serializable):
         if idx % 1000 == 999:
           logger.info(f"Read {idx+1} lines ({float(idx+1)/len(h5_keys)*100:.2f}%) of {filename} at {key}")
         yield ArrayInput(inp)
+    logger.info(f"loading finished at idx {idx}")
 
   def count_sents(self, filename):
     with h5py.File(filename, "r") as hf:

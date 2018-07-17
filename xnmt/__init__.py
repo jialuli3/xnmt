@@ -24,6 +24,7 @@ import xnmt.attender
 import xnmt.batcher
 import xnmt.classifier
 import xnmt.conv
+import xnmt.cluster
 import xnmt.decoder
 import xnmt.embedder
 import xnmt.eval_task

@@ -20,7 +20,7 @@ class Attender(object):
 
   def calc_attention(self, state):
     """ Compute attention weights.
-    
+
     Args:
       state (dy.Expression): the current decoder state, aka query, for which to compute the weights.
     """
@@ -28,7 +28,7 @@ class Attender(object):
 
   def calc_context(self, state):
     """ Compute weighted sum.
-    
+
     Args:
       state (dy.Expression): the current decoder state, aka query, for which to compute the weighted sum.
     """
@@ -42,7 +42,7 @@ class Attender(object):
 class MlpAttender(Attender, Serializable):
   """
   Implements the attention model of Bahdanau et. al (2014)
-  
+
   Args:
     input_dim: input dimension
     state_dim: dimension of state inputs
@@ -81,6 +81,7 @@ class MlpAttender(Attender, Serializable):
     b = dy.parameter(self.pb)
     self.WI = dy.affine_transform([b, W, I])
     wi_dim = self.WI.dim()
+    #print("curr sent",self.curr_sent.as_tensor().npvalue().shape)
     # TODO(philip30): dynet affine transform bug, should be fixed upstream
     # if the input size is "1" then the last dimension will be dropped.
     if len(wi_dim[0]) == 1:
@@ -113,7 +114,7 @@ class DotAttender(Attender, Serializable):
   """
   Implements dot product attention of https://arxiv.org/abs/1508.04025
   Also (optionally) perform scaling of https://arxiv.org/abs/1706.03762
-  
+
   Args:
     scale: whether to perform scaling
     truncate_dec_batches: currently unsupported
@@ -193,4 +194,3 @@ class BilinearAttender(Attender, Serializable):
   def calc_context(self, state):
     attention = self.calc_attention(state)
     return self.I * attention
-

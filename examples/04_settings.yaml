@@ -1,0 +1,29 @@
+# The basic XNMT behavior can be controlled via predefined configurations.
+# These are defined under xnmt/settings.py, and include "standard", "debug", and "unittest" settings.
+# These specify things like verbosity, default paths, whether experiments should be skipped if the log file already
+# exists, and whether to activate the DyNet check_validity and immediate_compute options.
+# 
+# As the name suggests, e.g. when debugging one might use XNMT as follows:
+# ``xnmt --settings=debug examples/04_settings.yaml``
+# 
+# It is easy to change behavior by either changing these configurations, or adding a new configuration to the module.
+settings-exp: !Experiment
+  model: !DefaultTranslator
+    src_reader: !PlainTextReader
+      vocab: !Vocab {vocab_file: examples/data/head.ja.vocab}
+    trg_reader: !PlainTextReader
+      vocab: !Vocab {vocab_file: examples/data/head.en.vocab}
+  train: !SimpleTrainingRegimen
+    run_for_epochs: 2
+    src_file: examples/data/head.ja
+    trg_file: examples/data/head.en
+    dev_tasks:
+      - !LossEvalTask
+        src_file: examples/data/head.ja
+        ref_file: examples/data/head.en
+  evaluate:
+    - !AccuracyEvalTask
+      eval_metrics: bleu
+      src_file: examples/data/head.ja
+      ref_file: examples/data/head.en
+      hyp_file: examples/output/{EXP}.test_hyp

@@ -1,0 +1,683 @@
+disabling CHECK_VALIDITY because it is not supported on GPU currently
+running XNMT revision 9ed5a34 on jialu-desktop on 2018-07-15 00:16:45
+initialized exp_global.param_init: GlorotInitializer@140116139537408({'gain': 1.0})
+initialized exp_global.bias_init: ZeroInitializer@140116139538808({})
+initialized exp_global: ExpGlobal@140116139569728({'model_file': './models/las-timit-pretrain-test.mod', 'log_file': './logs/las-timit-pretrain-test.log', 'dropout': 0.3, 'weight_noise': 0.0, 'default_layer_dim': 512, 'param_init': GlorotInitializer@140116139990376, 'bias_init': ZeroInitializer@140116139987464, 'truncate_dec_batches': False, 'save_num_checkpoints': 1, 'loss_comb_method': 'sum', 'compute_report': False, 'commandline_args': {'dynet_mem': None, 'dynet_seed': None, 'dynet_autobatch': None, 'dynet_devices': None, 'dynet_viz': False, 'dynet_gpu': True, 'dynet_gpu_ids': None, 'dynet_gpus': None, 'dynet_weight_decay': None, 'dynet_profiling': None, 'settings': 'debug', 'experiments_file': 'las-timit.yaml', 'experiment_name': [], 'generate_doc': False}, 'placeholders': {'DATA_DIR': '/home/jialu/TIMIT'}})
+initialized model.src_reader: H5Reader@140116139585376({'transpose': True, 'feat_from': None, 'feat_to': None, 'feat_skip': None, 'timestep_skip': None, 'timestep_truncate': None})
+initialized model.trg_reader.vocab: Vocab@140116139619104({'i2w': ['<s>', '</s>', '__', 'a', 'ä', 'á', 'à', 'â', 'æ', 'b', 'c', 'ç', 'd', 'e', 'é', 'è', 'ê', 'ë', 'f', 'g', 'h', 'i', 'í', 'î', 'ï', 'j', 'k', 'l', 'm', 'n', 'ñ', 'o', 'ó', 'ö', 'ô', 'œ', 'p', 'q', 'r', 's', 't', 'u', 'ú', 'ü', 'ù', 'û', 'v', 'w', 'x', 'y', 'ÿ', 'z', 'ß', "'", '<unk>'], 'vocab_file': None, 'sentencepiece_vocab': False})
+initialized model.trg_reader: PlainTextReader@140116139619048({'vocab': Vocab@140116139676952, 'read_sent_len': False})
+initialized model.src_embedder: NoopEmbedder@140116139585040({'emb_dim': 40})
+initialized model.encoder.modules.0.builder_layers.0.0.param_init: GlorotInitializer@140116139582408({'gain': 1.0})
+initialized model.encoder.modules.0.builder_layers.0.0.bias_init: ZeroInitializer@140116139581680({})
+initialized model.encoder.modules.0.builder_layers.0.0: UniLSTMSeqTransducer@140116139582352({'layers': 1, 'input_dim': 40, 'hidden_dim': 256.0, 'dropout': 0.3, 'weightnoise_std': 0.0, 'param_init': GlorotInitializer@140116139679192, 'bias_init': ZeroInitializer@140116139678296, 'decoder_input_dim': None, 'decoder_input_feeding': True, 'yaml_path': model.encoder.modules.0.builder_layers.0.0})
+initialized model.encoder.modules.0.builder_layers.0.1.param_init: GlorotInitializer@140116139581792({'gain': 1.0})
+initialized model.encoder.modules.0.builder_layers.0.1.bias_init: ZeroInitializer@140116139581624({})
+initialized model.encoder.modules.0.builder_layers.0.1: UniLSTMSeqTransducer@140116139582240({'layers': 1, 'input_dim': 40, 'hidden_dim': 256.0, 'dropout': 0.3, 'weightnoise_std': 0.0, 'param_init': GlorotInitializer@140116139581680, 'bias_init': ZeroInitializer@140116139678912, 'decoder_input_dim': None, 'decoder_input_feeding': True, 'yaml_path': model.encoder.modules.0.builder_layers.0.1})
+initialized model.encoder.modules.0.builder_layers.1.0.param_init: GlorotInitializer@140116139582520({'gain': 1.0})
+initialized model.encoder.modules.0.builder_layers.1.0.bias_init: ZeroInitializer@140116139582968({})
+initialized model.encoder.modules.0.builder_layers.1.0: UniLSTMSeqTransducer@140116139582632({'layers': 1, 'input_dim': 1024, 'hidden_dim': 256.0, 'dropout': 0.3, 'weightnoise_std': 0.0, 'param_init': GlorotInitializer@140116139715328, 'bias_init': ZeroInitializer@140116139715832, 'decoder_input_dim': None, 'decoder_input_feeding': True, 'yaml_path': model.encoder.modules.0.builder_layers.1.0})
+initialized model.encoder.modules.0.builder_layers.1.1.param_init: GlorotInitializer@140116139583136({'gain': 1.0})
+initialized model.encoder.modules.0.builder_layers.1.1.bias_init: ZeroInitializer@140116139582856({})
+initialized model.encoder.modules.0.builder_layers.1.1: UniLSTMSeqTransducer@140116139583192({'layers': 1, 'input_dim': 1024, 'hidden_dim': 256.0, 'dropout': 0.3, 'weightnoise_std': 0.0, 'param_init': GlorotInitializer@140116139716168, 'bias_init': ZeroInitializer@140116139715552, 'decoder_input_dim': None, 'decoder_input_feeding': True, 'yaml_path': model.encoder.modules.0.builder_layers.1.1})
+initialized model.encoder.modules.0.builder_layers.2.0.param_init: GlorotInitializer@140116139583752({'gain': 1.0})
+initialized model.encoder.modules.0.builder_layers.2.0.bias_init: ZeroInitializer@140116139583416({})
+initialized model.encoder.modules.0.builder_layers.2.0: UniLSTMSeqTransducer@140116139583080({'layers': 1, 'input_dim': 1024, 'hidden_dim': 256.0, 'dropout': 0.3, 'weightnoise_std': 0.0, 'param_init': GlorotInitializer@140116139714488, 'bias_init': ZeroInitializer@140116139696872, 'decoder_input_dim': None, 'decoder_input_feeding': True, 'yaml_path': model.encoder.modules.0.builder_layers.2.0})
+initialized model.encoder.modules.0.builder_layers.2.1.param_init: GlorotInitializer@140116139583640({'gain': 1.0})
+initialized model.encoder.modules.0.builder_layers.2.1.bias_init: ZeroInitializer@140116139583976({})
+initialized model.encoder.modules.0.builder_layers.2.1: UniLSTMSeqTransducer@140116139583304({'layers': 1, 'input_dim': 1024, 'hidden_dim': 256.0, 'dropout': 0.3, 'weightnoise_std': 0.0, 'param_init': GlorotInitializer@140116139697936, 'bias_init': ZeroInitializer@140116139696760, 'decoder_input_dim': None, 'decoder_input_feeding': True, 'yaml_path': model.encoder.modules.0.builder_layers.2.1})
+initialized model.encoder.modules.0.builder_layers.3.0.param_init: GlorotInitializer@140116139584200({'gain': 1.0})
+initialized model.encoder.modules.0.builder_layers.3.0.bias_init: ZeroInitializer@140116139583864({})
+initialized model.encoder.modules.0.builder_layers.3.0: UniLSTMSeqTransducer@140116139583920({'layers': 1, 'input_dim': 1024, 'hidden_dim': 256.0, 'dropout': 0.3, 'weightnoise_std': 0.0, 'param_init': GlorotInitializer@140116139696984, 'bias_init': ZeroInitializer@140116139698048, 'decoder_input_dim': None, 'decoder_input_feeding': True, 'yaml_path': model.encoder.modules.0.builder_layers.3.0})
+initialized model.encoder.modules.0.builder_layers.3.1.param_init: GlorotInitializer@140116139584760({'gain': 1.0})
+initialized model.encoder.modules.0.builder_layers.3.1.bias_init: ZeroInitializer@140116139584088({})
+initialized model.encoder.modules.0.builder_layers.3.1: UniLSTMSeqTransducer@140116139584536({'layers': 1, 'input_dim': 1024, 'hidden_dim': 256.0, 'dropout': 0.3, 'weightnoise_std': 0.0, 'param_init': GlorotInitializer@140116139699448, 'bias_init': ZeroInitializer@140116139698104, 'decoder_input_dim': None, 'decoder_input_feeding': True, 'yaml_path': model.encoder.modules.0.builder_layers.3.1})
+initialized model.encoder.modules.0: PyramidalLSTMSeqTransducer@140116139581736({'layers': 4, 'input_dim': 40, 'hidden_dim': 512, 'downsampling_method': 'concat', 'reduce_factor': 2, 'dropout': 0.3, 'builder_layers': [[UniLSTMSeqTransducer@140116139678856, UniLSTMSeqTransducer@140116139678464], [UniLSTMSeqTransducer@140116139582520, UniLSTMSeqTransducer@140116139715384], [UniLSTMSeqTransducer@140116139677512, UniLSTMSeqTransducer@140116139583640], [UniLSTMSeqTransducer@140116139584200, UniLSTMSeqTransducer@140116139584760]]})
+initialized model.encoder: ModularSeqTransducer@140116139536512({'input_dim': 40, 'modules': [PyramidalLSTMSeqTransducer@140116139583752]})
+for model.attender.param_init: reusing previously initialized GlorotInitializer@140116139990376
+for model.attender.bias_init: reusing previously initialized ZeroInitializer@140116139987464
+initialized model.attender: MlpAttender@140116139536736({'input_dim': 512, 'state_dim': 512, 'hidden_dim': 128, 'param_init': GlorotInitializer@140116139990376, 'bias_init': ZeroInitializer@140116139987464, 'truncate_dec_batches': False})
+for model.trg_embedder.param_init: reusing previously initialized GlorotInitializer@140116139990376
+for model.trg_embedder.src_reader: reusing previously initialized H5Reader@140116139676504
+for model.trg_embedder.trg_reader: reusing previously initialized PlainTextReader@140116139676336
+initialized model.trg_embedder: SimpleWordEmbedder@140116139585264({'emb_dim': 64, 'weight_noise': 0.0, 'word_dropout': 0.1, 'fix_norm': 1, 'param_init': GlorotInitializer@140116139990376, 'vocab_size': 55, 'vocab': None, 'src_reader': H5Reader@140116139676504, 'trg_reader': PlainTextReader@140116139676336, 'yaml_path': model.trg_embedder})
+initialized model.decoder.bridge: CopyBridge@140116139537744({'dec_layers': 1, 'dec_dim': 512})
+for model.decoder.rnn.param_init: reusing previously initialized GlorotInitializer@140116139990376
+for model.decoder.rnn.bias_init: reusing previously initialized ZeroInitializer@140116139987464
+initialized model.decoder.rnn: UniLSTMSeqTransducer@140116139537800({'layers': 1, 'input_dim': 64, 'hidden_dim': 512, 'dropout': 0.3, 'weightnoise_std': 0.0, 'param_init': GlorotInitializer@140116139990376, 'bias_init': ZeroInitializer@140116139987464, 'decoder_input_dim': 512, 'decoder_input_feeding': True, 'yaml_path': model.decoder.rnn})
+for model.decoder.transform.param_init: reusing previously initialized GlorotInitializer@140116139990376
+for model.decoder.transform.bias_init: reusing previously initialized ZeroInitializer@140116139987464
+initialized model.decoder.transform: AuxNonLinear@140116139537464({'input_dim': 512, 'output_dim': 512, 'aux_input_dim': 512, 'bias': True, 'activation': 'tanh', 'param_init': GlorotInitializer@140116139990376, 'bias_init': ZeroInitializer@140116139987464})
+for model.decoder.scorer.trg_reader: reusing previously initialized PlainTextReader@140116139676336
+for model.decoder.scorer.param_init: reusing previously initialized GlorotInitializer@140116139990376
+for model.decoder.scorer.bias_init: reusing previously initialized ZeroInitializer@140116139987464
+for model.decoder.scorer.output_projector.param_init: reusing previously initialized GlorotInitializer@140116139990376
+for model.decoder.scorer.output_projector.bias_init: reusing previously initialized ZeroInitializer@140116139987464
+initialized model.decoder.scorer.output_projector: Linear@140116139538584({'input_dim': 512, 'output_dim': 55, 'bias': True, 'param_init': GlorotInitializer@140116139990376, 'bias_init': ZeroInitializer@140116139987464})
+initialized model.decoder.scorer: Softmax@140116139537128({'input_dim': 512, 'vocab_size': None, 'vocab': None, 'trg_reader': PlainTextReader@140116139676336, 'label_smoothing': 0.1, 'param_init': GlorotInitializer@140116139990376, 'bias_init': ZeroInitializer@140116139987464, 'output_projector': Linear@140116139539816})
+initialized model.decoder: AutoRegressiveDecoder@140116139537688({'input_dim': 512, 'trg_embed_dim': 64, 'input_feeding': True, 'bridge': CopyBridge@140116139699560, 'rnn': UniLSTMSeqTransducer@140116139699840, 'transform': AuxNonLinear@140116139700064, 'scorer': Softmax@140116139699896, 'truncate_dec_batches': False})
+initialized model.inference.post_process: PlainTextOutputProcessor@140116139584928({})
+initialized model.inference.search_strategy.len_norm: NoNormalization@140116139585152({})
+initialized model.inference.search_strategy: BeamSearch@140116139584480({'beam_size': 1, 'max_len': 100, 'len_norm': NoNormalization@140116139759936, 'one_best': True, 'scores_proc': None})
+initialized model.inference.batcher: InOrderBatcher@140116139584592({'batch_size': 1, 'src_pad_token': 1, 'trg_pad_token': 1, 'pad_src_to_multiple': 1})
+initialized model.inference: AutoRegressiveInference@140116139582184({'src_file': None, 'trg_file': None, 'ref_file': None, 'max_src_len': None, 'max_num_sents': None, 'post_process': PlainTextOutputProcessor@140116139537464, 'search_strategy': BeamSearch@140116139585152, 'mode': 'onebest', 'batcher': InOrderBatcher@140116139758256, 'reporter': None})
+initialized model.search_strategy.len_norm: NoNormalization@140116139585096({})
+initialized model.search_strategy: BeamSearch@140116139584816({'beam_size': 1, 'max_len': 100, 'len_norm': NoNormalization@140116139759544, 'one_best': True, 'scores_proc': None})
+initialized model: DefaultTranslator@140116139537240({'src_reader': H5Reader@140116139676504, 'trg_reader': PlainTextReader@140116139676336, 'src_embedder': NoopEmbedder@140116139676448, 'encoder': ModularSeqTransducer@140116139582352, 'attender': MlpAttender@140116139676896, 'trg_embedder': SimpleWordEmbedder@140116139618768, 'decoder': AutoRegressiveDecoder@140116139536960, 'inference': AutoRegressiveInference@140116139584592, 'search_strategy': BeamSearch@140116139539200, 'compute_report': False, 'calc_global_fertility': False, 'calc_attention_entropy': False})
+for train.model: reusing previously initialized DefaultTranslator@140116139584816
+initialized train.batcher: WordSrcBatcher@140116139619440({'avg_batch_size': 220, 'src_pad_token': None, 'pad_src_to_multiple': 8})
+initialized train.loss_calculator: AutoRegressiveMLELoss@140116139620560({'truncate_dec_batches': False})
+initialized train.trainer: AdamTrainer@140116139619160({'alpha': 0.0008})
+for train.dev_tasks.0.model: reusing previously initialized DefaultTranslator@140116139584816
+initialized train.dev_tasks.0.inference.search_strategy.len_norm: PolynomialNormalization@140116139620224({'m': 1.5, 'apply_during_search': True})
+initialized train.dev_tasks.0.inference.search_strategy: BeamSearch@140116139619776({'beam_size': 20, 'max_len': 500, 'len_norm': PolynomialNormalization@140116139758088})
+initialized train.dev_tasks.0.inference.batcher: InOrderBatcher@140116139619496({'batch_size': 1, 'src_pad_token': None, 'pad_src_to_multiple': 8})
+initialized train.dev_tasks.0.inference: AutoRegressiveInference@140116139619832({'max_src_len': 1500, 'post_process': 'join-char', 'search_strategy': BeamSearch@140116139759824, 'batcher': InOrderBatcher@140116139760440})
+initialized train.dev_tasks.0: AccuracyEvalTask@140116139619216({'src_file': '/home/jialu/TIMIT/dev.h5', 'ref_file': '/home/jialu/TIMIT/dev.words', 'hyp_file': './logs/las-timit-pretrain-test.dev_hyp', 'model': DefaultTranslator@140116139584816, 'eval_metrics': 'wer,cer', 'inference': AutoRegressiveInference@140117328422448})
+for train.dev_tasks.1.model: reusing previously initialized DefaultTranslator@140116139584816
+for train.dev_tasks.1.batcher: reusing previously initialized WordSrcBatcher@140116139759600
+for train.dev_tasks.1.loss_calculator.truncate_dec_batches: reusing previously initialized False
+initialized train.dev_tasks.1.loss_calculator: AutoRegressiveMLELoss@140116139619888({'truncate_dec_batches': False})
+initialized train.dev_tasks.1: LossEvalTask@140116139620280({'src_file': '/home/jialu/TIMIT/dev.h5', 'ref_file': '/home/jialu/TIMIT/dev.char', 'model': DefaultTranslator@140116139584816, 'batcher': WordSrcBatcher@140116139759600, 'loss_calculator': AutoRegressiveMLELoss@140116139760720, 'max_src_len': 1500, 'loss_comb_method': 'sum'})
+for train.loss_comb_method: reusing previously initialized sum
+initialized train: SimpleTrainingRegimen@140116139618992({'model': DefaultTranslator@140116139584816, 'src_file': '/home/jialu/TIMIT/train.h5', 'trg_file': '/home/jialu/TIMIT/train.char', 'dev_every': 0, 'batcher': WordSrcBatcher@140116139759600, 'loss_calculator': AutoRegressiveMLELoss@140116139757808, 'trainer': AdamTrainer@140116139758816, 'run_for_epochs': 50, 'lr_decay': 0.5, 'lr_decay_times': 3, 'patience': 8, 'initial_patience': 15, 'dev_tasks': [AccuracyEvalTask@140116139620448, LossEvalTask@140116139760328], 'restart_trainer': True, 'name': 'las-timit-pretrain-test', 'max_src_len': 1500, 'max_trg_len': 350, 'loss_comb_method': 'sum', 'commandline_args': {'dynet_mem': None, 'dynet_seed': None, 'dynet_autobatch': None, 'dynet_devices': None, 'dynet_viz': False, 'dynet_gpu': True, 'dynet_gpu_ids': None, 'dynet_gpus': None, 'dynet_weight_decay': None, 'dynet_profiling': None, 'settings': 'debug', 'experiments_file': 'las-timit.yaml', 'experiment_name': [], 'generate_doc': False}})
+for evaluate.0.model: reusing previously initialized DefaultTranslator@140116139584816
+initialized evaluate.0.inference.search_strategy.len_norm: PolynomialNormalization@140116139573088({'m': 1.5, 'apply_during_search': True})
+initialized evaluate.0.inference.search_strategy: BeamSearch@140116139572416({'beam_size': 20, 'max_len': 500, 'len_norm': PolynomialNormalization@140116139750960, 'one_best': True, 'scores_proc': None})
+initialized evaluate.0.inference.batcher: InOrderBatcher@140116139572920({'batch_size': 1, 'src_pad_token': None, 'trg_pad_token': 1, 'pad_src_to_multiple': 1})
+initialized evaluate.0.inference: AutoRegressiveInference@140116139571464({'src_file': None, 'trg_file': None, 'ref_file': None, 'max_src_len': 1500, 'max_num_sents': None, 'post_process': 'join-char', 'search_strategy': BeamSearch@140116139749504, 'mode': 'onebest', 'batcher': InOrderBatcher@140116139749840, 'reporter': None})
+initialized evaluate.0: AccuracyEvalTask@140116139572136({'src_file': '/home/jialu/TIMIT/test.h5', 'ref_file': '/home/jialu/TIMIT/test.words', 'hyp_file': './logs/las-timit-pretrain-test.test_hyp', 'model': DefaultTranslator@140116139584816, 'eval_metrics': 'wer,cer', 'inference': AutoRegressiveInference@140116139572416, 'desc': None})
+initialized : Experiment@140116139926752({'exp_global': ExpGlobal@140116139987912, 'preproc': None, 'model': DefaultTranslator@140116139584816, 'train': SimpleTrainingRegimen@140116139584480, 'evaluate': [AccuracyEvalTask@140116139570736], 'random_search_report': None})
+> populated DyNet weights of all components from given data files
+  DyNet param count: 11396855
+> Training
+Starting to read /home/jialu/TIMIT/train.h5 and /home/jialu/TIMIT/train.char
+Read 1000 lines (21.65%) of /home/jialu/TIMIT/train.h5 at 999
+Read 2000 lines (43.29%) of /home/jialu/TIMIT/train.h5 at 1999
+Read 3000 lines (64.94%) of /home/jialu/TIMIT/train.h5 at 2999
+Read 4000 lines (86.58%) of /home/jialu/TIMIT/train.h5 at 3999
+Done reading /home/jialu/TIMIT/train.h5 and /home/jialu/TIMIT/train.char. Packing into batches.
+Done packing batches.
+The dy.parameter(...) call is now DEPRECATED.
+        There is no longer need to explicitly add parameters to the computation graph.
+        Any used parameter will be added automatically.
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 0.2422: train_loss/word=3.261434 (words=58015, words/sec=4090.97, time=0-00:00:25)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 0.5002: train_loss/word=2.595968 (words=113341, words/sec=3920.40, time=0-00:00:39)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 0.7522: train_loss/word=2.274295 (words=160814, words/sec=4286.35, time=0-00:00:50)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 1.0000: train_loss/word=2.034653 (words=217896, words/sec=4037.99, time=0-00:01:04)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+Starting to read /home/jialu/TIMIT/dev.h5 and /home/jialu/TIMIT/dev.char
+Done reading /home/jialu/TIMIT/dev.h5 and /home/jialu/TIMIT/dev.char. Packing into batches.
+Done packing batches.
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 1.0000 dev WER: 44.59% ( C/S/I/D: 875/470/102/50; hyp_len=1447, ref_len=1395 ) (words=1395, time=0-00:02:26)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 19.26% ( C/S/I/D: 5307/645/183/394; hyp_len=6135, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 1.215
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:21
+  best dev score, writing out model
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 1.0457: train_loss/word=1.221668 (words=9964, words/sec=4515.08, time=0-00:02:34)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 1.3041: train_loss/word=1.223049 (words=59791, words/sec=4572.55, time=0-00:02:45)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 1.5416: train_loss/word=1.178579 (words=116843, words/sec=4134.99, time=0-00:02:59)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 1.7584: train_loss/word=1.166616 (words=165856, words/sec=4296.53, time=0-00:03:10)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 2.0000: train_loss/word=1.158300 (words=217896, words/sec=3545.34, time=0-00:03:25)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 2.0000 dev WER: 33.26% ( C/S/I/D: 981/371/50/43; hyp_len=1402, ref_len=1395 ) (words=1395, time=0-00:04:47)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 14.06% ( C/S/I/D: 5592/470/138/284; hyp_len=6200, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 1.065
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+  best dev score, writing out model
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 2.0472: train_loss/word=1.041324 (words=9589, words/sec=4342.00, time=0-00:04:56)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 2.3177: train_loss/word=1.045153 (words=67979, words/sec=4170.43, time=0-00:05:10)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 2.5494: train_loss/word=1.050170 (words=116746, words/sec=4311.86, time=0-00:05:21)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 2.7721: train_loss/word=1.036892 (words=165226, words/sec=4306.61, time=0-00:05:32)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 3.0000: train_loss/word=1.043987 (words=217896, words/sec=3576.47, time=0-00:05:47)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 3.0000 dev WER: 31.54% ( C/S/I/D: 1014/348/59/33; hyp_len=1421, ref_len=1395 ) (words=1395, time=0-00:07:10)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 12.89% ( C/S/I/D: 5657/445/129/244; hyp_len=6231, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 1.029
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+  best dev score, writing out model
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 3.0281: train_loss/word=1.049595 (words=9193, words/sec=3620.01, time=0-00:07:19)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 3.2825: train_loss/word=1.007810 (words=58172, words/sec=4434.22, time=0-00:07:30)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 3.5123: train_loss/word=1.015805 (words=105496, words/sec=4121.97, time=0-00:07:41)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 3.7465: train_loss/word=1.006124 (words=159706, words/sec=3799.03, time=0-00:07:55)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 3.9634: train_loss/word=0.999173 (words=208331, words/sec=4318.97, time=0-00:08:07)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 4.0000: train_loss/word=0.998912 (words=217896, words/sec=4055.70, time=0-00:08:09)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 4.0000 dev WER: 30.47% ( C/S/I/D: 1037/330/67/28; hyp_len=1434, ref_len=1395 ) (words=1395, time=0-00:09:31)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 12.09% ( C/S/I/D: 5710/415/131/221; hyp_len=6256, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 1.003
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+  best dev score, writing out model
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 4.0377: train_loss/word=0.961360 (words=9415, words/sec=4064.67, time=0-00:09:40)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 4.2587: train_loss/word=0.983822 (words=47574, words/sec=4332.20, time=0-00:09:49)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 4.4877: train_loss/word=0.983769 (words=101757, words/sec=3744.81, time=0-00:10:03)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 4.7071: train_loss/word=0.984235 (words=150375, words/sec=4248.67, time=0-00:10:15)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 4.9519: train_loss/word=0.973307 (words=208158, words/sec=4241.71, time=0-00:10:28)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 5.0000: train_loss/word=0.971836 (words=217896, words/sec=4516.41, time=0-00:10:31)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 5.0000 dev WER: 29.75% ( C/S/I/D: 1036/328/56/31; hyp_len=1420, ref_len=1395 ) (words=1395, time=0-00:11:52)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.93% ( C/S/I/D: 5704/424/115/218; hyp_len=6243, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.997
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:21
+  best dev score, writing out model
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 5.0558: train_loss/word=0.972055 (words=10143, words/sec=4752.54, time=0-00:12:01)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 5.2950: train_loss/word=0.974198 (words=57092, words/sec=4140.97, time=0-00:12:12)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 5.5219: train_loss/word=0.957615 (words=105972, words/sec=4382.45, time=0-00:12:23)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 5.7496: train_loss/word=0.949277 (words=163587, words/sec=4155.11, time=0-00:12:37)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 5.9840: train_loss/word=0.949091 (words=212679, words/sec=4392.09, time=0-00:12:48)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 6.0000: train_loss/word=0.950881 (words=217896, words/sec=1708.82, time=0-00:12:52)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 6.0000 dev WER: 29.25% ( C/S/I/D: 1044/321/57/30; hyp_len=1422, ref_len=1395 ) (words=1395, time=0-00:14:14)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.63% ( C/S/I/D: 5732/399/124/215; hyp_len=6255, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.990
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+  best dev score, writing out model
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 6.0444: train_loss/word=0.887829 (words=9780, words/sec=4439.86, time=0-00:14:22)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 6.2855: train_loss/word=0.951609 (words=59376, words/sec=4413.13, time=0-00:14:33)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 6.5318: train_loss/word=0.937508 (words=112860, words/sec=3774.37, time=0-00:14:48)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 6.7874: train_loss/word=0.939800 (words=169745, words/sec=4100.79, time=0-00:15:02)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 7.0000: train_loss/word=0.936523 (words=217896, words/sec=4249.33, time=0-00:15:13)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 7.0000 dev WER: 28.10% ( C/S/I/D: 1052/314/49/29; hyp_len=1415, ref_len=1395 ) (words=1395, time=0-00:16:35)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.90% ( C/S/I/D: 5767/365/113/214; hyp_len=6245, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.988
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+  best dev score, writing out model
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 7.0584: train_loss/word=0.960347 (words=10310, words/sec=4766.57, time=0-00:16:43)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 7.3076: train_loss/word=0.929776 (words=64233, words/sec=3783.37, time=0-00:16:58)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 7.5656: train_loss/word=0.919403 (words=121950, words/sec=4245.75, time=0-00:17:11)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 7.7905: train_loss/word=0.927203 (words=168901, words/sec=4072.82, time=0-00:17:23)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 8.0000: train_loss/word=0.921857 (words=217896, words/sec=4285.70, time=0-00:17:34)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 8.0000 dev WER: 30.11% ( C/S/I/D: 1039/333/64/23; hyp_len=1436, ref_len=1395 ) (words=1395, time=0-00:18:57)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.68% ( C/S/I/D: 5734/399/129/213; hyp_len=6262, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.987
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 8.0303: train_loss/word=0.954468 (words=9290, words/sec=3835.32, time=0-00:19:00)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 8.2855: train_loss/word=0.924010 (words=63322, words/sec=3794.49, time=0-00:19:14)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 8.5359: train_loss/word=0.913897 (words=112625, words/sec=4510.15, time=0-00:19:25)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 8.7987: train_loss/word=0.921138 (words=169358, words/sec=4053.08, time=0-00:19:39)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 9.0000: train_loss/word=0.916435 (words=217896, words/sec=4243.42, time=0-00:19:50)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 9.0000 dev WER: 28.67% ( C/S/I/D: 1048/314/53/33; hyp_len=1415, ref_len=1395 ) (words=1395, time=0-00:21:13)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.11% ( C/S/I/D: 5752/379/111/215; hyp_len=6242, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.985
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 9.0377: train_loss/word=0.893552 (words=9424, words/sec=4078.55, time=0-00:21:15)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 9.2617: train_loss/word=0.908010 (words=58384, words/sec=4347.34, time=0-00:21:27)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 9.5275: train_loss/word=0.911117 (words=106432, words/sec=4349.45, time=0-00:21:38)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 9.7649: train_loss/word=0.904879 (words=163383, words/sec=4106.35, time=0-00:21:52)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 10.0000: train_loss/word=0.906936 (words=217896, words/sec=3798.39, time=0-00:22:06)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 10.0000 dev WER: 28.24% ( C/S/I/D: 1049/314/48/32; hyp_len=1411, ref_len=1395 ) (words=1395, time=0-00:23:29)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.89% ( C/S/I/D: 5783/347/128/216; hyp_len=6258, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.981
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 10.0413: train_loss/word=0.860369 (words=9412, words/sec=4168.41, time=0-00:23:31)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 10.3121: train_loss/word=0.898638 (words=65295, words/sec=4080.75, time=0-00:23:45)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 10.5463: train_loss/word=0.904970 (words=123645, words/sec=4183.28, time=0-00:23:59)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 10.8067: train_loss/word=0.903422 (words=178406, words/sec=3881.59, time=0-00:24:13)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 11.0000: train_loss/word=0.899051 (words=217896, words/sec=4509.53, time=0-00:24:22)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 11.0000 dev WER: 29.75% ( C/S/I/D: 1048/319/68/28; hyp_len=1435, ref_len=1395 ) (words=1395, time=0-00:25:44)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.06% ( C/S/I/D: 5769/380/125/197; hyp_len=6274, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.979
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 11.0335: train_loss/word=0.894226 (words=9772, words/sec=4135.69, time=0-00:25:47)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 11.2920: train_loss/word=0.886143 (words=59243, words/sec=4585.81, time=0-00:25:58)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 11.5193: train_loss/word=0.894111 (words=106674, words/sec=4172.60, time=0-00:26:09)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 11.7383: train_loss/word=0.890512 (words=159654, words/sec=3664.16, time=0-00:26:24)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 12.0000: train_loss/word=0.890462 (words=217896, words/sec=4250.53, time=0-00:26:37)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 12.0000 dev WER: 28.53% ( C/S/I/D: 1052/317/55/26; hyp_len=1424, ref_len=1395 ) (words=1395, time=0-00:27:59)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.27% ( C/S/I/D: 5753/391/122/202; hyp_len=6266, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.977
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 12.0366: train_loss/word=0.864201 (words=9545, words/sec=4070.88, time=0-00:28:02)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 12.2530: train_loss/word=0.874465 (words=58327, words/sec=4303.02, time=0-00:28:13)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 12.4981: train_loss/word=0.876315 (words=116386, words/sec=4229.20, time=0-00:28:27)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 12.7582: train_loss/word=0.879794 (words=164428, words/sec=4399.67, time=0-00:28:38)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 13.0000: train_loss/word=0.884142 (words=217896, words/sec=3727.20, time=0-00:28:53)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 13.0000 dev WER: 29.61% ( C/S/I/D: 1040/326/58/29; hyp_len=1424, ref_len=1395 ) (words=1395, time=0-00:30:15)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.66% ( C/S/I/D: 5733/387/127/226; hyp_len=6247, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.980
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 13.0472: train_loss/word=0.855139 (words=9637, words/sec=4419.61, time=0-00:30:17)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 13.2896: train_loss/word=0.866067 (words=67613, words/sec=4214.49, time=0-00:30:31)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 13.5201: train_loss/word=0.882047 (words=106002, words/sec=4383.49, time=0-00:30:40)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 13.7589: train_loss/word=0.874382 (words=159445, words/sec=3792.28, time=0-00:30:54)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 14.0000: train_loss/word=0.876670 (words=217896, words/sec=4213.88, time=0-00:31:08)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 14.0000 dev WER: 29.25% ( C/S/I/D: 1051/315/64/29; hyp_len=1430, ref_len=1395 ) (words=1395, time=0-00:32:30)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.39% ( C/S/I/D: 5759/378/136/209; hyp_len=6273, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.970
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 14.0444: train_loss/word=0.839102 (words=9752, words/sec=4481.65, time=0-00:32:33)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 14.2950: train_loss/word=0.854981 (words=67253, words/sec=4216.87, time=0-00:32:46)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 14.5206: train_loss/word=0.853026 (words=115853, words/sec=4380.36, time=0-00:32:57)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 14.7703: train_loss/word=0.862302 (words=174137, words/sec=4204.17, time=0-00:33:11)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 15.0000: train_loss/word=0.869873 (words=217896, words/sec=3661.51, time=0-00:33:23)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 15.0000 dev WER: 30.75% ( C/S/I/D: 1033/336/67/26; hyp_len=1436, ref_len=1395 ) (words=1395, time=0-00:34:45)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.44% ( C/S/I/D: 5742/389/122/215; hyp_len=6253, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.977
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 15.0320: train_loss/word=0.882156 (words=9874, words/sec=4127.26, time=0-00:34:48)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 15.2695: train_loss/word=0.865872 (words=67842, words/sec=4227.04, time=0-00:35:02)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 15.4937: train_loss/word=0.871025 (words=114252, words/sec=4012.27, time=0-00:35:13)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 15.7580: train_loss/word=0.869196 (words=168379, words/sec=3823.46, time=0-00:35:28)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 16.0000: train_loss/word=0.867818 (words=217896, words/sec=4518.75, time=0-00:35:39)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 16.0000 dev WER: 27.38% ( C/S/I/D: 1064/302/51/29; hyp_len=1417, ref_len=1395 ) (words=1395, time=0-00:37:01)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.72% ( C/S/I/D: 5779/367/113/200; hyp_len=6259, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.969
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+  best dev score, writing out model
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 16.0281: train_loss/word=0.891787 (words=9199, words/sec=3633.47, time=0-00:37:10)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 16.2693: train_loss/word=0.875425 (words=55903, words/sec=4151.85, time=0-00:37:21)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 16.5143: train_loss/word=0.865133 (words=119737, words/sec=3787.14, time=0-00:37:38)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 16.7539: train_loss/word=0.864291 (words=168589, words/sec=4390.31, time=0-00:37:49)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 17.0000: train_loss/word=0.862148 (words=217896, words/sec=4510.84, time=0-00:38:00)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 17.0000 dev WER: 28.60% ( C/S/I/D: 1049/313/53/33; hyp_len=1415, ref_len=1395 ) (words=1395, time=0-00:39:22)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.13% ( C/S/I/D: 5757/375/117/214; hyp_len=6249, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.973
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 17.0366: train_loss/word=0.844485 (words=9556, words/sec=4070.89, time=0-00:39:25)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 17.2734: train_loss/word=0.854593 (words=56241, words/sec=4149.17, time=0-00:39:36)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 17.5091: train_loss/word=0.855256 (words=105301, words/sec=4387.92, time=0-00:39:47)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 17.7561: train_loss/word=0.857122 (words=155638, words/sec=4566.77, time=0-00:39:58)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 18.0000: train_loss/word=0.856523 (words=217896, words/sec=3664.31, time=0-00:40:15)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 18.0000 dev WER: 28.60% ( C/S/I/D: 1055/311/59/29; hyp_len=1425, ref_len=1395 ) (words=1395, time=0-00:41:38)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.94% ( C/S/I/D: 5771/376/119/199; hyp_len=6266, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.970
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 18.0158: train_loss/word=0.884959 (words=5153, words/sec=1695.69, time=0-00:41:41)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 18.2632: train_loss/word=0.845277 (words=54450, words/sec=4522.52, time=0-00:41:52)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 18.5357: train_loss/word=0.854545 (words=102128, words/sec=4320.24, time=0-00:42:03)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 18.7749: train_loss/word=0.852709 (words=159637, words/sec=4181.61, time=0-00:42:17)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 19.0000: train_loss/word=0.852781 (words=217896, words/sec=4194.62, time=0-00:42:31)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 19.0000 dev WER: 28.60% ( C/S/I/D: 1046/318/50/31; hyp_len=1414, ref_len=1395 ) (words=1395, time=0-00:43:53)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.44% ( C/S/I/D: 5743/388/123/215; hyp_len=6254, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.973
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 19.0281: train_loss/word=0.883902 (words=9210, words/sec=3665.96, time=0-00:43:56)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 19.2647: train_loss/word=0.854330 (words=62825, words/sec=3716.11, time=0-00:44:10)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 19.5307: train_loss/word=0.856728 (words=119912, words/sec=4174.45, time=0-00:44:24)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 19.7758: train_loss/word=0.855480 (words=169481, words/sec=4489.27, time=0-00:44:35)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 20.0000: train_loss/word=0.850556 (words=217896, words/sec=4336.36, time=0-00:44:46)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 20.0000 dev WER: 27.89% ( C/S/I/D: 1065/298/59/32; hyp_len=1422, ref_len=1395 ) (words=1395, time=0-00:46:09)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.08% ( C/S/I/D: 5769/377/126/200; hyp_len=6272, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.968
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 20.0444: train_loss/word=0.814796 (words=9753, words/sec=4462.46, time=0-00:46:11)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 20.2639: train_loss/word=0.853861 (words=56865, words/sec=4078.81, time=0-00:46:23)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 20.5108: train_loss/word=0.842657 (words=114807, words/sec=4249.90, time=0-00:46:36)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 20.7273: train_loss/word=0.843906 (words=159310, words/sec=3733.00, time=0-00:46:48)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 20.9719: train_loss/word=0.845977 (words=208674, words/sec=4493.13, time=0-00:46:59)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 21.0000: train_loss/word=0.847054 (words=217896, words/sec=3669.95, time=0-00:47:02)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 21.0000 dev WER: 28.67% ( C/S/I/D: 1053/311/58/31; hyp_len=1422, ref_len=1395 ) (words=1395, time=0-00:48:24)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.03% ( C/S/I/D: 5768/374/122/204; hyp_len=6264, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.966
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 21.0160: train_loss/word=0.871712 (words=5204, words/sec=1706.46, time=0-00:48:27)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 21.2855: train_loss/word=0.858403 (words=62270, words/sec=4173.21, time=0-00:48:41)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 21.5201: train_loss/word=0.845994 (words=119321, words/sec=4154.46, time=0-00:48:55)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 21.7563: train_loss/word=0.846244 (words=168833, words/sec=4465.89, time=0-00:49:06)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 22.0000: train_loss/word=0.845645 (words=217896, words/sec=4458.87, time=0-00:49:17)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 22.0000 dev WER: 28.67% ( C/S/I/D: 1063/309/68/23; hyp_len=1440, ref_len=1395 ) (words=1395, time=0-00:50:39)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.19% ( C/S/I/D: 5773/378/137/195; hyp_len=6288, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.967
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 22.0584: train_loss/word=0.853624 (words=10293, words/sec=4810.04, time=0-00:50:42)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 22.2926: train_loss/word=0.835925 (words=59443, words/sec=4460.94, time=0-00:50:53)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 22.5177: train_loss/word=0.835325 (words=116126, words/sec=4032.93, time=0-00:51:07)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 22.7695: train_loss/word=0.834898 (words=174387, words/sec=4309.20, time=0-00:51:20)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 23.0000: train_loss/word=0.841645 (words=217896, words/sec=3639.52, time=0-00:51:32)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 23.0000 dev WER: 27.74% ( C/S/I/D: 1059/306/51/30; hyp_len=1416, ref_len=1395 ) (words=1395, time=0-00:52:54)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.08% ( C/S/I/D: 5772/372/129/202; hyp_len=6273, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.972
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 23.0390: train_loss/word=0.824335 (words=9385, words/sec=4089.01, time=0-00:52:57)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 23.3054: train_loss/word=0.837372 (words=68287, words/sec=4334.04, time=0-00:53:10)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 23.5348: train_loss/word=0.829176 (words=116762, words/sec=4391.57, time=0-00:53:22)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 23.7667: train_loss/word=0.828021 (words=170518, words/sec=3788.90, time=0-00:53:36)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 24.0000: train_loss/word=0.837626 (words=217896, words/sec=4107.90, time=0-00:53:47)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 24.0000 dev WER: 29.10% ( C/S/I/D: 1047/315/58/33; hyp_len=1420, ref_len=1395 ) (words=1395, time=0-00:55:09)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.25% ( C/S/I/D: 5754/381/122/211; hyp_len=6257, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.969
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 24.0535: train_loss/word=0.826736 (words=10130, words/sec=4629.38, time=0-00:55:12)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 24.2706: train_loss/word=0.816758 (words=58209, words/sec=4328.43, time=0-00:55:23)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 24.4957: train_loss/word=0.828753 (words=105131, words/sec=4076.03, time=0-00:55:35)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 24.7182: train_loss/word=0.833193 (words=153505, words/sec=4228.55, time=0-00:55:46)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 24.9680: train_loss/word=0.833688 (words=208023, words/sec=3839.56, time=0-00:56:00)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 25.0000: train_loss/word=0.834600 (words=217896, words/sec=4122.37, time=0-00:56:03)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 25.0000 dev WER: 29.46% ( C/S/I/D: 1042/322/58/31; hyp_len=1422, ref_len=1395 ) (words=1395, time=0-00:57:25)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.38% ( C/S/I/D: 5764/377/140/205; hyp_len=6281, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.967
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 25.0335: train_loss/word=0.842404 (words=9752, words/sec=4117.44, time=0-00:57:27)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 25.2963: train_loss/word=0.846025 (words=62567, words/sec=3688.93, time=0-00:57:42)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 25.5141: train_loss/word=0.833715 (words=110910, words/sec=4295.02, time=0-00:57:53)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 25.7511: train_loss/word=0.833255 (words=159722, words/sec=4345.38, time=0-00:58:04)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 26.0000: train_loss/word=0.831615 (words=217896, words/sec=4283.43, time=0-00:58:18)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 26.0000 dev WER: 28.46% ( C/S/I/D: 1059/312/61/24; hyp_len=1432, ref_len=1395 ) (words=1395, time=0-00:59:41)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.05% ( C/S/I/D: 5765/378/120/203; hyp_len=6263, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.966
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 26.0351: train_loss/word=0.829119 (words=9691, words/sec=4109.11, time=0-00:59:43)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 26.2693: train_loss/word=0.820421 (words=66726, words/sec=4117.66, time=0-00:59:57)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 26.5039: train_loss/word=0.825393 (words=115745, words/sec=4376.11, time=0-01:00:08)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 26.7446: train_loss/word=0.830373 (words=163000, words/sec=4171.67, time=0-01:00:20)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 26.9835: train_loss/word=0.829829 (words=212550, words/sec=4506.51, time=0-01:00:31)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 27.0000: train_loss/word=0.830410 (words=217896, words/sec=1719.93, time=0-01:00:34)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 27.0000 dev WER: 29.03% ( C/S/I/D: 1054/315/64/26; hyp_len=1433, ref_len=1395 ) (words=1395, time=0-01:01:57)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.52% ( C/S/I/D: 5743/403/128/200; hyp_len=6274, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.970
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:23
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 27.0390: train_loss/word=0.807413 (words=9416, words/sec=4088.31, time=0-01:01:59)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 27.2615: train_loss/word=0.814588 (words=58187, words/sec=4373.57, time=0-01:02:11)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 27.4905: train_loss/word=0.817104 (words=107008, words/sec=4370.73, time=0-01:02:22)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 27.7214: train_loss/word=0.824354 (words=156170, words/sec=4318.29, time=0-01:02:33)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 27.9634: train_loss/word=0.827732 (words=208344, words/sec=3598.88, time=0-01:02:48)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 28.0000: train_loss/word=0.827425 (words=217896, words/sec=4056.45, time=0-01:02:50)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 28.0000 dev WER: 29.03% ( C/S/I/D: 1045/318/55/32; hyp_len=1418, ref_len=1395 ) (words=1395, time=0-01:04:13)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.42% ( C/S/I/D: 5738/391/117/217; hyp_len=6246, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.967
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 28.0390: train_loss/word=0.808846 (words=9416, words/sec=4064.04, time=0-01:04:15)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 28.2662: train_loss/word=0.816265 (words=58504, words/sec=4404.53, time=0-01:04:26)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 28.4829: train_loss/word=0.827072 (words=105180, words/sec=3991.49, time=0-01:04:38)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 28.7095: train_loss/word=0.828778 (words=159452, words/sec=3717.76, time=0-01:04:53)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 28.9498: train_loss/word=0.825470 (words=207985, words/sec=4383.65, time=0-01:05:04)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 29.0000: train_loss/word=0.825086 (words=217896, words/sec=4551.03, time=0-01:05:06)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 29.0000 dev WER: 27.53% ( C/S/I/D: 1061/301/50/33; hyp_len=1412, ref_len=1395 ) (words=1395, time=0-01:06:29)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.89% ( C/S/I/D: 5781/368/126/197; hyp_len=6275, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.962
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 29.0422: train_loss/word=0.793567 (words=9331, words/sec=4124.14, time=0-01:06:31)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 29.2792: train_loss/word=0.816171 (words=58947, words/sec=4510.77, time=0-01:06:42)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 29.5214: train_loss/word=0.817886 (words=116789, words/sec=4219.18, time=0-01:06:56)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 29.7643: train_loss/word=0.823545 (words=163894, words/sec=4154.50, time=0-01:07:07)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 29.9838: train_loss/word=0.822217 (words=212628, words/sec=4336.56, time=0-01:07:18)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 30.0000: train_loss/word=0.822726 (words=217896, words/sec=1687.52, time=0-01:07:22)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 30.0000 dev WER: 28.46% ( C/S/I/D: 1057/311/59/27; hyp_len=1427, ref_len=1395 ) (words=1395, time=0-01:08:44)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.31% ( C/S/I/D: 5764/372/136/210; hyp_len=6272, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.963
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 30.0403: train_loss/word=0.801951 (words=9522, words/sec=4205.65, time=0-01:08:47)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 30.2652: train_loss/word=0.807972 (words=57925, words/sec=4294.86, time=0-01:08:58)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 30.5115: train_loss/word=0.818831 (words=110442, words/sec=3584.03, time=0-01:09:13)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 30.7714: train_loss/word=0.817410 (words=168889, words/sec=4337.60, time=0-01:09:26)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 31.0000: train_loss/word=0.820300 (words=217896, words/sec=4314.03, time=0-01:09:38)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 31.0000 dev WER: 28.17% ( C/S/I/D: 1052/311/50/32; hyp_len=1413, ref_len=1395 ) (words=1395, time=0-01:11:00)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.27% ( C/S/I/D: 5760/373/129/213; hyp_len=6262, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.962
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+  new learning rate: 0.00039999998989515007
+  restarting trainer and reverting learned weights to best checkpoint..
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 31.0422: train_loss/word=0.825954 (words=9359, words/sec=4109.66, time=0-01:11:12)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 31.3130: train_loss/word=0.913857 (words=57570, words/sec=4381.01, time=0-01:11:23)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 31.5545: train_loss/word=0.907302 (words=111865, words/sec=3818.24, time=0-01:11:38)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 31.7892: train_loss/word=0.909631 (words=169617, words/sec=4121.67, time=0-01:11:52)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 32.0000: train_loss/word=0.903987 (words=217896, words/sec=4263.06, time=0-01:12:03)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 32.0000 dev WER: 29.39% ( C/S/I/D: 1038/321/53/36; hyp_len=1412, ref_len=1395 ) (words=1395, time=0-01:13:25)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 12.07% ( C/S/I/D: 5712/407/132/227; hyp_len=6251, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 1.003
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:21
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 32.0584: train_loss/word=0.919012 (words=10297, words/sec=4811.25, time=0-01:13:27)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 32.2981: train_loss/word=0.896324 (words=64502, words/sec=3802.00, time=0-01:13:41)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 32.5145: train_loss/word=0.894952 (words=121712, words/sec=4044.27, time=0-01:13:56)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 32.7331: train_loss/word=0.887239 (words=170185, words/sec=4335.59, time=0-01:14:07)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 33.0000: train_loss/word=0.891019 (words=217896, words/sec=4318.98, time=0-01:14:18)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 33.0000 dev WER: 29.32% ( C/S/I/D: 1052/315/66/28; hyp_len=1433, ref_len=1395 ) (words=1395, time=0-01:15:41)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.49% ( C/S/I/D: 5761/392/144/193; hyp_len=6297, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.989
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 33.0335: train_loss/word=0.890378 (words=9777, words/sec=4129.91, time=0-01:15:43)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 33.2939: train_loss/word=0.878960 (words=72776, words/sec=3736.53, time=0-01:16:00)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 33.5212: train_loss/word=0.873120 (words=121862, words/sec=4394.11, time=0-01:16:11)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 33.7675: train_loss/word=0.872861 (words=171057, words/sec=4411.01, time=0-01:16:23)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 34.0000: train_loss/word=0.878960 (words=217896, words/sec=4118.19, time=0-01:16:34)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 34.0000 dev WER: 29.46% ( C/S/I/D: 1042/321/58/32; hyp_len=1421, ref_len=1395 ) (words=1395, time=0-01:17:57)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.91% ( C/S/I/D: 5754/394/164/198; hyp_len=6312, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.988
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 34.0303: train_loss/word=0.897914 (words=9253, words/sec=3754.99, time=0-01:17:59)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 34.2675: train_loss/word=0.877556 (words=58364, words/sec=4398.33, time=0-01:18:11)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 34.4857: train_loss/word=0.870162 (words=111701, words/sec=3698.27, time=0-01:18:25)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 34.7418: train_loss/word=0.870561 (words=159590, words/sec=4310.21, time=0-01:18:36)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 34.9649: train_loss/word=0.869516 (words=208155, words/sec=4287.65, time=0-01:18:48)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 35.0000: train_loss/word=0.869010 (words=217896, words/sec=4156.95, time=0-01:18:50)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 35.0000 dev WER: 29.75% ( C/S/I/D: 1040/325/60/30; hyp_len=1425, ref_len=1395 ) (words=1395, time=0-01:20:13)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.93% ( C/S/I/D: 5733/404/144/209; hyp_len=6281, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.983
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 35.0335: train_loss/word=0.874033 (words=9787, words/sec=4130.00, time=0-01:20:15)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 35.3009: train_loss/word=0.881534 (words=62726, words/sec=3694.27, time=0-01:20:30)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 35.5271: train_loss/word=0.871717 (words=111733, words/sec=4343.88, time=0-01:20:41)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 35.7504: train_loss/word=0.861523 (words=160047, words/sec=4330.39, time=0-01:20:52)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 36.0000: train_loss/word=0.857233 (words=217896, words/sec=4262.03, time=0-01:21:06)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 36.0000 dev WER: 28.67% ( C/S/I/D: 1056/307/61/32; hyp_len=1424, ref_len=1395 ) (words=1395, time=0-01:22:28)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.36% ( C/S/I/D: 5765/389/140/192; hyp_len=6294, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.972
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 36.0162: train_loss/word=0.862870 (words=5268, words/sec=1709.70, time=0-01:22:31)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 36.2654: train_loss/word=0.838073 (words=54342, words/sec=4501.88, time=0-01:22:42)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 36.5067: train_loss/word=0.841728 (words=111628, words/sec=4168.84, time=0-01:22:56)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 36.7494: train_loss/word=0.843779 (words=170258, words/sec=4261.52, time=0-01:23:10)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 37.0000: train_loss/word=0.847821 (words=217896, words/sec=4249.83, time=0-01:23:21)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 37.0000 dev WER: 28.39% ( C/S/I/D: 1051/313/52/31; hyp_len=1416, ref_len=1395 ) (words=1395, time=0-01:24:44)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.94% ( C/S/I/D: 5743/409/155/194; hyp_len=6307, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.973
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:23
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 37.0535: train_loss/word=0.846497 (words=10144, words/sec=4666.77, time=0-01:24:47)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 37.2972: train_loss/word=0.862829 (words=62738, words/sec=3585.28, time=0-01:25:01)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 37.5416: train_loss/word=0.856084 (words=112157, words/sec=4478.17, time=0-01:25:12)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 37.7920: train_loss/word=0.847069 (words=170172, words/sec=4274.00, time=0-01:25:26)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 38.0000: train_loss/word=0.841803 (words=217896, words/sec=4241.62, time=0-01:25:37)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 38.0000 dev WER: 28.82% ( C/S/I/D: 1050/315/57/30; hyp_len=1422, ref_len=1395 ) (words=1395, time=0-01:27:00)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.58% ( C/S/I/D: 5754/395/143/197; hyp_len=6292, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.968
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 38.0558: train_loss/word=0.848700 (words=10148, words/sec=4755.42, time=0-01:27:02)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 38.2918: train_loss/word=0.847884 (words=67422, words/sec=4059.74, time=0-01:27:16)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 38.5158: train_loss/word=0.838864 (words=116648, words/sec=4403.42, time=0-01:27:28)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 38.7593: train_loss/word=0.843632 (words=160256, words/sec=3687.94, time=0-01:27:39)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 39.0000: train_loss/word=0.838337 (words=217896, words/sec=4220.50, time=0-01:27:53)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 39.0000 dev WER: 29.61% ( C/S/I/D: 1050/316/68/29; hyp_len=1434, ref_len=1395 ) (words=1395, time=0-01:29:16)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.42% ( C/S/I/D: 5760/376/139/210; hyp_len=6275, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.971
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+  new learning rate: 0.00019999999494757503
+  restarting trainer and reverting learned weights to best checkpoint..
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 39.0377: train_loss/word=0.838964 (words=9386, words/sec=4057.50, time=0-01:29:27)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 39.2835: train_loss/word=0.864059 (words=63982, words/sec=3855.32, time=0-01:29:42)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 39.5245: train_loss/word=0.864550 (words=112766, words/sec=4440.15, time=0-01:29:53)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 39.7671: train_loss/word=0.873671 (words=169243, words/sec=4016.76, time=0-01:30:07)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 40.0000: train_loss/word=0.873859 (words=217896, words/sec=4344.53, time=0-01:30:18)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 40.0000 dev WER: 28.53% ( C/S/I/D: 1062/311/65/22; hyp_len=1438, ref_len=1395 ) (words=1395, time=0-01:31:41)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.90% ( C/S/I/D: 5790/360/136/196; hyp_len=6286, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.979
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 40.0422: train_loss/word=0.828747 (words=9314, words/sec=4110.35, time=0-01:31:43)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 40.2656: train_loss/word=0.859351 (words=58092, words/sec=4319.88, time=0-01:31:54)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 40.4957: train_loss/word=0.852943 (words=106906, words/sec=4442.01, time=0-01:32:05)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 40.7446: train_loss/word=0.864555 (words=150623, words/sec=3680.36, time=0-01:32:17)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 40.9665: train_loss/word=0.863999 (words=208125, words/sec=4061.97, time=0-01:32:32)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 41.0000: train_loss/word=0.865128 (words=217896, words/sec=4099.71, time=0-01:32:34)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 41.0000 dev WER: 27.96% ( C/S/I/D: 1053/310/48/32; hyp_len=1411, ref_len=1395 ) (words=1395, time=0-01:33:56)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.83% ( C/S/I/D: 5784/344/125/218; hyp_len=6253, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.973
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 41.0422: train_loss/word=0.818067 (words=9350, words/sec=4118.15, time=0-01:33:59)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 41.2786: train_loss/word=0.872013 (words=56560, words/sec=4107.19, time=0-01:34:10)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 41.5050: train_loss/word=0.862024 (words=114469, words/sec=4181.31, time=0-01:34:24)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 41.7645: train_loss/word=0.855741 (words=168546, words/sec=3842.42, time=0-01:34:38)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 42.0000: train_loss/word=0.853650 (words=217896, words/sec=4411.66, time=0-01:34:49)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 42.0000 dev WER: 28.53% ( C/S/I/D: 1060/311/63/24; hyp_len=1434, ref_len=1395 ) (words=1395, time=0-01:36:12)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.20% ( C/S/I/D: 5770/372/135/204; hyp_len=6277, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.963
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 42.0377: train_loss/word=0.822636 (words=9358, words/sec=4049.71, time=0-01:36:14)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 42.2846: train_loss/word=0.853152 (words=72976, words/sec=3735.37, time=0-01:36:31)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 42.5156: train_loss/word=0.845278 (words=121906, words/sec=4412.37, time=0-01:36:43)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 42.7610: train_loss/word=0.845014 (words=171244, words/sec=4461.16, time=0-01:36:54)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 43.0000: train_loss/word=0.848837 (words=217896, words/sec=4093.39, time=0-01:37:05)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 43.0000 dev WER: 27.74% ( C/S/I/D: 1066/299/58/30; hyp_len=1423, ref_len=1395 ) (words=1395, time=0-01:38:27)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.51% ( C/S/I/D: 5792/347/113/207; hyp_len=6252, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.959
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 43.0377: train_loss/word=0.819798 (words=9398, words/sec=4061.94, time=0-01:38:30)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 43.3043: train_loss/word=0.834198 (words=67807, words/sec=4320.44, time=0-01:38:44)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 43.5286: train_loss/word=0.835478 (words=116311, words/sec=4360.39, time=0-01:38:55)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 43.8045: train_loss/word=0.844105 (words=169939, words/sec=3768.25, time=0-01:39:09)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 44.0000: train_loss/word=0.843169 (words=217896, words/sec=4108.16, time=0-01:39:21)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 44.0000 dev WER: 28.60% ( C/S/I/D: 1051/315/55/29; hyp_len=1421, ref_len=1395 ) (words=1395, time=0-01:40:43)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.11% ( C/S/I/D: 5773/376/132/197; hyp_len=6281, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.960
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 44.0366: train_loss/word=0.830790 (words=9545, words/sec=4075.22, time=0-01:40:46)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 44.2699: train_loss/word=0.831323 (words=63278, words/sec=3779.46, time=0-01:41:00)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 44.5035: train_loss/word=0.842350 (words=110937, words/sec=4187.19, time=0-01:41:11)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 44.7716: train_loss/word=0.838656 (words=169365, words/sec=4328.55, time=0-01:41:25)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 45.0000: train_loss/word=0.838643 (words=217896, words/sec=4289.63, time=0-01:41:36)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 45.0000 dev WER: 28.39% ( C/S/I/D: 1054/312/55/29; hyp_len=1421, ref_len=1395 ) (words=1395, time=0-01:42:59)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 11.19% ( C/S/I/D: 5751/367/115/228; hyp_len=6233, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.959
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:23
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 45.0303: train_loss/word=0.852932 (words=9313, words/sec=3785.09, time=0-01:43:02)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 45.2872: train_loss/word=0.833093 (words=67241, words/sec=4280.26, time=0-01:43:16)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 45.5264: train_loss/word=0.837469 (words=125651, words/sec=4206.33, time=0-01:43:30)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 45.8104: train_loss/word=0.840591 (words=178970, words/sec=3805.26, time=0-01:43:44)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 46.0000: train_loss/word=0.836819 (words=217896, words/sec=4446.61, time=0-01:43:52)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 46.0000 dev WER: 26.88% ( C/S/I/D: 1077/289/57/29; hyp_len=1423, ref_len=1395 ) (words=1395, time=0-01:45:15)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.13% ( C/S/I/D: 5807/349/104/190; hyp_len=6260, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.959
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:22
+  best dev score, writing out model
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 46.0366: train_loss/word=0.833488 (words=9525, words/sec=4026.90, time=0-01:45:23)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 46.2613: train_loss/word=0.824559 (words=58227, words/sec=4404.13, time=0-01:45:34)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 46.4861: train_loss/word=0.835124 (words=105168, words/sec=4082.54, time=0-01:45:46)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 46.7182: train_loss/word=0.829129 (words=153509, words/sec=4352.50, time=0-01:45:57)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 46.9519: train_loss/word=0.835044 (words=208152, words/sec=3751.38, time=0-01:46:12)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 47.0000: train_loss/word=0.834105 (words=217896, words/sec=4456.62, time=0-01:46:14)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 47.0000 dev WER: 27.74% ( C/S/I/D: 1060/306/52/29; hyp_len=1418, ref_len=1395 ) (words=1395, time=0-01:47:35)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.56% ( C/S/I/D: 5794/349/118/203; hyp_len=6261, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.960
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:20
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 47.0377: train_loss/word=0.809034 (words=9386, words/sec=4101.26, time=0-01:47:37)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 47.2665: train_loss/word=0.828280 (words=54676, words/sec=3916.85, time=0-01:47:49)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 47.5006: train_loss/word=0.824924 (words=111539, words/sec=4127.81, time=0-01:48:03)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 47.7565: train_loss/word=0.826511 (words=170647, words/sec=4361.37, time=0-01:48:16)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 48.0000: train_loss/word=0.829823 (words=217896, words/sec=4271.15, time=0-01:48:27)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 48.0000 dev WER: 26.95% ( C/S/I/D: 1066/297/47/32; hyp_len=1410, ref_len=1395 ) (words=1395, time=0-01:49:48)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.61% ( C/S/I/D: 5804/354/131/188; hyp_len=6289, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.960
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:20
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 48.0481: train_loss/word=0.813293 (words=9755, words/sec=4516.76, time=0-01:49:51)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 48.2900: train_loss/word=0.824592 (words=64035, words/sec=3806.82, time=0-01:50:05)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 48.5318: train_loss/word=0.830263 (words=111505, words/sec=4289.64, time=0-01:50:16)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 48.7645: train_loss/word=0.830484 (words=160378, words/sec=4378.57, time=0-01:50:27)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 49.0000: train_loss/word=0.829168 (words=217896, words/sec=4191.86, time=0-01:50:41)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 49.0000 dev WER: 28.24% ( C/S/I/D: 1050/311/49/34; hyp_len=1410, ref_len=1395 ) (words=1395, time=0-01:52:02)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.84% ( C/S/I/D: 5781/366/123/199; hyp_len=6270, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.958
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:21
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 49.0502: train_loss/word=0.807111 (words=9911, words/sec=4606.98, time=0-01:52:04)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 49.2768: train_loss/word=0.840054 (words=63650, words/sec=3709.08, time=0-01:52:19)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 49.5128: train_loss/word=0.832688 (words=110458, words/sec=4198.62, time=0-01:52:30)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 49.7351: train_loss/word=0.826917 (words=159257, words/sec=4420.50, time=0-01:52:41)
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 50.0000: train_loss/word=0.826156 (words=217896, words/sec=4372.32, time=0-01:52:55)
+> Checkpoint
+Performing inference on /home/jialu/TIMIT/dev.h5
+[las-timit-pretrain-test] [las-timit-pretrain-test] Epoch 50.0000 dev WER: 27.67% ( C/S/I/D: 1059/309/50/27; hyp_len=1418, ref_len=1395 ) (words=1395, time=0-01:54:16)
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary CER: 10.95% ( C/S/I/D: 5785/357/134/204; hyp_len=6276, ref_len=6346 )
+[las-timit-pretrain-test] [las-timit-pretrain-test]              dev auxiliary Loss: 0.957
+[las-timit-pretrain-test] [las-timit-pretrain-test]              checkpoint took 0-00:01:20
+reverting learned weights to best checkpoint..
+> Performing final evaluation
+Performing inference on /home/jialu/TIMIT/test.h5
+Read 1000 lines (65.79%) of /home/jialu/TIMIT/test.h5 at 999

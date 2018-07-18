@@ -1,0 +1,3 @@
+Epoch 22 learning rate 0.01
+las-timit-evaluate            | WER: 230.60% ( C/S/I/D: 3889/9202/21019/25; hyp_len=34110, ref_len=13116 )
+                              | CER: 142.97% ( C/S/I/D: 27445/31426/53173/1000; hyp_len=112044, ref_len=59871 )

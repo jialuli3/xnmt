@@ -25,5 +25,5 @@ examples/preproc/
 dist/
 docs/_build/
 docs/examples
-/home/jialu/xnmt/recipes/las-tedlium/logs
-/home/jialu/xnmt/recipes/las-tedlium/models
+/home/jialu/xnmt/recipes/las-tedlium/logs/
+/home/jialu/xnmt/recipes/las-tedlium/models/

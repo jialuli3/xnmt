@@ -1,0 +1,1272 @@
+- {data: train, epoch: 0.2422077922077922, key: train_loss, loss: 3.2614339031392743,
+  task_name: '{EXP}', time: '0-00:00:25', words: 58015, words_per_sec: 4090.9729273499197}
+- {data: train, epoch: 0.5002164502164502, key: train_loss, loss: 2.5959681059259228,
+  task_name: '{EXP}', time: '0-00:00:39', words: 113341, words_per_sec: 3920.400009021577}
+- {data: train, epoch: 0.7521645021645021, key: train_loss, loss: 2.274295099851381,
+  task_name: '{EXP}', time: '0-00:00:50', words: 160814, words_per_sec: 4286.354208290271}
+- {data: train, epoch: 1.0, key: train_loss, loss: 2.034652972705442, task_name: '{EXP}',
+  time: '0-00:01:04', words: 217896, words_per_sec: 4037.992682173998}
+- epoch: 1.0
+  key: dev_loss
+  score: !WERScore {correct: 875, deletions: 50, desc: null, insertions: 102, substitutions: 470}
+  task_name: '{EXP}'
+  time: 0-00:02:26
+  words: 1395
+- epoch: 1.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5307, deletions: 394, desc: null, insertions: 183, substitutions: 645}
+  task_name: '{EXP}'
+- epoch: 1.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 1.2150161878019472, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 1.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:21'}
+- {data: train, epoch: 1.0456709956709958, key: train_loss, loss: 1.2216681224282417,
+  task_name: '{EXP}', time: '0-00:02:34', words: 9964, words_per_sec: 4515.084826394895}
+- {data: train, epoch: 1.304112554112554, key: train_loss, loss: 1.223048812086058,
+  task_name: '{EXP}', time: '0-00:02:45', words: 59791, words_per_sec: 4572.553975410248}
+- {data: train, epoch: 1.5415584415584416, key: train_loss, loss: 1.1785788575535119,
+  task_name: '{EXP}', time: '0-00:02:59', words: 116843, words_per_sec: 4134.994600910488}
+- {data: train, epoch: 1.7584415584415585, key: train_loss, loss: 1.166615590105272,
+  task_name: '{EXP}', time: '0-00:03:10', words: 165856, words_per_sec: 4296.525506323826}
+- {data: train, epoch: 2.0, key: train_loss, loss: 1.1582997253420209, task_name: '{EXP}',
+  time: '0-00:03:25', words: 217896, words_per_sec: 3545.3402342249824}
+- epoch: 2.0
+  key: dev_loss
+  score: !WERScore {correct: 981, deletions: 43, desc: null, insertions: 50, substitutions: 371}
+  task_name: '{EXP}'
+  time: 0-00:04:47
+  words: 1395
+- epoch: 2.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5592, deletions: 284, desc: null, insertions: 138, substitutions: 470}
+  task_name: '{EXP}'
+- epoch: 2.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 1.0650118370041057, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 2.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 2.047186147186147, key: train_loss, loss: 1.041324307963552,
+  task_name: '{EXP}', time: '0-00:04:56', words: 9589, words_per_sec: 4342.002731350222}
+- {data: train, epoch: 2.3177489177489177, key: train_loss, loss: 1.0451531906912428,
+  task_name: '{EXP}', time: '0-00:05:10', words: 67979, words_per_sec: 4170.425226506644}
+- {data: train, epoch: 2.5493506493506493, key: train_loss, loss: 1.0501704739214834,
+  task_name: '{EXP}', time: '0-00:05:21', words: 116746, words_per_sec: 4311.86157833009}
+- {data: train, epoch: 2.772077922077922, key: train_loss, loss: 1.0368924136485782,
+  task_name: '{EXP}', time: '0-00:05:32', words: 165226, words_per_sec: 4306.606857582589}
+- {data: train, epoch: 3.0, key: train_loss, loss: 1.0439872978393363, task_name: '{EXP}',
+  time: '0-00:05:47', words: 217896, words_per_sec: 3576.4686068030937}
+- epoch: 3.0
+  key: dev_loss
+  score: !WERScore {correct: 1014, deletions: 33, desc: null, insertions: 59, substitutions: 348}
+  task_name: '{EXP}'
+  time: 0-00:07:10
+  words: 1395
+- epoch: 3.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5657, deletions: 244, desc: null, insertions: 129, substitutions: 445}
+  task_name: '{EXP}'
+- epoch: 3.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 1.0285609428587916, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 3.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 3.0281385281385282, key: train_loss, loss: 1.0495953102904383,
+  task_name: '{EXP}', time: '0-00:07:19', words: 9193, words_per_sec: 3620.013456625965}
+- {data: train, epoch: 3.2824675324675323, key: train_loss, loss: 1.0078100658123754,
+  task_name: '{EXP}', time: '0-00:07:30', words: 58172, words_per_sec: 4434.218496721026}
+- {data: train, epoch: 3.5123376623376625, key: train_loss, loss: 1.0158050090465516,
+  task_name: '{EXP}', time: '0-00:07:41', words: 105496, words_per_sec: 4121.968350525226}
+- {data: train, epoch: 3.7465367965367964, key: train_loss, loss: 1.006124009214588,
+  task_name: '{EXP}', time: '0-00:07:55', words: 159706, words_per_sec: 3799.0349789141255}
+- {data: train, epoch: 3.9634199134199135, key: train_loss, loss: 0.9991726704214087,
+  task_name: '{EXP}', time: '0-00:08:07', words: 208331, words_per_sec: 4318.966379100567}
+- {data: train, epoch: 4.0, key: train_loss, loss: 0.9989115946153785, task_name: '{EXP}',
+  time: '0-00:08:09', words: 217896, words_per_sec: 4055.6950562667607}
+- epoch: 4.0
+  key: dev_loss
+  score: !WERScore {correct: 1037, deletions: 28, desc: null, insertions: 67, substitutions: 330}
+  task_name: '{EXP}'
+  time: 0-00:09:31
+  words: 1395
+- epoch: 4.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5710, deletions: 221, desc: null, insertions: 131, substitutions: 415}
+  task_name: '{EXP}'
+- epoch: 4.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 1.003002807311247, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 4.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 4.037662337662337, key: train_loss, loss: 0.9613604869224641,
+  task_name: '{EXP}', time: '0-00:09:40', words: 9415, words_per_sec: 4064.668907948453}
+- {data: train, epoch: 4.258658008658009, key: train_loss, loss: 0.9838221811349162,
+  task_name: '{EXP}', time: '0-00:09:49', words: 47574, words_per_sec: 4332.2041935240695}
+- {data: train, epoch: 4.4876623376623375, key: train_loss, loss: 0.9837691314387462,
+  task_name: '{EXP}', time: '0-00:10:03', words: 101757, words_per_sec: 3744.814995753014}
+- {data: train, epoch: 4.707142857142857, key: train_loss, loss: 0.9842347841334165,
+  task_name: '{EXP}', time: '0-00:10:15', words: 150375, words_per_sec: 4248.666712156643}
+- {data: train, epoch: 4.951948051948052, key: train_loss, loss: 0.9733066160981082,
+  task_name: '{EXP}', time: '0-00:10:28', words: 208158, words_per_sec: 4241.709283640656}
+- {data: train, epoch: 5.0, key: train_loss, loss: 0.97183566249782, task_name: '{EXP}',
+  time: '0-00:10:31', words: 217896, words_per_sec: 4516.41361740072}
+- epoch: 5.0
+  key: dev_loss
+  score: !WERScore {correct: 1036, deletions: 31, desc: null, insertions: 56, substitutions: 328}
+  task_name: '{EXP}'
+  time: 0-00:11:52
+  words: 1395
+- epoch: 5.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5704, deletions: 218, desc: null, insertions: 115, substitutions: 424}
+  task_name: '{EXP}'
+- epoch: 5.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9966366013976141, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 5.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:21'}
+- {data: train, epoch: 5.055844155844156, key: train_loss, loss: 0.9720553699287686,
+  task_name: '{EXP}', time: '0-00:12:01', words: 10143, words_per_sec: 4752.539766866206}
+- {data: train, epoch: 5.295021645021645, key: train_loss, loss: 0.9741983915489473,
+  task_name: '{EXP}', time: '0-00:12:12', words: 57092, words_per_sec: 4140.969470423852}
+- {data: train, epoch: 5.521861471861472, key: train_loss, loss: 0.9576150108489743,
+  task_name: '{EXP}', time: '0-00:12:23', words: 105972, words_per_sec: 4382.449421411304}
+- {data: train, epoch: 5.749567099567099, key: train_loss, loss: 0.9492773185579386,
+  task_name: '{EXP}', time: '0-00:12:37', words: 163587, words_per_sec: 4155.110665332816}
+- {data: train, epoch: 5.983982683982684, key: train_loss, loss: 0.9490905583502602,
+  task_name: '{EXP}', time: '0-00:12:48', words: 212679, words_per_sec: 4392.09434445903}
+- {data: train, epoch: 6.0, key: train_loss, loss: 0.9508814868604174, task_name: '{EXP}',
+  time: '0-00:12:52', words: 217896, words_per_sec: 1708.81675873497}
+- epoch: 6.0
+  key: dev_loss
+  score: !WERScore {correct: 1044, deletions: 30, desc: null, insertions: 57, substitutions: 321}
+  task_name: '{EXP}'
+  time: 0-00:14:14
+  words: 1395
+- epoch: 6.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5732, deletions: 215, desc: null, insertions: 124, substitutions: 399}
+  task_name: '{EXP}'
+- epoch: 6.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.990341252944759, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 6.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 6.044372294372295, key: train_loss, loss: 0.887829315247955,
+  task_name: '{EXP}', time: '0-00:14:22', words: 9780, words_per_sec: 4439.857635499385}
+- {data: train, epoch: 6.285497835497836, key: train_loss, loss: 0.9516090551369661,
+  task_name: '{EXP}', time: '0-00:14:33', words: 59376, words_per_sec: 4413.12500754983}
+- {data: train, epoch: 6.531818181818182, key: train_loss, loss: 0.9375080385128699,
+  task_name: '{EXP}', time: '0-00:14:48', words: 112860, words_per_sec: 3774.3652208657804}
+- {data: train, epoch: 6.787445887445887, key: train_loss, loss: 0.9397998882514949,
+  task_name: '{EXP}', time: '0-00:15:02', words: 169745, words_per_sec: 4100.787094811284}
+- {data: train, epoch: 7.0, key: train_loss, loss: 0.9365234823178259, task_name: '{EXP}',
+  time: '0-00:15:13', words: 217896, words_per_sec: 4249.3258464995115}
+- epoch: 7.0
+  key: dev_loss
+  score: !WERScore {correct: 1052, deletions: 29, desc: null, insertions: 49, substitutions: 314}
+  task_name: '{EXP}'
+  time: 0-00:16:35
+  words: 1395
+- epoch: 7.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5767, deletions: 214, desc: null, insertions: 113, substitutions: 365}
+  task_name: '{EXP}'
+- epoch: 7.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9875785607238697, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 7.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 7.058441558441558, key: train_loss, loss: 0.9603471106631911,
+  task_name: '{EXP}', time: '0-00:16:43', words: 10310, words_per_sec: 4766.565563752507}
+- {data: train, epoch: 7.307575757575758, key: train_loss, loss: 0.929775505106896,
+  task_name: '{EXP}', time: '0-00:16:58', words: 64233, words_per_sec: 3783.368051655603}
+- {data: train, epoch: 7.565584415584416, key: train_loss, loss: 0.9194027073083231,
+  task_name: '{EXP}', time: '0-00:17:11', words: 121950, words_per_sec: 4245.754747062555}
+- {data: train, epoch: 7.79047619047619, key: train_loss, loss: 0.9272033513252586,
+  task_name: '{EXP}', time: '0-00:17:23', words: 168901, words_per_sec: 4072.821479469607}
+- {data: train, epoch: 8.0, key: train_loss, loss: 0.9218568756711918, task_name: '{EXP}',
+  time: '0-00:17:34', words: 217896, words_per_sec: 4285.702610961522}
+- epoch: 8.0
+  key: dev_loss
+  score: !WERScore {correct: 1039, deletions: 23, desc: null, insertions: 64, substitutions: 333}
+  task_name: '{EXP}'
+  time: 0-00:18:57
+  words: 1395
+- epoch: 8.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5734, deletions: 213, desc: null, insertions: 129, substitutions: 399}
+  task_name: '{EXP}'
+- epoch: 8.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9867753216434384, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 8.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 8.030303030303031, key: train_loss, loss: 0.9544676945976857,
+  task_name: '{EXP}', time: '0-00:19:00', words: 9290, words_per_sec: 3835.3212351430225}
+- {data: train, epoch: 8.285497835497836, key: train_loss, loss: 0.9240102530888751,
+  task_name: '{EXP}', time: '0-00:19:14', words: 63322, words_per_sec: 3794.490911546094}
+- {data: train, epoch: 8.535930735930735, key: train_loss, loss: 0.913897041481687,
+  task_name: '{EXP}', time: '0-00:19:25', words: 112625, words_per_sec: 4510.150076025661}
+- {data: train, epoch: 8.7987012987013, key: train_loss, loss: 0.9211382793771183,
+  task_name: '{EXP}', time: '0-00:19:39', words: 169358, words_per_sec: 4053.082442663525}
+- {data: train, epoch: 9.0, key: train_loss, loss: 0.91643490472519, task_name: '{EXP}',
+  time: '0-00:19:50', words: 217896, words_per_sec: 4243.42051273981}
+- epoch: 9.0
+  key: dev_loss
+  score: !WERScore {correct: 1048, deletions: 33, desc: null, insertions: 53, substitutions: 314}
+  task_name: '{EXP}'
+  time: 0-00:21:13
+  words: 1395
+- epoch: 9.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5752, deletions: 215, desc: null, insertions: 111, substitutions: 379}
+  task_name: '{EXP}'
+- epoch: 9.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9848338304385553, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 9.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 9.037662337662338, key: train_loss, loss: 0.8935519932486206,
+  task_name: '{EXP}', time: '0-00:21:15', words: 9424, words_per_sec: 4078.548357792648}
+- {data: train, epoch: 9.261688311688312, key: train_loss, loss: 0.9080104184954354,
+  task_name: '{EXP}', time: '0-00:21:27', words: 58384, words_per_sec: 4347.336642974837}
+- {data: train, epoch: 9.527489177489178, key: train_loss, loss: 0.9111168288496411,
+  task_name: '{EXP}', time: '0-00:21:38', words: 106432, words_per_sec: 4349.452767709716}
+- {data: train, epoch: 9.764935064935065, key: train_loss, loss: 0.9048786685512339,
+  task_name: '{EXP}', time: '0-00:21:52', words: 163383, words_per_sec: 4106.346308661238}
+- {data: train, epoch: 10.0, key: train_loss, loss: 0.9069363715588514, task_name: '{EXP}',
+  time: '0-00:22:06', words: 217896, words_per_sec: 3798.3853355713018}
+- epoch: 10.0
+  key: dev_loss
+  score: !WERScore {correct: 1049, deletions: 32, desc: null, insertions: 48, substitutions: 314}
+  task_name: '{EXP}'
+  time: 0-00:23:29
+  words: 1395
+- epoch: 10.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5783, deletions: 216, desc: null, insertions: 128, substitutions: 347}
+  task_name: '{EXP}'
+- epoch: 10.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9808104293293884, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 10.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 10.04134199134199, key: train_loss, loss: 0.8603690974620166,
+  task_name: '{EXP}', time: '0-00:23:31', words: 9412, words_per_sec: 4168.413950835324}
+- {data: train, epoch: 10.312121212121212, key: train_loss, loss: 0.8986379798534535,
+  task_name: '{EXP}', time: '0-00:23:45', words: 65295, words_per_sec: 4080.7455335095055}
+- {data: train, epoch: 10.546320346320346, key: train_loss, loss: 0.9049700432374439,
+  task_name: '{EXP}', time: '0-00:23:59', words: 123645, words_per_sec: 4183.277997606822}
+- {data: train, epoch: 10.806709956709957, key: train_loss, loss: 0.9034223609439285,
+  task_name: '{EXP}', time: '0-00:24:13', words: 178406, words_per_sec: 3881.593090217101}
+- {data: train, epoch: 11.0, key: train_loss, loss: 0.8990512868488579, task_name: '{EXP}',
+  time: '0-00:24:22', words: 217896, words_per_sec: 4509.528737510779}
+- epoch: 11.0
+  key: dev_loss
+  score: !WERScore {correct: 1048, deletions: 28, desc: null, insertions: 68, substitutions: 319}
+  task_name: '{EXP}'
+  time: 0-00:25:44
+  words: 1395
+- epoch: 11.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5769, deletions: 197, desc: null, insertions: 125, substitutions: 380}
+  task_name: '{EXP}'
+- epoch: 11.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9788942104309911, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 11.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 11.033549783549784, key: train_loss, loss: 0.8942264489741097,
+  task_name: '{EXP}', time: '0-00:25:47', words: 9772, words_per_sec: 4135.687444288897}
+- {data: train, epoch: 11.291991341991341, key: train_loss, loss: 0.8861427655482504,
+  task_name: '{EXP}', time: '0-00:25:58', words: 59243, words_per_sec: 4585.814519580661}
+- {data: train, epoch: 11.51926406926407, key: train_loss, loss: 0.8941105666417074,
+  task_name: '{EXP}', time: '0-00:26:09', words: 106674, words_per_sec: 4172.603663438021}
+- {data: train, epoch: 11.738311688311688, key: train_loss, loss: 0.890511571116289,
+  task_name: '{EXP}', time: '0-00:26:24', words: 159654, words_per_sec: 3664.157592617238}
+- {data: train, epoch: 12.0, key: train_loss, loss: 0.8904624300590935, task_name: '{EXP}',
+  time: '0-00:26:37', words: 217896, words_per_sec: 4250.533030282435}
+- epoch: 12.0
+  key: dev_loss
+  score: !WERScore {correct: 1052, deletions: 26, desc: null, insertions: 55, substitutions: 317}
+  task_name: '{EXP}'
+  time: 0-00:27:59
+  words: 1395
+- epoch: 12.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5753, deletions: 202, desc: null, insertions: 122, substitutions: 391}
+  task_name: '{EXP}'
+- epoch: 12.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9767263070556738, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 12.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 12.036580086580086, key: train_loss, loss: 0.8642013365963855,
+  task_name: '{EXP}', time: '0-00:28:02', words: 9545, words_per_sec: 4070.8822705472135}
+- {data: train, epoch: 12.253030303030304, key: train_loss, loss: 0.8744652404895031,
+  task_name: '{EXP}', time: '0-00:28:13', words: 58327, words_per_sec: 4303.023575125878}
+- {data: train, epoch: 12.498051948051948, key: train_loss, loss: 0.8763150945453061,
+  task_name: '{EXP}', time: '0-00:28:27', words: 116386, words_per_sec: 4229.203763285975}
+- {data: train, epoch: 12.758225108225108, key: train_loss, loss: 0.8797937014985282,
+  task_name: '{EXP}', time: '0-00:28:38', words: 164428, words_per_sec: 4399.666843174959}
+- {data: train, epoch: 13.0, key: train_loss, loss: 0.8841421978367834, task_name: '{EXP}',
+  time: '0-00:28:53', words: 217896, words_per_sec: 3727.19589951197}
+- epoch: 13.0
+  key: dev_loss
+  score: !WERScore {correct: 1040, deletions: 29, desc: null, insertions: 58, substitutions: 326}
+  task_name: '{EXP}'
+  time: 0-00:30:15
+  words: 1395
+- epoch: 13.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5733, deletions: 226, desc: null, insertions: 127, substitutions: 387}
+  task_name: '{EXP}'
+- epoch: 13.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9796250865006884, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 13.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 13.047186147186148, key: train_loss, loss: 0.8551388042181177,
+  task_name: '{EXP}', time: '0-00:30:17', words: 9637, words_per_sec: 4419.612516596574}
+- {data: train, epoch: 13.28961038961039, key: train_loss, loss: 0.8660673121986526,
+  task_name: '{EXP}', time: '0-00:30:31', words: 67613, words_per_sec: 4214.488635295581}
+- {data: train, epoch: 13.52012987012987, key: train_loss, loss: 0.8820474145682393,
+  task_name: '{EXP}', time: '0-00:30:40', words: 106002, words_per_sec: 4383.491467832308}
+- {data: train, epoch: 13.758874458874459, key: train_loss, loss: 0.8743815430820581,
+  task_name: '{EXP}', time: '0-00:30:54', words: 159445, words_per_sec: 3792.275406164914}
+- {data: train, epoch: 14.0, key: train_loss, loss: 0.876670232641805, task_name: '{EXP}',
+  time: '0-00:31:08', words: 217896, words_per_sec: 4213.876816550378}
+- epoch: 14.0
+  key: dev_loss
+  score: !WERScore {correct: 1051, deletions: 29, desc: null, insertions: 64, substitutions: 315}
+  task_name: '{EXP}'
+  time: 0-00:32:30
+  words: 1395
+- epoch: 14.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5759, deletions: 209, desc: null, insertions: 136, substitutions: 378}
+  task_name: '{EXP}'
+- epoch: 14.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9703912587801741, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 14.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 14.044372294372295, key: train_loss, loss: 0.8391021152712265,
+  task_name: '{EXP}', time: '0-00:32:33', words: 9752, words_per_sec: 4481.649321263746}
+- {data: train, epoch: 14.295021645021645, key: train_loss, loss: 0.8549810786205634,
+  task_name: '{EXP}', time: '0-00:32:46', words: 67253, words_per_sec: 4216.873192863605}
+- {data: train, epoch: 14.520562770562771, key: train_loss, loss: 0.8530263954510241,
+  task_name: '{EXP}', time: '0-00:32:57', words: 115853, words_per_sec: 4380.364488183418}
+- {data: train, epoch: 14.77034632034632, key: train_loss, loss: 0.8623021554822855,
+  task_name: '{EXP}', time: '0-00:33:11', words: 174137, words_per_sec: 4204.165582898669}
+- {data: train, epoch: 15.0, key: train_loss, loss: 0.8698731096199563, task_name: '{EXP}',
+  time: '0-00:33:23', words: 217896, words_per_sec: 3661.513423869893}
+- epoch: 15.0
+  key: dev_loss
+  score: !WERScore {correct: 1033, deletions: 26, desc: null, insertions: 67, substitutions: 336}
+  task_name: '{EXP}'
+  time: 0-00:34:45
+  words: 1395
+- epoch: 15.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5742, deletions: 215, desc: null, insertions: 122, substitutions: 389}
+  task_name: '{EXP}'
+- epoch: 15.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9772216490934367, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 15.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 15.032034632034632, key: train_loss, loss: 0.8821556890254709,
+  task_name: '{EXP}', time: '0-00:34:48', words: 9874, words_per_sec: 4127.2641717454535}
+- {data: train, epoch: 15.269480519480519, key: train_loss, loss: 0.8658716265827217,
+  task_name: '{EXP}', time: '0-00:35:02', words: 67842, words_per_sec: 4227.038316563192}
+- {data: train, epoch: 15.493722943722943, key: train_loss, loss: 0.8710254815697974,
+  task_name: '{EXP}', time: '0-00:35:13', words: 114252, words_per_sec: 4012.2690560451047}
+- {data: train, epoch: 15.758008658008658, key: train_loss, loss: 0.8691955431923666,
+  task_name: '{EXP}', time: '0-00:35:28', words: 168379, words_per_sec: 3823.4634366563732}
+- {data: train, epoch: 16.0, key: train_loss, loss: 0.8678176924140416, task_name: '{EXP}',
+  time: '0-00:35:39', words: 217896, words_per_sec: 4518.747654144952}
+- epoch: 16.0
+  key: dev_loss
+  score: !WERScore {correct: 1064, deletions: 29, desc: null, insertions: 51, substitutions: 302}
+  task_name: '{EXP}'
+  time: 0-00:37:01
+  words: 1395
+- epoch: 16.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5779, deletions: 200, desc: null, insertions: 113, substitutions: 367}
+  task_name: '{EXP}'
+- epoch: 16.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9694316437810192, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 16.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 16.028138528138527, key: train_loss, loss: 0.8917873418646048,
+  task_name: '{EXP}', time: '0-00:37:10', words: 9199, words_per_sec: 3633.4698852591505}
+- {data: train, epoch: 16.269264069264068, key: train_loss, loss: 0.8754247906250558,
+  task_name: '{EXP}', time: '0-00:37:21', words: 55903, words_per_sec: 4151.848011552643}
+- {data: train, epoch: 16.514285714285712, key: train_loss, loss: 0.8651334253992604,
+  task_name: '{EXP}', time: '0-00:37:38', words: 119737, words_per_sec: 3787.143639258711}
+- {data: train, epoch: 16.753896103896103, key: train_loss, loss: 0.8642909604450394,
+  task_name: '{EXP}', time: '0-00:37:49', words: 168589, words_per_sec: 4390.314014114946}
+- {data: train, epoch: 17.0, key: train_loss, loss: 0.8621478878541827, task_name: '{EXP}',
+  time: '0-00:38:00', words: 217896, words_per_sec: 4510.836713587318}
+- epoch: 17.0
+  key: dev_loss
+  score: !WERScore {correct: 1049, deletions: 33, desc: null, insertions: 53, substitutions: 313}
+  task_name: '{EXP}'
+  time: 0-00:39:22
+  words: 1395
+- epoch: 17.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5757, deletions: 214, desc: null, insertions: 117, substitutions: 375}
+  task_name: '{EXP}'
+- epoch: 17.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9725212496702282, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 17.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 17.036580086580088, key: train_loss, loss: 0.8444854876844391,
+  task_name: '{EXP}', time: '0-00:39:25', words: 9556, words_per_sec: 4070.889092745425}
+- {data: train, epoch: 17.273376623376624, key: train_loss, loss: 0.8545927504650744,
+  task_name: '{EXP}', time: '0-00:39:36', words: 56241, words_per_sec: 4149.169461688233}
+- {data: train, epoch: 17.509090909090908, key: train_loss, loss: 0.8552561155046011,
+  task_name: '{EXP}', time: '0-00:39:47', words: 105301, words_per_sec: 4387.919658032685}
+- {data: train, epoch: 17.756060606060608, key: train_loss, loss: 0.8571219188818765,
+  task_name: '{EXP}', time: '0-00:39:58', words: 155638, words_per_sec: 4566.774509118963}
+- {data: train, epoch: 18.0, key: train_loss, loss: 0.8565233941163445, task_name: '{EXP}',
+  time: '0-00:40:15', words: 217896, words_per_sec: 3664.311885085562}
+- epoch: 18.0
+  key: dev_loss
+  score: !WERScore {correct: 1055, deletions: 29, desc: null, insertions: 59, substitutions: 311}
+  task_name: '{EXP}'
+  time: 0-00:41:38
+  words: 1395
+- epoch: 18.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5771, deletions: 199, desc: null, insertions: 119, substitutions: 376}
+  task_name: '{EXP}'
+- epoch: 18.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9699065683070752, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 18.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 18.015800865800866, key: train_loss, loss: 0.8849591181714536,
+  task_name: '{EXP}', time: '0-00:41:41', words: 5153, words_per_sec: 1695.6948465371836}
+- {data: train, epoch: 18.263203463203464, key: train_loss, loss: 0.845276782383494,
+  task_name: '{EXP}', time: '0-00:41:52', words: 54450, words_per_sec: 4522.52459154657}
+- {data: train, epoch: 18.535714285714285, key: train_loss, loss: 0.8545449418407538,
+  task_name: '{EXP}', time: '0-00:42:03', words: 102128, words_per_sec: 4320.2386205206985}
+- {data: train, epoch: 18.774891774891774, key: train_loss, loss: 0.8527092453552826,
+  task_name: '{EXP}', time: '0-00:42:17', words: 159637, words_per_sec: 4181.609747050729}
+- {data: train, epoch: 19.0, key: train_loss, loss: 0.8527808053713125, task_name: '{EXP}',
+  time: '0-00:42:31', words: 217896, words_per_sec: 4194.618709802443}
+- epoch: 19.0
+  key: dev_loss
+  score: !WERScore {correct: 1046, deletions: 31, desc: null, insertions: 50, substitutions: 318}
+  task_name: '{EXP}'
+  time: 0-00:43:53
+  words: 1395
+- epoch: 19.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5743, deletions: 215, desc: null, insertions: 123, substitutions: 388}
+  task_name: '{EXP}'
+- epoch: 19.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9728231889216256, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 19.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 19.028138528138527, key: train_loss, loss: 0.883902040496064,
+  task_name: '{EXP}', time: '0-00:43:56', words: 9210, words_per_sec: 3665.9623949202423}
+- {data: train, epoch: 19.264718614718614, key: train_loss, loss: 0.8543296654272782,
+  task_name: '{EXP}', time: '0-00:44:10', words: 62825, words_per_sec: 3716.1117708183006}
+- {data: train, epoch: 19.53073593073593, key: train_loss, loss: 0.8567279497803597,
+  task_name: '{EXP}', time: '0-00:44:24', words: 119912, words_per_sec: 4174.449788264211}
+- {data: train, epoch: 19.775757575757577, key: train_loss, loss: 0.855479893856096,
+  task_name: '{EXP}', time: '0-00:44:35', words: 169481, words_per_sec: 4489.268958502764}
+- {data: train, epoch: 20.0, key: train_loss, loss: 0.8505563510122088, task_name: '{EXP}',
+  time: '0-00:44:46', words: 217896, words_per_sec: 4336.363593771464}
+- epoch: 20.0
+  key: dev_loss
+  score: !WERScore {correct: 1065, deletions: 32, desc: null, insertions: 59, substitutions: 298}
+  task_name: '{EXP}'
+  time: 0-00:46:09
+  words: 1395
+- epoch: 20.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5769, deletions: 200, desc: null, insertions: 126, substitutions: 377}
+  task_name: '{EXP}'
+- epoch: 20.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9675864997222703, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 20.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 20.044372294372295, key: train_loss, loss: 0.8147961684866195,
+  task_name: '{EXP}', time: '0-00:46:11', words: 9753, words_per_sec: 4462.455820788975}
+- {data: train, epoch: 20.263852813852814, key: train_loss, loss: 0.8538609552915898,
+  task_name: '{EXP}', time: '0-00:46:23', words: 56865, words_per_sec: 4078.811102639822}
+- {data: train, epoch: 20.51082251082251, key: train_loss, loss: 0.8426565335941515,
+  task_name: '{EXP}', time: '0-00:46:36', words: 114807, words_per_sec: 4249.90260153962}
+- {data: train, epoch: 20.727272727272727, key: train_loss, loss: 0.843906025643792,
+  task_name: '{EXP}', time: '0-00:46:48', words: 159310, words_per_sec: 3732.998853336324}
+- {data: train, epoch: 20.971861471861473, key: train_loss, loss: 0.8459772634475605,
+  task_name: '{EXP}', time: '0-00:46:59', words: 208674, words_per_sec: 4493.132343721779}
+- {data: train, epoch: 21.0, key: train_loss, loss: 0.8470540104639943, task_name: '{EXP}',
+  time: '0-00:47:02', words: 217896, words_per_sec: 3669.950387001729}
+- epoch: 21.0
+  key: dev_loss
+  score: !WERScore {correct: 1053, deletions: 31, desc: null, insertions: 58, substitutions: 311}
+  task_name: '{EXP}'
+  time: 0-00:48:24
+  words: 1395
+- epoch: 21.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5768, deletions: 204, desc: null, insertions: 122, substitutions: 374}
+  task_name: '{EXP}'
+- epoch: 21.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9657536657484583, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 21.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 21.016017316017315, key: train_loss, loss: 0.8717121707760856,
+  task_name: '{EXP}', time: '0-00:48:27', words: 5204, words_per_sec: 1706.4632416468771}
+- {data: train, epoch: 21.285497835497836, key: train_loss, loss: 0.8584025228465754,
+  task_name: '{EXP}', time: '0-00:48:41', words: 62270, words_per_sec: 4173.2085499809455}
+- {data: train, epoch: 21.52012987012987, key: train_loss, loss: 0.8459944135069476,
+  task_name: '{EXP}', time: '0-00:48:55', words: 119321, words_per_sec: 4154.464656641751}
+- {data: train, epoch: 21.756277056277057, key: train_loss, loss: 0.8462436924542299,
+  task_name: '{EXP}', time: '0-00:49:06', words: 168833, words_per_sec: 4465.894844140409}
+- {data: train, epoch: 22.0, key: train_loss, loss: 0.8456449783526315, task_name: '{EXP}',
+  time: '0-00:49:17', words: 217896, words_per_sec: 4458.86618036814}
+- epoch: 22.0
+  key: dev_loss
+  score: !WERScore {correct: 1063, deletions: 23, desc: null, insertions: 68, substitutions: 309}
+  task_name: '{EXP}'
+  time: 0-00:50:39
+  words: 1395
+- epoch: 22.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5773, deletions: 195, desc: null, insertions: 137, substitutions: 378}
+  task_name: '{EXP}'
+- epoch: 22.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9672456899083647, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 22.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 22.058441558441558, key: train_loss, loss: 0.8536240686935296,
+  task_name: '{EXP}', time: '0-00:50:42', words: 10293, words_per_sec: 4810.0395294331565}
+- {data: train, epoch: 22.292640692640692, key: train_loss, loss: 0.8359248089424953,
+  task_name: '{EXP}', time: '0-00:50:53', words: 59443, words_per_sec: 4460.942859412511}
+- {data: train, epoch: 22.517748917748918, key: train_loss, loss: 0.8353251995340729,
+  task_name: '{EXP}', time: '0-00:51:07', words: 116126, words_per_sec: 4032.9253703564164}
+- {data: train, epoch: 22.76948051948052, key: train_loss, loss: 0.8348978678035418,
+  task_name: '{EXP}', time: '0-00:51:20', words: 174387, words_per_sec: 4309.196934239713}
+- {data: train, epoch: 23.0, key: train_loss, loss: 0.8416451689001003, task_name: '{EXP}',
+  time: '0-00:51:32', words: 217896, words_per_sec: 3639.5165829375633}
+- epoch: 23.0
+  key: dev_loss
+  score: !WERScore {correct: 1059, deletions: 30, desc: null, insertions: 51, substitutions: 306}
+  task_name: '{EXP}'
+  time: 0-00:52:54
+  words: 1395
+- epoch: 23.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5772, deletions: 202, desc: null, insertions: 129, substitutions: 372}
+  task_name: '{EXP}'
+- epoch: 23.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9721008228321626, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 23.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 23.038961038961038, key: train_loss, loss: 0.8243347200486149,
+  task_name: '{EXP}', time: '0-00:52:57', words: 9385, words_per_sec: 4089.0075887061303}
+- {data: train, epoch: 23.305411255411254, key: train_loss, loss: 0.8373719830343807,
+  task_name: '{EXP}', time: '0-00:53:10', words: 68287, words_per_sec: 4334.0439153762445}
+- {data: train, epoch: 23.534848484848485, key: train_loss, loss: 0.8291763381721472,
+  task_name: '{EXP}', time: '0-00:53:22', words: 116762, words_per_sec: 4391.5659871826565}
+- {data: train, epoch: 23.766666666666666, key: train_loss, loss: 0.8280209540974047,
+  task_name: '{EXP}', time: '0-00:53:36', words: 170518, words_per_sec: 3788.89619514634}
+- {data: train, epoch: 24.0, key: train_loss, loss: 0.8376260608917213, task_name: '{EXP}',
+  time: '0-00:53:47', words: 217896, words_per_sec: 4107.899894762806}
+- epoch: 24.0
+  key: dev_loss
+  score: !WERScore {correct: 1047, deletions: 33, desc: null, insertions: 58, substitutions: 315}
+  task_name: '{EXP}'
+  time: 0-00:55:09
+  words: 1395
+- epoch: 24.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5754, deletions: 211, desc: null, insertions: 122, substitutions: 381}
+  task_name: '{EXP}'
+- epoch: 24.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9686633302391464, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 24.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 24.053463203463203, key: train_loss, loss: 0.826735929016535,
+  task_name: '{EXP}', time: '0-00:55:12', words: 10130, words_per_sec: 4629.379784283406}
+- {data: train, epoch: 24.27056277056277, key: train_loss, loss: 0.816757900746126,
+  task_name: '{EXP}', time: '0-00:55:23', words: 58209, words_per_sec: 4328.427081840453}
+- {data: train, epoch: 24.495670995670995, key: train_loss, loss: 0.8287526024079481,
+  task_name: '{EXP}', time: '0-00:55:35', words: 105131, words_per_sec: 4076.0273664133956}
+- {data: train, epoch: 24.71818181818182, key: train_loss, loss: 0.8331926821652796,
+  task_name: '{EXP}', time: '0-00:55:46', words: 153505, words_per_sec: 4228.548564972374}
+- {data: train, epoch: 24.96796536796537, key: train_loss, loss: 0.8336884693752313,
+  task_name: '{EXP}', time: '0-00:56:00', words: 208023, words_per_sec: 3839.5632329447308}
+- {data: train, epoch: 25.0, key: train_loss, loss: 0.8346004475579807, task_name: '{EXP}',
+  time: '0-00:56:03', words: 217896, words_per_sec: 4122.3673740730355}
+- epoch: 25.0
+  key: dev_loss
+  score: !WERScore {correct: 1042, deletions: 31, desc: null, insertions: 58, substitutions: 322}
+  task_name: '{EXP}'
+  time: 0-00:57:25
+  words: 1395
+- epoch: 25.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5764, deletions: 205, desc: null, insertions: 140, substitutions: 377}
+  task_name: '{EXP}'
+- epoch: 25.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9674249228127886, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 25.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 25.033549783549784, key: train_loss, loss: 0.8424036215327625,
+  task_name: '{EXP}', time: '0-00:57:27', words: 9752, words_per_sec: 4117.444335380604}
+- {data: train, epoch: 25.296320346320346, key: train_loss, loss: 0.8460252016088753,
+  task_name: '{EXP}', time: '0-00:57:42', words: 62567, words_per_sec: 3688.9308769521444}
+- {data: train, epoch: 25.514069264069263, key: train_loss, loss: 0.8337149332087954,
+  task_name: '{EXP}', time: '0-00:57:53', words: 110910, words_per_sec: 4295.018874252019}
+- {data: train, epoch: 25.751082251082252, key: train_loss, loss: 0.8332545088350775,
+  task_name: '{EXP}', time: '0-00:58:04', words: 159722, words_per_sec: 4345.381590643849}
+- {data: train, epoch: 26.0, key: train_loss, loss: 0.8316149372148869, task_name: '{EXP}',
+  time: '0-00:58:18', words: 217896, words_per_sec: 4283.427101617853}
+- epoch: 26.0
+  key: dev_loss
+  score: !WERScore {correct: 1059, deletions: 24, desc: null, insertions: 61, substitutions: 312}
+  task_name: '{EXP}'
+  time: 0-00:59:41
+  words: 1395
+- epoch: 26.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5765, deletions: 203, desc: null, insertions: 120, substitutions: 378}
+  task_name: '{EXP}'
+- epoch: 26.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9660706282951417, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 26.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 26.035064935064934, key: train_loss, loss: 0.8291193484128315,
+  task_name: '{EXP}', time: '0-00:59:43', words: 9691, words_per_sec: 4109.1054655237285}
+- {data: train, epoch: 26.269264069264068, key: train_loss, loss: 0.820421409418274,
+  task_name: '{EXP}', time: '0-00:59:57', words: 66726, words_per_sec: 4117.656816273361}
+- {data: train, epoch: 26.503896103896103, key: train_loss, loss: 0.8253926499254828,
+  task_name: '{EXP}', time: '0-01:00:08', words: 115745, words_per_sec: 4376.113253657508}
+- {data: train, epoch: 26.744588744588743, key: train_loss, loss: 0.8303734692532592,
+  task_name: '{EXP}', time: '0-01:00:20', words: 163000, words_per_sec: 4171.671479409182}
+- {data: train, epoch: 26.983549783549783, key: train_loss, loss: 0.8298289419033756,
+  task_name: '{EXP}', time: '0-01:00:31', words: 212550, words_per_sec: 4506.509815972698}
+- {data: train, epoch: 27.0, key: train_loss, loss: 0.8304103886752453, task_name: '{EXP}',
+  time: '0-01:00:34', words: 217896, words_per_sec: 1719.928503928504}
+- epoch: 27.0
+  key: dev_loss
+  score: !WERScore {correct: 1054, deletions: 26, desc: null, insertions: 64, substitutions: 315}
+  task_name: '{EXP}'
+  time: 0-01:01:57
+  words: 1395
+- epoch: 27.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5743, deletions: 200, desc: null, insertions: 128, substitutions: 403}
+  task_name: '{EXP}'
+- epoch: 27.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9703857598998524, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 27.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:23'}
+- {data: train, epoch: 27.038961038961038, key: train_loss, loss: 0.8074128727033772,
+  task_name: '{EXP}', time: '0-01:01:59', words: 9416, words_per_sec: 4088.3092847067564}
+- {data: train, epoch: 27.26147186147186, key: train_loss, loss: 0.8145876169585775,
+  task_name: '{EXP}', time: '0-01:02:11', words: 58187, words_per_sec: 4373.567446388519}
+- {data: train, epoch: 27.49047619047619, key: train_loss, loss: 0.8171036870856034,
+  task_name: '{EXP}', time: '0-01:02:22', words: 107008, words_per_sec: 4370.728951756695}
+- {data: train, epoch: 27.72142857142857, key: train_loss, loss: 0.8243537347371854,
+  task_name: '{EXP}', time: '0-01:02:33', words: 156170, words_per_sec: 4318.287568112381}
+- {data: train, epoch: 27.963419913419912, key: train_loss, loss: 0.827731673263329,
+  task_name: '{EXP}', time: '0-01:02:48', words: 208344, words_per_sec: 3598.8846897460076}
+- {data: train, epoch: 28.0, key: train_loss, loss: 0.8274248178280865, task_name: '{EXP}',
+  time: '0-01:02:50', words: 217896, words_per_sec: 4056.4455781200563}
+- epoch: 28.0
+  key: dev_loss
+  score: !WERScore {correct: 1045, deletions: 32, desc: null, insertions: 55, substitutions: 318}
+  task_name: '{EXP}'
+  time: 0-01:04:13
+  words: 1395
+- epoch: 28.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5738, deletions: 217, desc: null, insertions: 117, substitutions: 391}
+  task_name: '{EXP}'
+- epoch: 28.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9666422703165191, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 28.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 28.038961038961038, key: train_loss, loss: 0.8088462913856733,
+  task_name: '{EXP}', time: '0-01:04:15', words: 9416, words_per_sec: 4064.0356030467738}
+- {data: train, epoch: 28.266233766233768, key: train_loss, loss: 0.8162651088093336,
+  task_name: '{EXP}', time: '0-01:04:26', words: 58504, words_per_sec: 4404.530797809034}
+- {data: train, epoch: 28.482900432900433, key: train_loss, loss: 0.8270721545802434,
+  task_name: '{EXP}', time: '0-01:04:38', words: 105180, words_per_sec: 3991.489700533477}
+- {data: train, epoch: 28.70952380952381, key: train_loss, loss: 0.8287777820431462,
+  task_name: '{EXP}', time: '0-01:04:53', words: 159452, words_per_sec: 3717.758008147821}
+- {data: train, epoch: 28.94978354978355, key: train_loss, loss: 0.8254699459058045,
+  task_name: '{EXP}', time: '0-01:05:04', words: 207985, words_per_sec: 4383.654611988225}
+- {data: train, epoch: 29.0, key: train_loss, loss: 0.8250855917394365, task_name: '{EXP}',
+  time: '0-01:05:06', words: 217896, words_per_sec: 4551.030194851403}
+- epoch: 29.0
+  key: dev_loss
+  score: !WERScore {correct: 1061, deletions: 33, desc: null, insertions: 50, substitutions: 301}
+  task_name: '{EXP}'
+  time: 0-01:06:29
+  words: 1395
+- epoch: 29.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5781, deletions: 197, desc: null, insertions: 126, substitutions: 368}
+  task_name: '{EXP}'
+- epoch: 29.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9620784331305237, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 29.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 29.042207792207794, key: train_loss, loss: 0.7935669220039385,
+  task_name: '{EXP}', time: '0-01:06:31', words: 9331, words_per_sec: 4124.141441524509}
+- {data: train, epoch: 29.27922077922078, key: train_loss, loss: 0.8161709187649498,
+  task_name: '{EXP}', time: '0-01:06:42', words: 58947, words_per_sec: 4510.773743731143}
+- {data: train, epoch: 29.521428571428572, key: train_loss, loss: 0.8178860445908326,
+  task_name: '{EXP}', time: '0-01:06:56', words: 116789, words_per_sec: 4219.180328649452}
+- {data: train, epoch: 29.764285714285712, key: train_loss, loss: 0.8235454126171108,
+  task_name: '{EXP}', time: '0-01:07:07', words: 163894, words_per_sec: 4154.501223560388}
+- {data: train, epoch: 29.983766233766232, key: train_loss, loss: 0.8222165736638637,
+  task_name: '{EXP}', time: '0-01:07:18', words: 212628, words_per_sec: 4336.5603351642885}
+- {data: train, epoch: 30.0, key: train_loss, loss: 0.8227261729793113, task_name: '{EXP}',
+  time: '0-01:07:22', words: 217896, words_per_sec: 1687.51649929809}
+- epoch: 30.0
+  key: dev_loss
+  score: !WERScore {correct: 1057, deletions: 27, desc: null, insertions: 59, substitutions: 311}
+  task_name: '{EXP}'
+  time: 0-01:08:44
+  words: 1395
+- epoch: 30.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5764, deletions: 210, desc: null, insertions: 136, substitutions: 372}
+  task_name: '{EXP}'
+- epoch: 30.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9633675944976545, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 30.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 30.04025974025974, key: train_loss, loss: 0.8019510328056081,
+  task_name: '{EXP}', time: '0-01:08:47', words: 9522, words_per_sec: 4205.651574064363}
+- {data: train, epoch: 30.265151515151516, key: train_loss, loss: 0.8079718857898144,
+  task_name: '{EXP}', time: '0-01:08:58', words: 57925, words_per_sec: 4294.859324959732}
+- {data: train, epoch: 30.51147186147186, key: train_loss, loss: 0.8188311741824894,
+  task_name: '{EXP}', time: '0-01:09:13', words: 110442, words_per_sec: 3584.030257124641}
+- {data: train, epoch: 30.771428571428572, key: train_loss, loss: 0.8174103043224766,
+  task_name: '{EXP}', time: '0-01:09:26', words: 168889, words_per_sec: 4337.596297387691}
+- {data: train, epoch: 31.0, key: train_loss, loss: 0.8202998636139776, task_name: '{EXP}',
+  time: '0-01:09:38', words: 217896, words_per_sec: 4314.030109395104}
+- epoch: 31.0
+  key: dev_loss
+  score: !WERScore {correct: 1052, deletions: 32, desc: null, insertions: 50, substitutions: 311}
+  task_name: '{EXP}'
+  time: 0-01:11:00
+  words: 1395
+- epoch: 31.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5760, deletions: 213, desc: null, insertions: 129, substitutions: 373}
+  task_name: '{EXP}'
+- epoch: 31.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9617202491091009, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 31.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 31.042207792207794, key: train_loss, loss: 0.8259543161996474,
+  task_name: '{EXP}', time: '0-01:11:12', words: 9359, words_per_sec: 4109.657525775074}
+- {data: train, epoch: 31.312987012987012, key: train_loss, loss: 0.9138570944882317,
+  task_name: '{EXP}', time: '0-01:11:23', words: 57570, words_per_sec: 4381.011361638215}
+- {data: train, epoch: 31.554545454545455, key: train_loss, loss: 0.9073022632260426,
+  task_name: '{EXP}', time: '0-01:11:38', words: 111865, words_per_sec: 3818.235541897249}
+- {data: train, epoch: 31.78917748917749, key: train_loss, loss: 0.9096309425472167,
+  task_name: '{EXP}', time: '0-01:11:52', words: 169617, words_per_sec: 4121.6701966811825}
+- {data: train, epoch: 32.0, key: train_loss, loss: 0.9039872084725913, task_name: '{EXP}',
+  time: '0-01:12:03', words: 217896, words_per_sec: 4263.057647870384}
+- epoch: 32.0
+  key: dev_loss
+  score: !WERScore {correct: 1038, deletions: 36, desc: null, insertions: 53, substitutions: 321}
+  task_name: '{EXP}'
+  time: 0-01:13:25
+  words: 1395
+- epoch: 32.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5712, deletions: 227, desc: null, insertions: 132, substitutions: 407}
+  task_name: '{EXP}'
+- epoch: 32.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 1.0033618688992216, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 32.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:21'}
+- {data: train, epoch: 32.05844155844156, key: train_loss, loss: 0.919011510482422,
+  task_name: '{EXP}', time: '0-01:13:27', words: 10297, words_per_sec: 4811.254795575344}
+- {data: train, epoch: 32.29805194805195, key: train_loss, loss: 0.8963237619448815,
+  task_name: '{EXP}', time: '0-01:13:41', words: 64502, words_per_sec: 3802.001994212686}
+- {data: train, epoch: 32.51450216450216, key: train_loss, loss: 0.8949524423241443,
+  task_name: '{EXP}', time: '0-01:13:56', words: 121712, words_per_sec: 4044.274153420385}
+- {data: train, epoch: 32.733116883116885, key: train_loss, loss: 0.8872390133347533,
+  task_name: '{EXP}', time: '0-01:14:07', words: 170185, words_per_sec: 4335.590420669595}
+- {data: train, epoch: 33.0, key: train_loss, loss: 0.8910191167568187, task_name: '{EXP}',
+  time: '0-01:14:18', words: 217896, words_per_sec: 4318.979675152422}
+- epoch: 33.0
+  key: dev_loss
+  score: !WERScore {correct: 1052, deletions: 28, desc: null, insertions: 66, substitutions: 315}
+  task_name: '{EXP}'
+  time: 0-01:15:41
+  words: 1395
+- epoch: 33.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5761, deletions: 193, desc: null, insertions: 144, substitutions: 392}
+  task_name: '{EXP}'
+- epoch: 33.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9894651597383674, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 33.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 33.03354978354978, key: train_loss, loss: 0.8903783872545259,
+  task_name: '{EXP}', time: '0-01:15:43', words: 9777, words_per_sec: 4129.905854642158}
+- {data: train, epoch: 33.2939393939394, key: train_loss, loss: 0.8789604348875316,
+  task_name: '{EXP}', time: '0-01:16:00', words: 72776, words_per_sec: 3736.529308831125}
+- {data: train, epoch: 33.52121212121212, key: train_loss, loss: 0.8731201280059616,
+  task_name: '{EXP}', time: '0-01:16:11', words: 121862, words_per_sec: 4394.11033617179}
+- {data: train, epoch: 33.76753246753247, key: train_loss, loss: 0.8728607534010958,
+  task_name: '{EXP}', time: '0-01:16:23', words: 171057, words_per_sec: 4411.010079369148}
+- {data: train, epoch: 34.0, key: train_loss, loss: 0.8789599260692315, task_name: '{EXP}',
+  time: '0-01:16:34', words: 217896, words_per_sec: 4118.1948116117255}
+- epoch: 34.0
+  key: dev_loss
+  score: !WERScore {correct: 1042, deletions: 32, desc: null, insertions: 58, substitutions: 321}
+  task_name: '{EXP}'
+  time: 0-01:17:57
+  words: 1395
+- epoch: 34.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5754, deletions: 198, desc: null, insertions: 164, substitutions: 394}
+  task_name: '{EXP}'
+- epoch: 34.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9876585319950781, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 34.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 34.03030303030303, key: train_loss, loss: 0.8979140211282827,
+  task_name: '{EXP}', time: '0-01:17:59', words: 9253, words_per_sec: 3754.992592262914}
+- {data: train, epoch: 34.26753246753247, key: train_loss, loss: 0.8775557044207474,
+  task_name: '{EXP}', time: '0-01:18:11', words: 58364, words_per_sec: 4398.330714069154}
+- {data: train, epoch: 34.48571428571429, key: train_loss, loss: 0.8701620416544503,
+  task_name: '{EXP}', time: '0-01:18:25', words: 111701, words_per_sec: 3698.2675621575972}
+- {data: train, epoch: 34.741774891774895, key: train_loss, loss: 0.8705607466055596,
+  task_name: '{EXP}', time: '0-01:18:36', words: 159590, words_per_sec: 4310.20965902201}
+- {data: train, epoch: 34.96493506493506, key: train_loss, loss: 0.8695160049189606,
+  task_name: '{EXP}', time: '0-01:18:48', words: 208155, words_per_sec: 4287.647223366422}
+- {data: train, epoch: 35.0, key: train_loss, loss: 0.8690095216546827, task_name: '{EXP}',
+  time: '0-01:18:50', words: 217896, words_per_sec: 4156.949915206055}
+- epoch: 35.0
+  key: dev_loss
+  score: !WERScore {correct: 1040, deletions: 30, desc: null, insertions: 60, substitutions: 325}
+  task_name: '{EXP}'
+  time: 0-01:20:13
+  words: 1395
+- epoch: 35.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5733, deletions: 209, desc: null, insertions: 144, substitutions: 404}
+  task_name: '{EXP}'
+- epoch: 35.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9825426893456916, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 35.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 35.03354978354978, key: train_loss, loss: 0.8740327171886175,
+  task_name: '{EXP}', time: '0-01:20:15', words: 9787, words_per_sec: 4129.995991505719}
+- {data: train, epoch: 35.3008658008658, key: train_loss, loss: 0.8815341771030952,
+  task_name: '{EXP}', time: '0-01:20:30', words: 62726, words_per_sec: 3694.2692766137334}
+- {data: train, epoch: 35.527056277056275, key: train_loss, loss: 0.8717169965523278,
+  task_name: '{EXP}', time: '0-01:20:41', words: 111733, words_per_sec: 4343.881018341383}
+- {data: train, epoch: 35.7504329004329, key: train_loss, loss: 0.8615233496351853,
+  task_name: '{EXP}', time: '0-01:20:52', words: 160047, words_per_sec: 4330.390237340443}
+- {data: train, epoch: 36.0, key: train_loss, loss: 0.8572330104406173, task_name: '{EXP}',
+  time: '0-01:21:06', words: 217896, words_per_sec: 4262.026450226986}
+- epoch: 36.0
+  key: dev_loss
+  score: !WERScore {correct: 1056, deletions: 32, desc: null, insertions: 61, substitutions: 307}
+  task_name: '{EXP}'
+  time: 0-01:22:28
+  words: 1395
+- epoch: 36.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5765, deletions: 192, desc: null, insertions: 140, substitutions: 389}
+  task_name: '{EXP}'
+- epoch: 36.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9722209447858957, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 36.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 36.01623376623377, key: train_loss, loss: 0.8628702706791003,
+  task_name: '{EXP}', time: '0-01:22:31', words: 5268, words_per_sec: 1709.699735578186}
+- {data: train, epoch: 36.265367965367965, key: train_loss, loss: 0.8380730543220484,
+  task_name: '{EXP}', time: '0-01:22:42', words: 54342, words_per_sec: 4501.878811301384}
+- {data: train, epoch: 36.506709956709955, key: train_loss, loss: 0.8417275179614434,
+  task_name: '{EXP}', time: '0-01:22:56', words: 111628, words_per_sec: 4168.844401640839}
+- {data: train, epoch: 36.749350649350646, key: train_loss, loss: 0.8437791549717928,
+  task_name: '{EXP}', time: '0-01:23:10', words: 170258, words_per_sec: 4261.518607809434}
+- {data: train, epoch: 37.0, key: train_loss, loss: 0.8478212602715286, task_name: '{EXP}',
+  time: '0-01:23:21', words: 217896, words_per_sec: 4249.832751146604}
+- epoch: 37.0
+  key: dev_loss
+  score: !WERScore {correct: 1051, deletions: 31, desc: null, insertions: 52, substitutions: 313}
+  task_name: '{EXP}'
+  time: 0-01:24:44
+  words: 1395
+- epoch: 37.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5743, deletions: 194, desc: null, insertions: 155, substitutions: 409}
+  task_name: '{EXP}'
+- epoch: 37.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9733093044339879, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 37.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:23'}
+- {data: train, epoch: 37.0534632034632, key: train_loss, loss: 0.8464974484609129,
+  task_name: '{EXP}', time: '0-01:24:47', words: 10144, words_per_sec: 4666.767259747755}
+- {data: train, epoch: 37.297186147186146, key: train_loss, loss: 0.8628291979766051,
+  task_name: '{EXP}', time: '0-01:25:01', words: 62738, words_per_sec: 3585.2794499132606}
+- {data: train, epoch: 37.54155844155844, key: train_loss, loss: 0.8560836586422939,
+  task_name: '{EXP}', time: '0-01:25:12', words: 112157, words_per_sec: 4478.170767603143}
+- {data: train, epoch: 37.79199134199134, key: train_loss, loss: 0.8470693438109678,
+  task_name: '{EXP}', time: '0-01:25:26', words: 170172, words_per_sec: 4273.997270628228}
+- {data: train, epoch: 38.0, key: train_loss, loss: 0.8418027080400455, task_name: '{EXP}',
+  time: '0-01:25:37', words: 217896, words_per_sec: 4241.620771076697}
+- epoch: 38.0
+  key: dev_loss
+  score: !WERScore {correct: 1050, deletions: 30, desc: null, insertions: 57, substitutions: 315}
+  task_name: '{EXP}'
+  time: 0-01:27:00
+  words: 1395
+- epoch: 38.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5754, deletions: 197, desc: null, insertions: 143, substitutions: 395}
+  task_name: '{EXP}'
+- epoch: 38.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.968404971425789, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 38.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 38.055844155844156, key: train_loss, loss: 0.8486996937512318,
+  task_name: '{EXP}', time: '0-01:27:02', words: 10148, words_per_sec: 4755.419615719058}
+- {data: train, epoch: 38.29177489177489, key: train_loss, loss: 0.8478840740272092,
+  task_name: '{EXP}', time: '0-01:27:16', words: 67422, words_per_sec: 4059.744665403937}
+- {data: train, epoch: 38.51580086580086, key: train_loss, loss: 0.8388643703639904,
+  task_name: '{EXP}', time: '0-01:27:28', words: 116648, words_per_sec: 4403.4178650127}
+- {data: train, epoch: 38.75930735930736, key: train_loss, loss: 0.8436315067279072,
+  task_name: '{EXP}', time: '0-01:27:39', words: 160256, words_per_sec: 3687.94213632351}
+- {data: train, epoch: 39.0, key: train_loss, loss: 0.8383374004614013, task_name: '{EXP}',
+  time: '0-01:27:53', words: 217896, words_per_sec: 4220.504296109267}
+- epoch: 39.0
+  key: dev_loss
+  score: !WERScore {correct: 1050, deletions: 29, desc: null, insertions: 68, substitutions: 316}
+  task_name: '{EXP}'
+  time: 0-01:29:16
+  words: 1395
+- epoch: 39.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5760, deletions: 210, desc: null, insertions: 139, substitutions: 376}
+  task_name: '{EXP}'
+- epoch: 39.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9707136155432784, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 39.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 39.03766233766234, key: train_loss, loss: 0.8389643651448967,
+  task_name: '{EXP}', time: '0-01:29:27', words: 9386, words_per_sec: 4057.497680126096}
+- {data: train, epoch: 39.28354978354978, key: train_loss, loss: 0.8640590261225813,
+  task_name: '{EXP}', time: '0-01:29:42', words: 63982, words_per_sec: 3855.321814205697}
+- {data: train, epoch: 39.52445887445887, key: train_loss, loss: 0.8645497524325816,
+  task_name: '{EXP}', time: '0-01:29:53', words: 112766, words_per_sec: 4440.15327731886}
+- {data: train, epoch: 39.767099567099564, key: train_loss, loss: 0.8736712488201137,
+  task_name: '{EXP}', time: '0-01:30:07', words: 169243, words_per_sec: 4016.7645979081944}
+- {data: train, epoch: 40.0, key: train_loss, loss: 0.8738585661637318, task_name: '{EXP}',
+  time: '0-01:30:18', words: 217896, words_per_sec: 4344.532972824404}
+- epoch: 40.0
+  key: dev_loss
+  score: !WERScore {correct: 1062, deletions: 22, desc: null, insertions: 65, substitutions: 311}
+  task_name: '{EXP}'
+  time: 0-01:31:41
+  words: 1395
+- epoch: 40.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5790, deletions: 196, desc: null, insertions: 136, substitutions: 360}
+  task_name: '{EXP}'
+- epoch: 40.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9792757345022713, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 40.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 40.04220779220779, key: train_loss, loss: 0.8287469635763367,
+  task_name: '{EXP}', time: '0-01:31:43', words: 9314, words_per_sec: 4110.345104137623}
+- {data: train, epoch: 40.265584415584414, key: train_loss, loss: 0.8593511205151957,
+  task_name: '{EXP}', time: '0-01:31:54', words: 58092, words_per_sec: 4319.875021238865}
+- {data: train, epoch: 40.495670995671, key: train_loss, loss: 0.852942961244867,
+  task_name: '{EXP}', time: '0-01:32:05', words: 106906, words_per_sec: 4442.013356191444}
+- {data: train, epoch: 40.74458874458875, key: train_loss, loss: 0.8645549896824356,
+  task_name: '{EXP}', time: '0-01:32:17', words: 150623, words_per_sec: 3680.3580042498993}
+- {data: train, epoch: 40.96645021645022, key: train_loss, loss: 0.8639990920608108,
+  task_name: '{EXP}', time: '0-01:32:32', words: 208125, words_per_sec: 4061.9710005485445}
+- {data: train, epoch: 41.0, key: train_loss, loss: 0.8651278094143823, task_name: '{EXP}',
+  time: '0-01:32:34', words: 217896, words_per_sec: 4099.708194925921}
+- epoch: 41.0
+  key: dev_loss
+  score: !WERScore {correct: 1053, deletions: 32, desc: null, insertions: 48, substitutions: 310}
+  task_name: '{EXP}'
+  time: 0-01:33:56
+  words: 1395
+- epoch: 41.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5784, deletions: 218, desc: null, insertions: 125, substitutions: 344}
+  task_name: '{EXP}'
+- epoch: 41.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.973381667444722, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 41.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 41.04220779220779, key: train_loss, loss: 0.8180669284759359,
+  task_name: '{EXP}', time: '0-01:33:59', words: 9350, words_per_sec: 4118.146910975742}
+- {data: train, epoch: 41.27857142857143, key: train_loss, loss: 0.8720128341307903,
+  task_name: '{EXP}', time: '0-01:34:10', words: 56560, words_per_sec: 4107.194842998649}
+- {data: train, epoch: 41.504978354978356, key: train_loss, loss: 0.862024389347498,
+  task_name: '{EXP}', time: '0-01:34:24', words: 114469, words_per_sec: 4181.308721527172}
+- {data: train, epoch: 41.76450216450216, key: train_loss, loss: 0.855741371235449,
+  task_name: '{EXP}', time: '0-01:34:38', words: 168546, words_per_sec: 3842.417707032091}
+- {data: train, epoch: 42.0, key: train_loss, loss: 0.8536504863200219, task_name: '{EXP}',
+  time: '0-01:34:49', words: 217896, words_per_sec: 4411.657374621328}
+- epoch: 42.0
+  key: dev_loss
+  score: !WERScore {correct: 1060, deletions: 24, desc: null, insertions: 63, substitutions: 311}
+  task_name: '{EXP}'
+  time: 0-01:36:12
+  words: 1395
+- epoch: 42.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5770, deletions: 204, desc: null, insertions: 135, substitutions: 372}
+  task_name: '{EXP}'
+- epoch: 42.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9632493403919956, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 42.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 42.03766233766234, key: train_loss, loss: 0.8226356188388277,
+  task_name: '{EXP}', time: '0-01:36:14', words: 9358, words_per_sec: 4049.709298278902}
+- {data: train, epoch: 42.28463203463203, key: train_loss, loss: 0.8531516087052593,
+  task_name: '{EXP}', time: '0-01:36:31', words: 72976, words_per_sec: 3735.3685981754074}
+- {data: train, epoch: 42.515584415584414, key: train_loss, loss: 0.8452783412206434,
+  task_name: '{EXP}', time: '0-01:36:43', words: 121906, words_per_sec: 4412.3724080222255}
+- {data: train, epoch: 42.76103896103896, key: train_loss, loss: 0.8450141980339457,
+  task_name: '{EXP}', time: '0-01:36:54', words: 171244, words_per_sec: 4461.163363459293}
+- {data: train, epoch: 43.0, key: train_loss, loss: 0.8488372355676561, task_name: '{EXP}',
+  time: '0-01:37:05', words: 217896, words_per_sec: 4093.388873016743}
+- epoch: 43.0
+  key: dev_loss
+  score: !WERScore {correct: 1066, deletions: 30, desc: null, insertions: 58, substitutions: 299}
+  task_name: '{EXP}'
+  time: 0-01:38:27
+  words: 1395
+- epoch: 43.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5792, deletions: 207, desc: null, insertions: 113, substitutions: 347}
+  task_name: '{EXP}'
+- epoch: 43.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9592129851123491, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 43.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 43.03766233766234, key: train_loss, loss: 0.8197976173454459,
+  task_name: '{EXP}', time: '0-01:38:30', words: 9398, words_per_sec: 4061.943341667492}
+- {data: train, epoch: 43.304329004329006, key: train_loss, loss: 0.8341983396464414,
+  task_name: '{EXP}', time: '0-01:38:44', words: 67807, words_per_sec: 4320.439241786288}
+- {data: train, epoch: 43.52857142857143, key: train_loss, loss: 0.8354782189896592,
+  task_name: '{EXP}', time: '0-01:38:55', words: 116311, words_per_sec: 4360.393607590187}
+- {data: train, epoch: 43.804545454545455, key: train_loss, loss: 0.844104972845955,
+  task_name: '{EXP}', time: '0-01:39:09', words: 169939, words_per_sec: 3768.245674084806}
+- {data: train, epoch: 44.0, key: train_loss, loss: 0.8431691632167697, task_name: '{EXP}',
+  time: '0-01:39:21', words: 217896, words_per_sec: 4108.160943989104}
+- epoch: 44.0
+  key: dev_loss
+  score: !WERScore {correct: 1051, deletions: 29, desc: null, insertions: 55, substitutions: 315}
+  task_name: '{EXP}'
+  time: 0-01:40:43
+  words: 1395
+- epoch: 44.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5773, deletions: 197, desc: null, insertions: 132, substitutions: 376}
+  task_name: '{EXP}'
+- epoch: 44.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9598409765676527, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 44.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 44.03658008658009, key: train_loss, loss: 0.8307897009232582,
+  task_name: '{EXP}', time: '0-01:40:46', words: 9545, words_per_sec: 4075.2225391246848}
+- {data: train, epoch: 44.26991341991342, key: train_loss, loss: 0.8313226487928269,
+  task_name: '{EXP}', time: '0-01:41:00', words: 63278, words_per_sec: 3779.4580313157703}
+- {data: train, epoch: 44.503463203463205, key: train_loss, loss: 0.8423503149943774,
+  task_name: '{EXP}', time: '0-01:41:11', words: 110937, words_per_sec: 4187.185547355099}
+- {data: train, epoch: 44.77164502164502, key: train_loss, loss: 0.8386556090488737,
+  task_name: '{EXP}', time: '0-01:41:25', words: 169365, words_per_sec: 4328.546198643389}
+- {data: train, epoch: 45.0, key: train_loss, loss: 0.838643389686192, task_name: '{EXP}',
+  time: '0-01:41:36', words: 217896, words_per_sec: 4289.631923391521}
+- epoch: 45.0
+  key: dev_loss
+  score: !WERScore {correct: 1054, deletions: 29, desc: null, insertions: 55, substitutions: 312}
+  task_name: '{EXP}'
+  time: 0-01:42:59
+  words: 1395
+- epoch: 45.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5751, deletions: 228, desc: null, insertions: 115, substitutions: 367}
+  task_name: '{EXP}'
+- epoch: 45.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9592892609427557, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 45.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:23'}
+- {data: train, epoch: 45.03030303030303, key: train_loss, loss: 0.8529316064405938,
+  task_name: '{EXP}', time: '0-01:43:02', words: 9313, words_per_sec: 3785.0859349919415}
+- {data: train, epoch: 45.287229437229435, key: train_loss, loss: 0.8330925633286425,
+  task_name: '{EXP}', time: '0-01:43:16', words: 67241, words_per_sec: 4280.261535061807}
+- {data: train, epoch: 45.52640692640693, key: train_loss, loss: 0.8374691481762978,
+  task_name: '{EXP}', time: '0-01:43:30', words: 125651, words_per_sec: 4206.331688963516}
+- {data: train, epoch: 45.81038961038961, key: train_loss, loss: 0.8405909864650849,
+  task_name: '{EXP}', time: '0-01:43:44', words: 178970, words_per_sec: 3805.2578981153843}
+- {data: train, epoch: 46.0, key: train_loss, loss: 0.8368193870836029, task_name: '{EXP}',
+  time: '0-01:43:52', words: 217896, words_per_sec: 4446.6102346878}
+- epoch: 46.0
+  key: dev_loss
+  score: !WERScore {correct: 1077, deletions: 29, desc: null, insertions: 57, substitutions: 289}
+  task_name: '{EXP}'
+  time: 0-01:45:15
+  words: 1395
+- epoch: 46.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5807, deletions: 190, desc: null, insertions: 104, substitutions: 349}
+  task_name: '{EXP}'
+- epoch: 46.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9586750046116524, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 46.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:22'}
+- {data: train, epoch: 46.03658008658009, key: train_loss, loss: 0.8334875328083989,
+  task_name: '{EXP}', time: '0-01:45:23', words: 9525, words_per_sec: 4026.9040147130954}
+- {data: train, epoch: 46.26125541125541, key: train_loss, loss: 0.8245586609036615,
+  task_name: '{EXP}', time: '0-01:45:34', words: 58227, words_per_sec: 4404.127458412116}
+- {data: train, epoch: 46.486147186147186, key: train_loss, loss: 0.835124403632759,
+  task_name: '{EXP}', time: '0-01:45:46', words: 105168, words_per_sec: 4082.543660643929}
+- {data: train, epoch: 46.71818181818182, key: train_loss, loss: 0.8291293563203135,
+  task_name: '{EXP}', time: '0-01:45:57', words: 153509, words_per_sec: 4352.501086188718}
+- {data: train, epoch: 46.95194805194805, key: train_loss, loss: 0.835043774445027,
+  task_name: '{EXP}', time: '0-01:46:12', words: 208152, words_per_sec: 3751.3754613816914}
+- {data: train, epoch: 47.0, key: train_loss, loss: 0.8341054346705251, task_name: '{EXP}',
+  time: '0-01:46:14', words: 217896, words_per_sec: 4456.624659613585}
+- epoch: 47.0
+  key: dev_loss
+  score: !WERScore {correct: 1060, deletions: 29, desc: null, insertions: 52, substitutions: 306}
+  task_name: '{EXP}'
+  time: 0-01:47:35
+  words: 1395
+- epoch: 47.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5794, deletions: 203, desc: null, insertions: 118, substitutions: 349}
+  task_name: '{EXP}'
+- epoch: 47.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9598290770872494, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 47.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:20'}
+- {data: train, epoch: 47.03766233766234, key: train_loss, loss: 0.8090344308511347,
+  task_name: '{EXP}', time: '0-01:47:37', words: 9386, words_per_sec: 4101.262666019789}
+- {data: train, epoch: 47.26645021645022, key: train_loss, loss: 0.8282795592873244,
+  task_name: '{EXP}', time: '0-01:47:49', words: 54676, words_per_sec: 3916.847786690596}
+- {data: train, epoch: 47.500649350649354, key: train_loss, loss: 0.8249243170410125,
+  task_name: '{EXP}', time: '0-01:48:03', words: 111539, words_per_sec: 4127.809270509405}
+- {data: train, epoch: 47.756493506493506, key: train_loss, loss: 0.8265114689195752,
+  task_name: '{EXP}', time: '0-01:48:16', words: 170647, words_per_sec: 4361.366901451341}
+- {data: train, epoch: 48.0, key: train_loss, loss: 0.8298234230543183, task_name: '{EXP}',
+  time: '0-01:48:27', words: 217896, words_per_sec: 4271.147409994152}
+- epoch: 48.0
+  key: dev_loss
+  score: !WERScore {correct: 1066, deletions: 32, desc: null, insertions: 47, substitutions: 297}
+  task_name: '{EXP}'
+  time: 0-01:49:48
+  words: 1395
+- epoch: 48.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5804, deletions: 188, desc: null, insertions: 131, substitutions: 354}
+  task_name: '{EXP}'
+- epoch: 48.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.959924417849723, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 48.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:20'}
+- {data: train, epoch: 48.04805194805195, key: train_loss, loss: 0.8132928626345464,
+  task_name: '{EXP}', time: '0-01:49:51', words: 9755, words_per_sec: 4516.758914722092}
+- {data: train, epoch: 48.29004329004329, key: train_loss, loss: 0.8245918674845788,
+  task_name: '{EXP}', time: '0-01:50:05', words: 64035, words_per_sec: 3806.822236392732}
+- {data: train, epoch: 48.53181818181818, key: train_loss, loss: 0.8302625863189992,
+  task_name: '{EXP}', time: '0-01:50:16', words: 111505, words_per_sec: 4289.642594365847}
+- {data: train, epoch: 48.76450216450216, key: train_loss, loss: 0.8304840324986127,
+  task_name: '{EXP}', time: '0-01:50:27', words: 160378, words_per_sec: 4378.574404018814}
+- {data: train, epoch: 49.0, key: train_loss, loss: 0.8291677898013846, task_name: '{EXP}',
+  time: '0-01:50:41', words: 217896, words_per_sec: 4191.861601831389}
+- epoch: 49.0
+  key: dev_loss
+  score: !WERScore {correct: 1050, deletions: 34, desc: null, insertions: 49, substitutions: 311}
+  task_name: '{EXP}'
+  time: 0-01:52:02
+  words: 1395
+- epoch: 49.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5781, deletions: 199, desc: null, insertions: 123, substitutions: 366}
+  task_name: '{EXP}'
+- epoch: 49.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9584391163326696, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 49.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:21'}
+- {data: train, epoch: 49.05021645021645, key: train_loss, loss: 0.8071110717416254,
+  task_name: '{EXP}', time: '0-01:52:04', words: 9911, words_per_sec: 4606.978861186017}
+- {data: train, epoch: 49.276839826839826, key: train_loss, loss: 0.8400544358798114,
+  task_name: '{EXP}', time: '0-01:52:19', words: 63650, words_per_sec: 3709.0765328186517}
+- {data: train, epoch: 49.51277056277056, key: train_loss, loss: 0.8326879175088042,
+  task_name: '{EXP}', time: '0-01:52:30', words: 110458, words_per_sec: 4198.621292801312}
+- {data: train, epoch: 49.73506493506493, key: train_loss, loss: 0.8269172859650596,
+  task_name: '{EXP}', time: '0-01:52:41', words: 159257, words_per_sec: 4420.504300372332}
+- {data: train, epoch: 50.0, key: train_loss, loss: 0.8261561954835965, task_name: '{EXP}',
+  time: '0-01:52:55', words: 217896, words_per_sec: 4372.321668608066}
+- epoch: 50.0
+  key: dev_loss
+  score: !WERScore {correct: 1059, deletions: 27, desc: null, insertions: 50, substitutions: 309}
+  task_name: '{EXP}'
+  time: 0-01:54:16
+  words: 1395
+- epoch: 50.0
+  key: auxiliary_score
+  score: !CERScore {correct: 5785, deletions: 204, desc: null, insertions: 134, substitutions: 357}
+  task_name: '{EXP}'
+- epoch: 50.0
+  key: auxiliary_score
+  score: !LossScore {desc: null, loss: 0.9574891062591718, loss_stats: null}
+  task_name: '{EXP}'
+- {epoch: 50.0, key: dev_time_needed, task_name: '{EXP}', time_needed: '0-00:01:20'}

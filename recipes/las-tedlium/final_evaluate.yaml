@@ -1,0 +1,33 @@
+las-timit-evaluate: !LoadSerialized
+   filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-timit-pretrain-test.mod
+   overwrite:
+   - path: train
+     val: null
+   - path: evaluate
+     val:
+      - !AccuracyEvalTask
+          desc: null
+          eval_metrics: wer,cer
+          hyp_file: '{EXP_DIR}/logs/{EXP}.test_hyp'
+          inference: !AutoRegressiveInference
+            batcher: !InOrderBatcher
+              batch_size: 1
+              pad_src_to_multiple: 8
+              src_pad_token: ~
+            max_num_sents: null
+            max_src_len: 1500
+            mode: onebest
+            post_process: join-char
+            ref_file: null
+            reporter: null
+            search_strategy: !BeamSearch
+              beam_size: 20
+              len_norm: !PolynomialNormalization {apply_during_search: true, m: 1.5}
+              max_len: 500
+              one_best: true
+              scores_proc: null
+            src_file: null
+            trg_file: null
+          model: !Ref {default: 1928437192847, name: null, path: model}
+          ref_file: '{DATA_DIR}/test.words'
+          src_file: '{DATA_DIR}/test.h5'

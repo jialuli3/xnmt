@@ -26,7 +26,7 @@ class Decoder(object):
     raise NotImplementedError('must be implemented by subclasses')
   def calc_prob(self, calc_scores_logsoftmax):
     raise NotImplementedError('must be implemented by subclasses')
-  def calc_log_prob(self, calc_scores_logsoftmax):
+  def calc_log_probs(self, calc_scores_logsoftmax):
     raise NotImplementedError('must be implemented by subclasses')
   def add_input(self, mlp_dec_state, trg_embedding):
     raise NotImplementedError('must be implemented by subclasses')
@@ -35,7 +35,7 @@ class Decoder(object):
 
 class AutoRegressiveDecoderState(object):
   """A state holding all the information needed for AutoRegressiveDecoder
-  
+
   Args:
     rnn_state: a DyNet RNN state
     context: a DyNet expression
@@ -116,7 +116,7 @@ class AutoRegressiveDecoder(Decoder, Serializable):
 
   def add_input(self, mlp_dec_state: AutoRegressiveDecoderState, trg_embedding: dy.Expression) -> AutoRegressiveDecoderState:
     """Add an input and update the state.
-    
+
     Args:
       mlp_dec_state: An object containing the current state.
       trg_embedding: The embedding of the word to input.
@@ -154,7 +154,7 @@ class AutoRegressiveDecoder(Decoder, Serializable):
 # TODO: This should be factored to simply use Softmax
 # class AutoRegressiveLexiconDecoder(AutoRegressiveDecoder, Serializable):
 #   yaml_tag = '!AutoRegressiveLexiconDecoder'
-# 
+#
 #   @register_xnmt_handler
 #   @serializable_init
 #   def __init__(self,
@@ -185,18 +185,18 @@ class AutoRegressiveDecoder(Decoder, Serializable):
 #     self.attender = attender
 #     self.lexicon_type = lexicon_type
 #     self.lexicon_alpha = lexicon_alpha
-# 
+#
 #     self.linear_projector = self.add_serializable_component("linear_projector", linear_projector,
 #                                                              lambda: xnmt.linear.Linear(input_dim=input_dim,
 #                                                                                         output_dim=mlp.output_dim))
-# 
+#
 #     if self.lexicon_type == "linear":
 #       self.lexicon_method = self.linear
 #     elif self.lexicon_type == "bias":
 #       self.lexicon_method = self.bias
 #     else:
 #       raise ValueError("Unrecognized lexicon method:", lexicon_type, "can only choose between [bias, linear]")
-# 
+#
 #   def load_lexicon(self):
 #     logger.info("Loading lexicon from file: " + self.lexicon_file)
 #     assert self.src_vocab.frozen
@@ -225,43 +225,42 @@ class AutoRegressiveDecoder(Decoder, Serializable):
 #     # TODO(philip30): Note sure if this is intended
 #     lexicon[src_unk_id] = {trg_unk_id: 1.0}
 #     return lexicon
-# 
+#
 #   @handle_xnmt_event
 #   def on_new_epoch(self, training_task, *args, **kwargs):
 #     if hasattr(self, "lexicon_prob"):
 #       del self.lexicon_prob
 #     if not hasattr(self, "lexicon"):
 #       self.lexicon = self.load_lexicon()
-# 
+#
 #   @handle_xnmt_event
 #   def on_start_sent(self, src):
 #     batch_size = len(src)
 #     col_size = len(src[0])
-# 
+#
 #     idxs = [(x, j, i) for i in range(batch_size) for j in range(col_size) for x in self.lexicon[src[i][j]].keys()]
 #     idxs = tuple(map(list, list(zip(*idxs))))
-# 
+#
 #     values = [x for i in range(batch_size) for j in range(col_size) for x in self.lexicon[src[i][j]].values()]
 #     self.lexicon_prob = dy.nobackprop(dy.sparse_inputTensor(idxs, values, (len(self.trg_vocab), col_size, batch_size), batched=True))
-#     
+#
 #   def calc_scores_logsoftmax(self, mlp_dec_state):
 #     score = super().calc_scores(mlp_dec_state)
 #     lex_prob = self.lexicon_prob * self.attender.get_last_attention()
 #     # Note that the sum dim is only summing a tensor of 1 size in dim 1.
 #     # This is to make sure that the shape of the returned tensor matches the vanilla decoder
 #     return dy.sum_dim(self.lexicon_method(mlp_dec_state, score, lex_prob), [1])
-# 
+#
 #   def linear(self, mlp_dec_state, score, lex_prob):
 #     coef = dy.logistic(self.linear_projector(mlp_dec_state.rnn_state.output()))
 #     return dy.log(dy.cmult(dy.softmax(score), coef) + dy.cmult((1-coef), lex_prob))
-# 
+#
 #   def bias(self, mlp_dec_state, score, lex_prob):
 #     return dy.log_softmax(score + dy.log(lex_prob + self.lexicon_alpha))
-# 
+#
 #   def calc_loss(self, mlp_dec_state, ref_action):
 #     logsoft = self.calc_scores_logsoftmax(mlp_dec_state)
 #     if not xnmt.batcher.is_batched(ref_action):
 #       return -dy.pick(logsoft, ref_action)
 #     else:
 #       return -dy.pick_batch(logsoft, ref_action)
-

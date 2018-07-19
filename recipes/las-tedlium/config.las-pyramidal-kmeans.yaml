@@ -1,4 +1,4 @@
-las-pyramidal-kmeans: !Experiment
+las-pyramidal-kmeans-new: !Experiment
   exp_global: !ExpGlobal
     dropout: 0.3
     default_layer_dim: 512
@@ -50,7 +50,7 @@ las-pyramidal-kmeans: !Experiment
     cluster: !KMeans
       n_dims: 512
       n_components: 50
-      max_iter: 30
+      max_iter: 20
   train: !SimpleTrainingRegimen
     src_file: '{DATA_DIR}/train.h5'
     trg_file: '{DATA_DIR}/train.char'

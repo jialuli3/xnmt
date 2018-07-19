@@ -5,6 +5,7 @@ import numpy as np
 import dynet as dy
 
 from typing import List, Union, Optional
+from collections import defaultdict
 from xnmt.param_collection import ParamManager
 from xnmt.param_init import NormalInitializer, ParamInitializer
 from xnmt.persistence import Serializable, serializable_init, bare, Ref
@@ -47,6 +48,10 @@ class KMeans(Cluster, Serializable):
         #self._mu = np.random.normal(size=(n_components,n_dims))  # np.array of size (n_components, n_dims)
         self.pc = ParamManager.my_params(self)
         self._mu=self.pc.add_parameters((n_components,n_dims),init=param_init.initializer((n_components,n_dims)))
+        self._centroid=np.random.normal(size=(n_components,n_dims))
+        self._mu.set_value(self._centroid)
+
+        self.curr_occupied_clusters=self.initalize_cluster_counting()
 
     def fit(self, x):
         """Runs EM step for max_iter number of times.
@@ -58,7 +63,9 @@ class KMeans(Cluster, Serializable):
         for i in range(self._max_iter):
             r_ik=self._e_step(x); #Update cluster assignment
             self._m_step(x,r_ik); #Update cluster mean
-        #self._centroid.init_from_array(self._mu)
+        self._mu.set_value(self._centroid)
+        unique, counts=np.unique(r_ik,return_counts=True)
+        print("Currently there are " + str(unique) +" clusters.")
 
     def _e_step(self, x):
         """Update cluster assignment.
@@ -92,12 +99,11 @@ class KMeans(Cluster, Serializable):
         #     r_ik_sum[r_ik[i]]+=1;
         unique, counts=np.unique(r_ik,return_counts=True)
         r_ik_sum=dict(zip(unique,counts))
-        #_mu=dy.parameter(self._mu)
-        self._centroid=np.zeros((self._n_components,self._n_dims))
+        #self._centroid=np.zeros((self._n_components,self._n_dims))
+        self._centroid[unique,:]=np.zeros(self._n_dims)
         for i in range(x.shape[0]):
             curr_k=r_ik[i]
             self._centroid[curr_k]+=x[i]/r_ik_sum[curr_k]
-        self._mu.set_value(self._centroid)
 
     def calc_loss(self, x):
         """
@@ -113,10 +119,9 @@ class KMeans(Cluster, Serializable):
         inter_results=np.ndarray(shape=(x.shape[0],self._n_components))
         for i in range(x.shape[0]):
             for j in range(self._n_components):
-                curr_mu=dy.pick(self._mu,index=j,dim=0)
-                inter_results[i][j]=np.sum(np.square(x[i]-curr_mu.npvalue()))
+                inter_results[i][j]=np.sum(np.square(x[i]-self._centroid[j]))
         #loss= np.sum(np.min(inter_results,axis=1))/x.shape[0]
-        loss= np.sum(np.min(inter_results,axis=1))
+        loss = np.sum(np.min(inter_results,axis=1))
         return loss
 
     def get_posterior(self, x):
@@ -136,11 +141,23 @@ class KMeans(Cluster, Serializable):
         inter_results=np.ndarray(shape=(x.shape[0],self._n_components))
         for i in range(x.shape[0]):
             for j in range(self._n_components):
-                curr_mu=dy.pick(self._mu,index=j,dim=0)
-                inter_results[i][j]=np.sum(np.square(x[i]-curr_mu.npvalue()))
+                inter_results[i][j]=np.sum(np.square(x[i]-self._centroid[j]))
         #print(inter_results)
         r_ik=np.argmin(inter_results,axis=1);
         return r_ik
+
+    def split_cluster(self,cluster_indexes):
+        """
+            Perform cluster splitting if not all clusters are occupied
+            after each epoch.
+        """
+
+    def initalize_cluster_counting(self):
+        """
+            Initialize cluster counting to determine whether to split cluster later on.
+        """
+        return dict(zip(range(self._n_components),[0]*self._n_components))
+
 
     def supervised_fit(self, x, y):
         """Assign each cluster with a label through counting.
@@ -163,9 +180,7 @@ class KMeans(Cluster, Serializable):
         label_count=np.zeros((self._n_components,self._n_components));#cluster assignment #, digit number
         r_ik=self.get_posterior(x);
         for i in range(x.shape[0]):
-            #print(r_ik[i],int(y[i]))
             label_count[r_ik[i]][int(y[i])]+=1
-        #print(label_count)
         for i in range(self._n_components):
             self.cluster_label_map.append(np.argmax(label_count[i]))
         #print(self.cluster_label_map)

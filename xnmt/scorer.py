@@ -36,7 +36,7 @@ class Scorer(object):
   def calc_log_probs(self, x: dy.Expression) -> dy.Expression:
     """
     Calculate the log probability of a decision
-    
+
     log(calc_prob()) == calc_log_prob()
 
     Both functions exist because it might help save memory.
@@ -105,7 +105,7 @@ class Softmax(Scorer, Serializable):
 
   @serializable_init
   def __init__(self,
-               input_dim: int = Ref("exp_global.default_layer_dim"),               
+               input_dim: int = Ref("exp_global.default_layer_dim"),
                vocab_size: Optional[int] = None,
                vocab: Optional[vocab.Vocab] = None,
                trg_reader: Optional[input_reader.InputReader] = Ref("model.trg_reader", default=None),
@@ -122,9 +122,12 @@ class Softmax(Scorer, Serializable):
                                                             lambda: output_projector or Linear(
                                                               input_dim=self.input_dim, output_dim=self.output_dim,
                                                               param_init=param_init, bias_init=bias_init))
-  
+
   def calc_scores(self, x: dy.Expression) -> dy.Expression:
-    return self.output_projector(x)
+    result=self.output_projector(x)
+    #print("output_dim",self.output_dim)
+    #print("x",x.dim(),"result",result.dim())
+    return result
 
   def calc_loss(self, x: dy.Expression, y: Union[int, List[int]]) -> dy.Expression:
 
@@ -146,7 +149,7 @@ class Softmax(Scorer, Serializable):
 
       ls_loss = -dy.mean_elems(log_prob)
       loss = ((1 - self.label_smoothing) * pre_loss) + (self.label_smoothing * ls_loss)
-    
+
     return loss
 
   def calc_probs(self, x: dy.Expression) -> dy.Expression:
@@ -154,4 +157,3 @@ class Softmax(Scorer, Serializable):
 
   def calc_log_probs(self, x: dy.Expression) -> dy.Expression:
     return dy.log_softmax(self.calc_scores(x))
-

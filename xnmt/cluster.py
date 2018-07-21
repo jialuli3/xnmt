@@ -5,7 +5,7 @@ import numpy as np
 import dynet as dy
 
 from typing import List, Union, Optional
-from collections import defaultdict
+from math import ceil
 from xnmt.param_collection import ParamManager
 from xnmt.param_init import NormalInitializer, ParamInitializer
 from xnmt.persistence import Serializable, serializable_init, bare, Ref
@@ -32,7 +32,8 @@ class KMeans(Cluster, Serializable):
             n_dims,
             n_components=50,
             max_iter=100,
-            param_init: ParamInitializer=bare(NormalInitializer))-> None:
+            param_init: ParamInitializer = bare(NormalInitializer)
+            )-> None:
         """Initialize a KMeans model
         Args:
             n_dims(int): The dimension of the feature.
@@ -48,10 +49,9 @@ class KMeans(Cluster, Serializable):
         #self._mu = np.random.normal(size=(n_components,n_dims))  # np.array of size (n_components, n_dims)
         self.pc = ParamManager.my_params(self)
         self._mu=self.pc.add_parameters((n_components,n_dims),init=param_init.initializer((n_components,n_dims)))
-        self._centroid=np.random.normal(size=(n_components,n_dims))
-        self._mu.set_value(self._centroid)
+        self._centroid=self._mu.npvalue()
 
-        self.curr_occupied_clusters=self.initalize_cluster_counting()
+        self.initalize_cluster_counting()
 
     def fit(self, x):
         """Runs EM step for max_iter number of times.
@@ -60,11 +60,14 @@ class KMeans(Cluster, Serializable):
             x(numpy.ndarray): Array containing the feature of dimension (N,
             ndims).
         """
+        self._centroid=self._mu.npvalue()
         for i in range(self._max_iter):
             r_ik=self._e_step(x); #Update cluster assignment
             self._m_step(x,r_ik); #Update cluster mean
         self._mu.set_value(self._centroid)
         unique, counts=np.unique(r_ik,return_counts=True)
+        for i,j in zip(unique,counts):
+            self._curr_occupied_clusters[i]+=j
         print("Currently there are " + str(unique) +" clusters.")
 
     def _e_step(self, x):
@@ -94,9 +97,7 @@ class KMeans(Cluster, Serializable):
             r_ik(numpy.ndarray): Array containing the cluster assignment of
                 each example, dimension (N,).
         """
-        # r_ik_sum=np.zeros((self._n_components,))
-        # for i in range(r_ik.shape[0]):
-        #     r_ik_sum[r_ik[i]]+=1;
+
         unique, counts=np.unique(r_ik,return_counts=True)
         r_ik_sum=dict(zip(unique,counts))
         #self._centroid=np.zeros((self._n_components,self._n_dims))
@@ -142,21 +143,50 @@ class KMeans(Cluster, Serializable):
         for i in range(x.shape[0]):
             for j in range(self._n_components):
                 inter_results[i][j]=np.sum(np.square(x[i]-self._centroid[j]))
-        #print(inter_results)
         r_ik=np.argmin(inter_results,axis=1);
         return r_ik
 
-    def split_cluster(self,cluster_indexes):
+    def split_cluster(self):
         """
             Perform cluster splitting if not all clusters are occupied
             after each epoch.
         """
+        #Calculate clusters to be split
+        print("Performing cluster splitting...")
+        clusters=[]
+        sorted_cluster=sorted(self._curr_occupied_clusters.items(), key=lambda kv:kv[1], reverse=True)
+        clusters=[k[0] for k in sorted_cluster if k[1]!=0]
+        curr_occupied_clusters_num=len(clusters)
+        each_split_num=ceil((self._n_components-curr_occupied_clusters_num)/curr_occupied_clusters_num)
+        print("There are currently "+str(curr_occupied_clusters_num)+" are occupied.")
+        if curr_occupied_clusters_num==self._n_components:
+            return
+        curr_count=0 #count how many times clusters have been split
+        curr_cluster_index=0
+        print(clusters)
+        for i in range(self._n_components):
+            if curr_cluster_index<len(clusters):
+                curr_feature=self._centroid[clusters[curr_cluster_index],:]
+            if self._curr_occupied_clusters[i] == 0:
+                #print("Splitting current cluster "+str(clusters[curr_cluster_index]))
+                random_num=np.random.rand(1)
+                self._centroid[i,:]=random_num*curr_feature
+                curr_count+=1
+                if curr_count >= each_split_num:
+                    curr_cluster_index+=1
+                    curr_count=0
+        #Split clusters itself
+        for i in range(curr_cluster_index):
+            random_num=np.random.rand(1)
+            self._centroid[clusters[i],:]*=random_num
+        self._mu.set_value(self._centroid)
+
 
     def initalize_cluster_counting(self):
         """
             Initialize cluster counting to determine whether to split cluster later on.
         """
-        return dict(zip(range(self._n_components),[0]*self._n_components))
+        self._curr_occupied_clusters=dict(zip(range(self._n_components),[0]*self._n_components))
 
 
     def supervised_fit(self, x, y):

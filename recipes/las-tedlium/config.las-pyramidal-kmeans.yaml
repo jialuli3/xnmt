@@ -1,4 +1,4 @@
-las-pyramidal-kmeans-new: !Experiment
+las-pyramidal-kmeans-debug: !Experiment
   exp_global: !ExpGlobal
     dropout: 0.3
     default_layer_dim: 512
@@ -58,7 +58,7 @@ las-pyramidal-kmeans-new: !Experiment
     max_trg_len: 350
     run_for_epochs: 20
     batcher: !WordSrcBatcher
-      avg_batch_size: 150
+      avg_batch_size: 220
       pad_src_to_multiple: 8
       src_pad_token: ~
     loss_calculator: !AutoRegressiveKMeansLoss

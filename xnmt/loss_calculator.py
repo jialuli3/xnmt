@@ -104,6 +104,13 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
     self.truncate_dec_batches = truncate_dec_batches
     self.evaluate = evaluate
 
+  def perform_cluster_splitting(self,translator: 'translator.AutoRegressiveTranslator'):
+      """
+      Perform cluster splitting after each epoch.
+      """
+      translator.cluster.split_cluster()
+      translator.cluster.initalize_cluster_counting()
+
   def calc_loss(self, translator: 'translator.AutoRegressiveTranslator',
                 initial_state: 'translator.AutoRegressiveDecoderState',
                 src: Union[xnmt.input.Input, 'batcher.Batch'],

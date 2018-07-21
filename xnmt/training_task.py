@@ -159,7 +159,7 @@ class SimpleTrainingTask(TrainingTask, Serializable):
     if retcode is not None:
       if self.training_state.epoch_num > 0:
         logger.info('using reloaded data')
-      # reload the data   
+      # reload the data
       self.model.src_reader.train = self.model.trg_reader.train = True
       self.src_data, self.trg_data, self.src_batches, self.trg_batches = \
           input_reader.read_parallel_corpus(src_reader=self.model.src_reader,

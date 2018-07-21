@@ -147,8 +147,9 @@ class SimpleTrainingRegimen(training_task.SimpleTrainingTask, TrainingRegimen, S
             self.backward(loss, self.dynet_profiling)
             self.update(self.trainer)
           self.train_loss_tracker.report(trg, loss_builder.get_factored_loss_val(comb_method=self.loss_comb_method))
-        if self.checkpoint_needed():
+        if self.checkpoint_needed():#Assume perform each checkpoint after one epoch
           self.checkpoint_and_save(save_fct)
+          self.loss_calculator.perform_cluster_splitting(self.model)
         if self.should_stop_training(): break
 
   def checkpoint_and_save(self, save_fct):

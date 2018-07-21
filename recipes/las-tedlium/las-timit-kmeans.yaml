@@ -1,6 +1,41 @@
-las-pyramidal-kmeans: !LoadSerialized
-  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-pyramidal-kmeans.mod
+las-pyramidal-kmeans-new-50: !LoadSerialized
+  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-pyramidal-kmeans-new-30.mod
   overwrite:
+  - path: evaluate
+    val:
+      - !AccuracyEvalTask
+          desc: null
+          eval_metrics: wer,cer
+          hyp_file: '{EXP_DIR}/logs/{EXP}.test_hyp'
+          inference: !AutoRegressiveInference
+            batcher: !InOrderBatcher
+              batch_size: 1
+              pad_src_to_multiple: 8
+              src_pad_token: ~
+            max_num_sents: null
+            max_src_len: 1500
+            mode: onebest
+            post_process: join-char
+            ref_file: null
+            reporter: null
+            search_strategy: !BeamSearch
+              beam_size: 20
+              len_norm: !PolynomialNormalization {apply_during_search: true, m: 1.5}
+              max_len: 500
+              one_best: true
+              scores_proc: null
+            src_file: null
+            trg_file: null
+          model: !Ref {default: 1928437192847, name: null, path: model}
+          ref_file: '{DATA_DIR}/test.words'
+          src_file: '{DATA_DIR}/test.h5'
+      - !LossEvalTask
+        loss_calculator: !AutoRegressiveKMeansLoss
+          truncate_dec_batches: false
+          evaluate: true
+        max_src_len: 1500
+        src_file: '{DATA_DIR}/test.h5'
+        ref_file: '{DATA_DIR}/test.char'
   - path: train
     val: !SimpleTrainingRegimen
       src_file: '{DATA_DIR}/train.h5'
@@ -9,7 +44,7 @@ las-pyramidal-kmeans: !LoadSerialized
       max_trg_len: 350
       run_for_epochs: 20
       batcher: !WordSrcBatcher
-        avg_batch_size: 24
+        avg_batch_size: 200
         pad_src_to_multiple: 8
         src_pad_token: ~
       loss_calculator: !AutoRegressiveKMeansLoss
@@ -21,7 +56,7 @@ las-pyramidal-kmeans: !LoadSerialized
       lr_decay_times: 3
       patience: 8
       initial_patience: 15
-      dev_every: 2000
+      dev_every: 0
       restart_trainer: True
       dev_tasks:
         - !AccuracyEvalTask

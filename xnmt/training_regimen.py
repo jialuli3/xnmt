@@ -38,6 +38,7 @@ class TrainingRegimen(object):
       dy.print_text_graphviz()
     loss.backward()
 
+
   def update(self, trainer: optimizer.XnmtOptimizer) -> None:
     """
     Update DyNet weights using the given optimizer.
@@ -133,8 +134,12 @@ class SimpleTrainingRegimen(training_task.SimpleTrainingTask, TrainingRegimen, S
     """
     Main training loop (overwrites TrainingRegimen.run_training())
     """
+    #print(self.trainer.get_clip_threshold())
+    self.trainer.set_clip_threshold(0.1)
+    curr_epoch=0
     if self.run_for_epochs > 0:
       for src,trg in self.next_minibatch():
+        #self.checkpoint_and_save(save_fct)
         if self.dev_zero:
           self.checkpoint_and_save(save_fct)
           self.dev_zero = False
@@ -150,6 +155,9 @@ class SimpleTrainingRegimen(training_task.SimpleTrainingTask, TrainingRegimen, S
         if self.checkpoint_needed():#Assume perform each checkpoint after one epoch
           self.checkpoint_and_save(save_fct)
           self.loss_calculator.perform_cluster_splitting(self.model)
+          # curr_epoch+=1
+          # if curr_epoch % 2 ==0:
+          #     self.loss_calculator.perform_cluster_splitting(self.model)
         if self.should_stop_training(): break
 
   def checkpoint_and_save(self, save_fct):

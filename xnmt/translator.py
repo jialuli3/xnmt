@@ -178,7 +178,7 @@ class DefaultTranslator(AutoRegressiveTranslator, Serializable, Reportable, mode
     #print("indexes",indexes)
     curr_sent=self.attender.curr_sent.as_tensor().npvalue()
     ht=curr_sent[:,targets_frame_idxes[:,0],targets_frame_idxes[:,2]]
-    print(ht.shape)
+    #print(ht.shape)
     #####################################################
     word_loss = self.decoder.calc_loss(dec_state, ref_word)
     return dec_state, word_loss
@@ -341,7 +341,7 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
 
     return model_loss
 
-  def calc_loss_one_step(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch]) \
+  def calc_loss_one_step(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch],) \
           -> Tuple[AutoRegressiveDecoderState,dy.Expression, np.ndarray]:
     if input_word is not None:
       dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
@@ -355,6 +355,7 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
     predict_vocab_index=np.argmax(dy.argmax(word_prob,gradient_mode="zero_gradient").npvalue(),axis=0)
     one_hot_subtract=predict_vocab_index-np.asarray(list(ref_word))
     correct_predicted_batch_index=np.array(np.argwhere(one_hot_subtract == 0)).flatten()
+    #print(correct_predicted_batch_index)
     # Gather attention frames
     if correct_predicted_batch_index.size!=0:
         curr_attention=self.attender.get_last_attention().npvalue()[:,:,correct_predicted_batch_index]
@@ -364,6 +365,22 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
         curr_sent=self.attender.curr_sent.as_tensor().npvalue()
         ht=curr_sent[:,targets_frame_idxes,correct_predicted_batch_index]
     return dec_state, word_loss, np.transpose(ht)
+
+  def calc_loss_one_step_evaluate(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch],) \
+          -> Tuple[AutoRegressiveDecoderState,dy.Expression, np.ndarray, int]:
+    if input_word is not None:
+      dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
+    rnn_output = dec_state.rnn_state.output()
+    dec_state.context = self.attender.calc_context(rnn_output)
+    #Calculate word loss
+    word_loss = self.decoder.calc_loss(dec_state, ref_word)
+    # Gather attention frames
+    curr_attention=self.attender.get_last_attention().npvalue()
+    targets_frame_idxes=np.argmax(curr_attention)
+    curr_sent=self.attender.curr_sent.as_tensor().npvalue()
+    #print(curr_attention.shape,curr_sent.shape,targets_frame_idxes.shape)
+    ht=curr_sent[:,targets_frame_idxes]
+    return dec_state, word_loss, np.transpose(ht),targets_frame_idxes
 
   def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
     if src.batch_size()!=1:
@@ -400,13 +417,15 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
                                    nbest_id=idx[0]))
     if self.compute_report:
       attentions = np.concatenate([x.npvalue() for x in attentions], axis=1)
+      #print(attentions)
       self.add_sent_for_report({"idx": idx[0],
                                 "attentions": attentions,
                                 "src": sent,
                                 "src_vocab": getattr(self.src_reader, "vocab", None),
                                 "trg_vocab": getattr(self.trg_reader, "vocab", None),
                                 "output": outputs[0]})
-
+    #attentions = np.concatenate([x.npvalue() for x in attentions], axis=1)
+    #print(attentions.shape)
     return outputs
 
   def generate_one_step(self, current_word: Any, current_state: AutoRegressiveDecoderState) -> TranslatorOutput:

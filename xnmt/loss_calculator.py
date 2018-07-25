@@ -100,9 +100,10 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
   yaml_tag = '!AutoRegressiveKMeansLoss'
   @serializable_init
   def __init__(self, truncate_dec_batches: bool = Ref("exp_global.truncate_dec_batches", default=False),
-        evaluate: bool = False) -> None:
+        dev_evaluate: bool = False, test_evaluate: bool = False) -> None:
     self.truncate_dec_batches = truncate_dec_batches
-    self.evaluate = evaluate
+    self.dev_evaluate = dev_evaluate
+    self.test_evaluate = test_evaluate
 
   def perform_cluster_splitting(self,translator: 'translator.AutoRegressiveTranslator'):
       """
@@ -118,6 +119,7 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
     dec_state = initial_state
     trg_mask = trg.mask if xnmt.batcher.is_batched(trg) else None
     losses = []
+    atts=[]
     hidden_units=np.array([])
     seq_len = trg.sent_len()
     if xnmt.batcher.is_batched(src):
@@ -129,25 +131,31 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
       ref_word = AutoRegressiveKMeansLoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
       if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
         dec_state.rnn_state, ref_word = xnmt.batcher.truncate_batches(dec_state.rnn_state, ref_word)
-      dec_state, word_loss, hidden_units_per_frame = translator.calc_loss_one_step(dec_state, ref_word, input_word)
+      if self.test_evaluate:
+          dec_state, word_loss, hidden_units_per_frame, curr_att = translator.calc_loss_one_step_evaluate(dec_state, ref_word, input_word)
+          atts.append(curr_att)
+      else:
+          dec_state, word_loss, hidden_units_per_frame = translator.calc_loss_one_step(dec_state, ref_word, input_word)
       #Gather hidden units to cluster for an entire batch
-      #print(hidden_units_per_frame.shape)
       if hidden_units.size == 0 and hidden_units_per_frame.size:
           hidden_units=hidden_units_per_frame
       if hidden_units.size and hidden_units_per_frame.size:
-          hidden_units=np.concatenate([hidden_units,hidden_units_per_frame],axis=0)
-
+          hidden_units=np.vstack((hidden_units,hidden_units_per_frame))
       if not self.truncate_dec_batches and xnmt.batcher.is_batched(src) and trg_mask is not None:
         word_loss = trg_mask.cmult_by_timestep_expr(word_loss, i, inverse=True)
       losses.append(word_loss)
       input_word = ref_word
     # Perform cluster for all frames in the batch
-    print("There are "+str(hidden_units.shape[0])+" hidden units.")
+    print("There are "+str(hidden_units.shape)+" hidden units.")
     hidden_units=np.asarray(hidden_units)
     cluster_loss=0
     if hidden_units.size:
-        if not self.evaluate:
+        if not self.dev_evaluate and not self.test_evaluate:
             translator.cluster.fit(hidden_units)
+        else:
+            r_ik=translator.cluster._e_step(hidden_units)
+            print(" ".join([str(x) for x in r_ik]))
+            print("Attention frames: "+str(atts))
         cluster_loss=translator.cluster.calc_loss(hidden_units)
         print("Current cluster loss is "+ str(cluster_loss))
 
@@ -155,8 +163,6 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
       loss_expr = dy.esum([dy.sum_batches(wl) for wl in losses])
     else:
       loss_expr = dy.esum(losses)
-    #loss_expr=dy.constant(1,cluster_loss)
-    #print("Current loss_expr is "+str(loss_expr.dim()))
     #return FactoredLossExpr({"mle": loss_expr, "cluster": dy.constant(1,cluster_loss)})
     return FactoredLossExpr({"mle": loss_expr,"cluster":dy.constant(1,cluster_loss)})
 

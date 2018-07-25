@@ -60,7 +60,6 @@ class KMeans(Cluster, Serializable):
             x(numpy.ndarray): Array containing the feature of dimension (N,
             ndims).
         """
-        self._centroid=self._mu.npvalue()
         for i in range(self._max_iter):
             r_ik=self._e_step(x); #Update cluster assignment
             self._m_step(x,r_ik); #Update cluster mean
@@ -105,6 +104,7 @@ class KMeans(Cluster, Serializable):
         for i in range(x.shape[0]):
             curr_k=r_ik[i]
             self._centroid[curr_k]+=x[i]/r_ik_sum[curr_k]
+        self._mu.set_value(self._centroid)
 
     def calc_loss(self, x):
         """
@@ -117,12 +117,13 @@ class KMeans(Cluster, Serializable):
                 loss(float): the average loss per hidden node.
 
         """
+        self._centroid=self._mu.npvalue()
         inter_results=np.ndarray(shape=(x.shape[0],self._n_components))
         for i in range(x.shape[0]):
             for j in range(self._n_components):
                 inter_results[i][j]=np.sum(np.square(x[i]-self._centroid[j]))
-        #loss= np.sum(np.min(inter_results,axis=1))/x.shape[0]
-        loss = np.sum(np.min(inter_results,axis=1))
+        loss= np.sum(np.min(inter_results,axis=1))/x.shape[0]
+        #loss = np.sum(np.min(inter_results,axis=1))
         return loss
 
     def get_posterior(self, x):
@@ -138,6 +139,7 @@ class KMeans(Cluster, Serializable):
             r_ik(numpy.ndarray): Array containing the cluster assignment of
             each example, dimension (N,).
         """
+        self._centroid=self._mu.npvalue()
         r_ik = np.ndarray(shape=(x.shape[0],));
         inter_results=np.ndarray(shape=(x.shape[0],self._n_components))
         for i in range(x.shape[0]):
@@ -153,32 +155,42 @@ class KMeans(Cluster, Serializable):
         """
         #Calculate clusters to be split
         print("Performing cluster splitting...")
-        clusters=[]
         sorted_cluster=sorted(self._curr_occupied_clusters.items(), key=lambda kv:kv[1], reverse=True)
-        clusters=[k[0] for k in sorted_cluster if k[1]!=0]
-        curr_occupied_clusters_num=len(clusters)
-        each_split_num=ceil((self._n_components-curr_occupied_clusters_num)/curr_occupied_clusters_num)
-        print("There are currently "+str(curr_occupied_clusters_num)+" are occupied.")
-        if curr_occupied_clusters_num==self._n_components:
-            return
-        curr_count=0 #count how many times clusters have been split
+        occupied_clusters=[k[0] for k in sorted_cluster if k[1]!=0]
+        unoccupied_clusters=[c for c in list(range(50)) if c not in occupied_clusters]
+        curr_occupied_clusters_num=len(occupied_clusters)
+        print("There are currently "+str(curr_occupied_clusters_num)+" clusters are occupied.")
+        #Bisecting K-means
         curr_cluster_index=0
-        print(clusters)
-        for i in range(self._n_components):
-            if curr_cluster_index<len(clusters):
-                curr_feature=self._centroid[clusters[curr_cluster_index],:]
-            if self._curr_occupied_clusters[i] == 0:
-                #print("Splitting current cluster "+str(clusters[curr_cluster_index]))
-                random_num=np.random.rand(1)
-                self._centroid[i,:]=random_num*curr_feature
-                curr_count+=1
-                if curr_count >= each_split_num:
-                    curr_cluster_index+=1
-                    curr_count=0
+        while len(occupied_clusters)<self._n_components:
+            curr_feature=self._centroid[occupied_clusters[curr_cluster_index],:]
+            #Perform bisecting splitting
+            self._centroid[occupied_clusters[curr_cluster_index],:]=0.99*curr_feature
+            self._centroid[unoccupied_clusters[curr_cluster_index],:]=0.01*curr_feature
+            occupied_clusters.append(unoccupied_clusters[curr_cluster_index])
+            curr_cluster_index+=1
+
+        # curr_count=0 #count how many times clusters have been split
+        # curr_cluster_index=0
+        # print(clusters)
+        # split_factor=[0.99,0.01]
+        # if each_split_num > 2:
+        #     random_list=list(np.random.rand(each_split_num-2))
+        #     split_factor+=random_list
+        # for i in range(self._n_components):
+        #     if curr_cluster_index<len(clusters):
+        #         curr_feature=self._centroid[clusters[curr_cluster_index],:]
+        #     if self._curr_occupied_clusters[i] == 0:
+        #         #print("Splitting current cluster "+str(clusters[curr_cluster_index]))
+        #         self._centroid[i,:]=split_factor[curr_count]*curr_feature
+        #         curr_count+=1
+        #         if curr_count >= each_split_num:
+        #             curr_cluster_index+=1
+        #             curr_count=0
         #Split clusters itself
-        for i in range(curr_cluster_index):
-            random_num=np.random.rand(1)
-            self._centroid[clusters[i],:]*=random_num
+        # for i in range(curr_cluster_index):
+        #     random_num=np.random.rand(1)
+        #     self._centroid[clusters[i],:]*=random_num
         self._mu.set_value(self._centroid)
 
 

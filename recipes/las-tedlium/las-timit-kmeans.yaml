@@ -1,5 +1,5 @@
-las-pyramidal-kmeans-new-50: !LoadSerialized
-  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-pyramidal-kmeans-new-30.mod
+las-timit-pretrain-kmeans: !LoadSerialized
+  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-timit-pretrain-kmeans.mod
   overwrite:
   - path: evaluate
     val:
@@ -32,7 +32,8 @@ las-pyramidal-kmeans-new-50: !LoadSerialized
       - !LossEvalTask
         loss_calculator: !AutoRegressiveKMeansLoss
           truncate_dec_batches: false
-          evaluate: true
+          dev_evaluate: false
+          test_evaluate: true
         max_src_len: 1500
         src_file: '{DATA_DIR}/test.h5'
         ref_file: '{DATA_DIR}/test.char'
@@ -42,16 +43,17 @@ las-pyramidal-kmeans-new-50: !LoadSerialized
       trg_file: '{DATA_DIR}/train.char'
       max_src_len: 1500
       max_trg_len: 350
-      run_for_epochs: 20
+      run_for_epochs: 50
       batcher: !WordSrcBatcher
-        avg_batch_size: 200
+        avg_batch_size: 210
         pad_src_to_multiple: 8
         src_pad_token: ~
       loss_calculator: !AutoRegressiveKMeansLoss
         truncate_dec_batches: false
-        evaluate: false
+        dev_evaluate: false
+        test_evaluate: false
       trainer: !AdamTrainer
-        alpha: 0.001
+        alpha: 0.0003
       lr_decay: 0.5
       lr_decay_times: 3
       patience: 8
@@ -80,7 +82,8 @@ las-pyramidal-kmeans-new-50: !LoadSerialized
         - !LossEvalTask
           loss_calculator: !AutoRegressiveKMeansLoss
             truncate_dec_batches: false
-            evaluate: true
+            dev_evaluate: true
+            test_evaluate: false
           max_src_len: 1500
-          src_file: *dev_src
+          src_file: '{DATA_DIR}/dev.h5'
           ref_file: '{DATA_DIR}/dev.char'

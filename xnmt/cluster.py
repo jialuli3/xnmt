@@ -157,7 +157,7 @@ class KMeans(Cluster, Serializable):
         print("Performing cluster splitting...")
         sorted_cluster=sorted(self._curr_occupied_clusters.items(), key=lambda kv:kv[1], reverse=True)
         occupied_clusters=[k[0] for k in sorted_cluster if k[1]!=0]
-        unoccupied_clusters=[c for c in list(range(50)) if c not in occupied_clusters]
+        unoccupied_clusters=[c for c in list(range(self._n_components)) if c not in occupied_clusters]
         curr_occupied_clusters_num=len(occupied_clusters)
         print("There are currently "+str(curr_occupied_clusters_num)+" clusters are occupied.")
         #Bisecting K-means

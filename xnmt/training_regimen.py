@@ -135,7 +135,7 @@ class SimpleTrainingRegimen(training_task.SimpleTrainingTask, TrainingRegimen, S
     Main training loop (overwrites TrainingRegimen.run_training())
     """
     #print(self.trainer.get_clip_threshold())
-    self.trainer.set_clip_threshold(0.1)
+    self.trainer.set_clip_threshold(0.05)
     curr_epoch=0
     if self.run_for_epochs > 0:
       for src,trg in self.next_minibatch():
@@ -154,7 +154,7 @@ class SimpleTrainingRegimen(training_task.SimpleTrainingTask, TrainingRegimen, S
           self.train_loss_tracker.report(trg, loss_builder.get_factored_loss_val(comb_method=self.loss_comb_method))
         if self.checkpoint_needed():#Assume perform each checkpoint after one epoch
           self.checkpoint_and_save(save_fct)
-          self.loss_calculator.perform_cluster_splitting(self.model)
+          #self.loss_calculator.perform_cluster_splitting(self.model)
           # curr_epoch+=1
           # if curr_epoch % 2 ==0:
           #     self.loss_calculator.perform_cluster_splitting(self.model)

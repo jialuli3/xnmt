@@ -1,5 +1,5 @@
-las-timit-evaluate-kmeans: !LoadSerialized
-   filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-timit-pretrain-kmeans-20.mod
+las-timit-evaluate-kmeans-100-clusters: !LoadSerialized
+   filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-timit-pretrain-kmeans-100-clusters.mod
    overwrite:
    - path: train
      val: null

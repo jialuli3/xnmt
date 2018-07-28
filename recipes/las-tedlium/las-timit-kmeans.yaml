@@ -1,5 +1,5 @@
-las-timit-pretrain-kmeans: !LoadSerialized
-  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-timit-pretrain-kmeans.mod
+las-timit-pretrain-kmeans-acoustic-100-clusters: !LoadSerialized
+  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-timit-pretrain-kmeans-acoustic-100-clusters.mod
   overwrite:
   - path: evaluate
     val:

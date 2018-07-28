@@ -170,16 +170,6 @@ class DefaultTranslator(AutoRegressiveTranslator, Serializable, Reportable, mode
       dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
     rnn_output = dec_state.rnn_state.output()
     dec_state.context = self.attender.calc_context(rnn_output)
-    #############################################################3
-    curr_attention=self.attender.get_last_attention().npvalue()
-    #attention idx dim(src_idx x 1 x batch_idx)
-    targets_frame_idxes=np.argwhere(curr_attention>0.8*np.max(curr_attention))
-    indexes=[targets_frame_idxes[:,0],targets_frame_idxes[:,2]]
-    #print("indexes",indexes)
-    curr_sent=self.attender.curr_sent.as_tensor().npvalue()
-    ht=curr_sent[:,targets_frame_idxes[:,0],targets_frame_idxes[:,2]]
-    #print(ht.shape)
-    #####################################################
     word_loss = self.decoder.calc_loss(dec_state, ref_word)
     return dec_state, word_loss
 
@@ -355,7 +345,6 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
     predict_vocab_index=np.argmax(dy.argmax(word_prob,gradient_mode="zero_gradient").npvalue(),axis=0)
     one_hot_subtract=predict_vocab_index-np.asarray(list(ref_word))
     correct_predicted_batch_index=np.array(np.argwhere(one_hot_subtract == 0)).flatten()
-    #print(correct_predicted_batch_index)
     # Gather attention frames
     if correct_predicted_batch_index.size!=0:
         curr_attention=self.attender.get_last_attention().npvalue()[:,:,correct_predicted_batch_index]
@@ -365,6 +354,30 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
         curr_sent=self.attender.curr_sent.as_tensor().npvalue()
         ht=curr_sent[:,targets_frame_idxes,correct_predicted_batch_index]
     return dec_state, word_loss, np.transpose(ht)
+
+  def calc_loss_one_step_acousitc(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch]) \
+          -> Tuple[AutoRegressiveDecoderState,dy.Expression,np.ndarray]:
+    if input_word is not None:
+      dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
+    rnn_output = dec_state.rnn_state.output()
+    dec_state.context = self.attender.calc_context(rnn_output)
+    ht=[]
+    #Calculate word loss
+    word_loss = self.decoder.calc_loss(dec_state, ref_word)
+    #Get the correct test token
+    word_prob = self.decoder.calc_log_probs(dec_state)
+    predict_vocab_index=np.argmax(dy.argmax(word_prob,gradient_mode="zero_gradient").npvalue(),axis=0)
+    one_hot_subtract=predict_vocab_index-np.asarray(list(ref_word))
+    correct_predicted_batch_index=np.array(np.argwhere(one_hot_subtract == 0)).flatten()
+    # Gather attention frames
+    if correct_predicted_batch_index.size!=0:
+        curr_attention=self.attender.get_last_attention().npvalue()[:,:,correct_predicted_batch_index]
+        #attention idx dim(src_idx x 1 x batch_idx)
+        targets_frame_idxes=np.argmax(curr_attention,axis=0).flatten()
+        #indexes=[targets_frame_idxes[:,0],targets_frame_idxes[:,2]]
+        #curr_sent=self.attender.curr_sent.as_tensor().npvalue()
+        #ht=curr_sent[:,targets_frame_idxes,correct_predicted_batch_index]
+    return dec_state, word_loss, targets_frame_idxes
 
   def calc_loss_one_step_evaluate(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch],) \
           -> Tuple[AutoRegressiveDecoderState,dy.Expression, np.ndarray, int]:

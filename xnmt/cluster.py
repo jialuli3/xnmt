@@ -145,7 +145,8 @@ class KMeans(Cluster, Serializable):
         for i in range(x.shape[0]):
             for j in range(self._n_components):
                 inter_results[i][j]=np.sum(np.square(x[i]-self._centroid[j]))
-        r_ik=np.argmin(inter_results,axis=1);
+        r_ik=np.argmin(inter_results,axis=1)
+        #print("r_ik,",r_ik.shape,r_ik)
         return r_ik
 
     def split_cluster(self):

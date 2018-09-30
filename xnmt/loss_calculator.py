@@ -110,6 +110,7 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
       """
       translator.cluster.split_cluster()
       translator.cluster.initalize_cluster_counting()
+
 #This is for clustering hidden nodes
   def calc_loss(self, translator: 'translator.AutoRegressiveTranslator',
                 initial_state: 'translator.AutoRegressiveDecoderState',
@@ -131,14 +132,14 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
       if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
         dec_state.rnn_state, ref_word = xnmt.batcher.truncate_batches(dec_state.rnn_state, ref_word)
       if self.test_evaluate:
-          dec_state, word_loss, hidden_units_per_frame, curr_att = translator.calc_loss_one_step_evaluate(dec_state, ref_word, input_word)
+          dec_state, word_loss, hidden_units_per_frame, curr_att = translator.calc_loss_one_step_evaluate(dec_state, ref_word, input_word, None)
           atts.append(curr_att)
       else:
           dec_state, word_loss, hidden_units_per_frame = translator.calc_loss_one_step(dec_state, ref_word, input_word)
       #Gather hidden units to cluster for an entire batch
       if hidden_units.size == 0 and hidden_units_per_frame.size:
           hidden_units=hidden_units_per_frame
-      if hidden_units.size and hidden_units_per_frame.size:
+      elif hidden_units.size and hidden_units_per_frame.size:
           hidden_units=np.vstack((hidden_units,hidden_units_per_frame))
       if not self.truncate_dec_batches and xnmt.batcher.is_batched(src) and trg_mask is not None:
         word_loss = trg_mask.cmult_by_timestep_expr(word_loss, i, inverse=True)
@@ -153,6 +154,7 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
             translator.cluster.fit(hidden_units)
         else:
             r_ik_all_hidden=translator.cluster._e_step(np.transpose(translator.attender.curr_sent.as_tensor().npvalue()))
+            print(len(list(r_ik_all_hidden)))
             print("all hidden units frames: "+str(list(r_ik_all_hidden)))
             r_ik=translator.cluster._e_step(hidden_units)
             #print(" ".join([str(x) for x in r_ik]))
@@ -167,68 +169,68 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
       loss_expr = dy.esum([dy.sum_batches(wl) for wl in losses])
     else:
       loss_expr = dy.esum(losses)
-    #return FactoredLossExpr({"mle": loss_expr, "cluster": dy.constant(1,cluster_loss)})
     return FactoredLossExpr({"mle": loss_expr,"cluster":dy.constant(1,cluster_loss)})
 
 #This is for raw acoustic features only
-  def calc_loss(self, translator: 'translator.AutoRegressiveTranslator',
-                initial_state: 'translator.AutoRegressiveDecoderState',
-                src: Union[xnmt.input.Input, 'batcher.Batch'],
-                trg: Union[xnmt.input.Input, 'batcher.Batch']):
-    dec_state = initial_state
-    trg_mask = trg.mask if xnmt.batcher.is_batched(trg) else None
-    losses = []
-    atts=[]
-    hidden_units=np.array([])
-    seq_len = trg.sent_len()
-    if xnmt.batcher.is_batched(src):
-      for j, single_trg in enumerate(trg):
-        assert single_trg.sent_len() == seq_len # assert consistent length
-        assert 1==len([i for i in range(seq_len) if (trg_mask is None or trg_mask.np_arr[j,i]==0) and single_trg[i]==Vocab.ES]) # assert exactly one unmasked ES token
-    input_word = None
-    for i in range(seq_len):
-      ref_word = AutoRegressiveKMeansLoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
-      if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
-        dec_state.rnn_state, ref_word = xnmt.batcher.truncate_batches(dec_state.rnn_state, ref_word)
-      if self.test_evaluate:
-          dec_state, word_loss, hidden_units_per_frame, curr_att = translator.calc_loss_one_step_evaluate(dec_state, ref_word, input_word)
-          atts.append(curr_att)
-      else:
-          dec_state, word_loss, targets_frame_idxes = translator.calc_loss_one_step_acousitc(dec_state, ref_word, input_word)
-      #Gather hidden units to cluster for an entire batch
-      if hidden_units.size == 0 and hidden_units_per_frame.size:
-          hidden_units=hidden_units_per_frame
-      if hidden_units.size and hidden_units_per_frame.size:
-          hidden_units=np.vstack((hidden_units,hidden_units_per_frame))
-      if not self.truncate_dec_batches and xnmt.batcher.is_batched(src) and trg_mask is not None:
-        word_loss = trg_mask.cmult_by_timestep_expr(word_loss, i, inverse=True)
-      losses.append(word_loss)
-      input_word = ref_word
-    # Perform cluster for all frames in the batch
-    print("There are "+str(hidden_units.shape)+" hidden units.")
-    hidden_units=np.asarray(hidden_units)
-    cluster_loss=0
-    if hidden_units.size:
-        if not self.dev_evaluate and not self.test_evaluate:
-            translator.cluster.fit(hidden_units)
-        else:
-            r_ik_all_hidden=translator.cluster._e_step(np.transpose(translator.attender.curr_sent.as_tensor().npvalue()))
-            print("all hidden units frames: "+str(list(r_ik_all_hidden)))
-            r_ik=translator.cluster._e_step(hidden_units)
-            #print(" ".join([str(x) for x in r_ik]))
-            print("attention frames: "+str(list(r_ik)))
-            print("attention indexes: "+str(atts))
-            #attention_frames=np.take(r_ik_all_hidden,atts)
-            #print(" ".join([str(x) for x in attention_frames]))
-        cluster_loss=translator.cluster.calc_loss(hidden_units)
-        print("Current cluster loss is "+ str(cluster_loss))
-
-    if self.truncate_dec_batches:
-      loss_expr = dy.esum([dy.sum_batches(wl) for wl in losses])
-    else:
-      loss_expr = dy.esum(losses)
-    #return FactoredLossExpr({"mle": loss_expr, "cluster": dy.constant(1,cluster_loss)})
-    return FactoredLossExpr({"mle": loss_expr,"cluster":dy.constant(1,cluster_loss)})
+  # def calc_loss(self, translator: 'translator.AutoRegressiveTranslator',
+  #               initial_state: 'translator.AutoRegressiveDecoderState',
+  #               src: Union[xnmt.input.Input, 'batcher.Batch'],
+  #               trg: Union[xnmt.input.Input, 'batcher.Batch']):
+  #   dec_state = initial_state
+  #   trg_mask = trg.mask if xnmt.batcher.is_batched(trg) else None
+  #   losses = []
+  #   atts=[]
+  #   acoustics_src=np.asarray([x.get_array() for x in src])
+  #   acoustics=np.asarray([])
+  #   seq_len = trg.sent_len()
+  #   if xnmt.batcher.is_batched(src):
+  #     for j, single_trg in enumerate(trg):
+  #       assert single_trg.sent_len() == seq_len # assert consistent length
+  #       assert 1==len([i for i in range(seq_len) if (trg_mask is None or trg_mask.np_arr[j,i]==0) and single_trg[i]==Vocab.ES]) # assert exactly one unmasked ES token
+  #   input_word = None
+  #   for i in range(seq_len):
+  #     ref_word = AutoRegressiveKMeansLoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
+  #     if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
+  #       dec_state.rnn_state, ref_word = xnmt.batcher.truncate_batches(dec_state.rnn_state, ref_word)
+  #     if self.test_evaluate:
+  #         dec_state, word_loss, acoustics_per_frame, curr_att = translator.calc_loss_one_step_evaluate(dec_state, ref_word, input_word, acoustics_src)
+  #         atts.append(curr_att)
+  #     else:
+  #         dec_state, word_loss, acoustics_per_frame = translator.calc_loss_one_step(dec_state, ref_word, input_word, acoustics_src)
+  #     #Gather hidden units to cluster for an entire batch
+  #     acoustics_per_frame=np.asarray(acoustics_per_frame)
+  #     if acoustics.size == 0 and acoustics_per_frame.size:
+  #         acoustics=acoustics_per_frame
+  #     elif acoustics.size and acoustics_per_frame.size:
+  #         acoustics=np.vstack((acoustics,acoustics_per_frame))
+  #     if not self.truncate_dec_batches and xnmt.batcher.is_batched(src) and trg_mask is not None:
+  #       word_loss = trg_mask.cmult_by_timestep_expr(word_loss, i, inverse=True)
+  #     losses.append(word_loss)
+  #     input_word = ref_word
+  #   # Perform cluster for all frames in the batch
+  #   cluster_loss=0
+  #   print("There are "+str(acoustics.shape)+" acoustic units.")
+  #   if acoustics.size:
+  #       if not self.dev_evaluate and not self.test_evaluate:
+  #           translator.cluster.fit(acoustics)
+  #       else:
+  #           r_ik_all_hidden=translator.cluster._e_step(acoustics_src)
+  #           print("all hidden units frames: "+str(list(r_ik_all_hidden)))
+  #           r_ik=translator.cluster._e_step(acoustics)
+  #           #print(" ".join([str(x) for x in r_ik]))
+  #           print("attention frames: "+str(list(r_ik)))
+  #           print("attention indexes: "+str(atts))
+  #           #attention_frames=np.take(r_ik_all_hidden,atts)
+  #           #print(" ".join([str(x) for x in attention_frames]))
+  #       cluster_loss=translator.cluster.calc_loss(acoustics)
+  #       print("Current cluster loss is "+ str(cluster_loss))
+  #
+  #   if self.truncate_dec_batches:
+  #     loss_expr = dy.esum([dy.sum_batches(wl) for wl in losses])
+  #   else:
+  #     loss_expr = dy.esum(losses)
+  #   #return FactoredLossExpr({"mle": loss_expr, "cluster": dy.constant(1,cluster_loss)})
+  #   return FactoredLossExpr({"mle": loss_expr,"cluster":dy.constant(1,cluster_loss)})
 
   @staticmethod
   def _select_ref_words(sent, index, truncate_masked = False):

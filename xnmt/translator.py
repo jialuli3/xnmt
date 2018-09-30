@@ -331,7 +331,7 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
 
     return model_loss
 
-  def calc_loss_one_step(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch],) \
+  def calc_loss_one_step(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch], acoustics:Optional[np.ndarray]) \
           -> Tuple[AutoRegressiveDecoderState,dy.Expression, np.ndarray]:
     if input_word is not None:
       dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
@@ -350,36 +350,20 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
         curr_attention=self.attender.get_last_attention().npvalue()[:,:,correct_predicted_batch_index]
         #attention idx dim(src_idx x 1 x batch_idx)
         targets_frame_idxes=np.argmax(curr_attention,axis=0).flatten()
-        #indexes=[targets_frame_idxes[:,0],targets_frame_idxes[:,2]]
-        curr_sent=self.attender.curr_sent.as_tensor().npvalue()
-        ht=curr_sent[:,targets_frame_idxes,correct_predicted_batch_index]
-    return dec_state, word_loss, np.transpose(ht)
+        #print("targets frame",targets_frame_idxes,"correct_predicted_batch_index",correct_predicted_batch_index)
+        #print("source length",acoustics.shape)
+        if acoustics is None:
+            curr_sent=self.attender.curr_sent.as_tensor().npvalue()
+            ht=np.transpose(curr_sent[:,targets_frame_idxes,correct_predicted_batch_index])
+        else:
+            max_acoustics_len=acoustics.shape[0]
+            targets_frame_idxes=np.asarray([list(range(x,min(x+8,max_acoustics_len))) for x in targets_frame_idxes])
+            total_indexes=np.column_stack((targets_frame_idxes,correct_predicted_batch_index))
+            ht=acoustics[total_indexes[:,:-1],:,np.reshape(total_indexes[:,-1],(-1,1))]
+            ht=np.transpose(np.reshape(ht,(40,-1)))
+    return dec_state, word_loss, ht
 
-  def calc_loss_one_step_acousitc(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch]) \
-          -> Tuple[AutoRegressiveDecoderState,dy.Expression,np.ndarray]:
-    if input_word is not None:
-      dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
-    rnn_output = dec_state.rnn_state.output()
-    dec_state.context = self.attender.calc_context(rnn_output)
-    ht=[]
-    #Calculate word loss
-    word_loss = self.decoder.calc_loss(dec_state, ref_word)
-    #Get the correct test token
-    word_prob = self.decoder.calc_log_probs(dec_state)
-    predict_vocab_index=np.argmax(dy.argmax(word_prob,gradient_mode="zero_gradient").npvalue(),axis=0)
-    one_hot_subtract=predict_vocab_index-np.asarray(list(ref_word))
-    correct_predicted_batch_index=np.array(np.argwhere(one_hot_subtract == 0)).flatten()
-    # Gather attention frames
-    if correct_predicted_batch_index.size!=0:
-        curr_attention=self.attender.get_last_attention().npvalue()[:,:,correct_predicted_batch_index]
-        #attention idx dim(src_idx x 1 x batch_idx)
-        targets_frame_idxes=np.argmax(curr_attention,axis=0).flatten()
-        #indexes=[targets_frame_idxes[:,0],targets_frame_idxes[:,2]]
-        #curr_sent=self.attender.curr_sent.as_tensor().npvalue()
-        #ht=curr_sent[:,targets_frame_idxes,correct_predicted_batch_index]
-    return dec_state, word_loss, targets_frame_idxes
-
-  def calc_loss_one_step_evaluate(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch],) \
+  def calc_loss_one_step_evaluate(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch], acoustics:Optional[np.ndarray]) \
           -> Tuple[AutoRegressiveDecoderState,dy.Expression, np.ndarray, int]:
     if input_word is not None:
       dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
@@ -390,10 +374,15 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
     # Gather attention frames
     curr_attention=self.attender.get_last_attention().npvalue()
     targets_frame_idxes=np.argmax(curr_attention)
-    curr_sent=self.attender.curr_sent.as_tensor().npvalue()
-    #print(curr_attention.shape,curr_sent.shape,targets_frame_idxes.shape)
-    ht=curr_sent[:,targets_frame_idxes]
-    return dec_state, word_loss, np.transpose(ht),targets_frame_idxes
+    if acoustics is None:
+        curr_sent=self.attender.curr_sent.as_tensor().npvalue()
+        ht=curr_sent[:,targets_frame_idxes]
+    else:
+        max_acoustics_len=acoustics.shape[0]
+        targets_frame_idxes=np.asarray(list(range(targets_frame_idxes,min(targets_frame_idxes+8,max_acoustics_len))))
+        ht=acoustics[targets_frame_idxes,:]
+        ht=np.transpose(np.reshape(ht,(40,-1)))
+    return dec_state, word_loss, np.transpose(ht), targets_frame_idxes
 
   def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
     if src.batch_size()!=1:

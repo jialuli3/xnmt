@@ -6,30 +6,31 @@
 # strategies.
 exp1-multi_task: !Experiment
   exp_global: !ExpGlobal
-    model_file: examples/output/{EXP}.mod
-    log_file: examples/output/{EXP}.log
+    model_file: /home/jialu/xnmt/examples/output/{EXP}.mod
+    log_file: /home/jialu/xnmt/examples/output/{EXP}.log
     default_layer_dim: 64
-  train: !SameBatchMultiTaskTrainingRegimen
+  #train: !SameBatchMultiTaskTrainingRegimen
+  train: !AlternatingBatchMultiTaskTrainingRegimen
     trainer: !AdamTrainer {}
-    n_task_steps: [2,1]
+    #n_task_steps: [2,1]
     tasks:
     - !SimpleTrainingTask # first task is the main task: it will control early stopping, learning rate schedule, model checkpoints, ..
       name: first_task
-      run_for_epochs: 6
+      run_for_epochs: 10
       batcher: !SrcBatcher
         batch_size: 6
-      src_file: examples/data/head.ja
-      trg_file: examples/data/head.en
+      src_file: /home/jialu/xnmt/examples/data/head.ja
+      trg_file: /home/jialu/xnmt/examples/data/head.en
       model: !DefaultTranslator
         _xnmt_id: first_task_model
         src_reader: !PlainTextReader
           vocab: !Vocab
             _xnmt_id: src_vocab
-            vocab_file: examples/data/head.ja.vocab
+            vocab_file: /home/jialu/xnmt/examples/data/head.ja.vocab
         trg_reader: !PlainTextReader
           vocab: !Vocab
             _xnmt_id: trg_vocab
-            vocab_file: examples/data/head.en.vocab
+            vocab_file: /home/jialu/xnmt/examples/data/head.en.vocab
         src_embedder: !SimpleWordEmbedder
           emb_dim: 64
           vocab: !Ref {name: src_vocab}
@@ -53,16 +54,17 @@ exp1-multi_task: !Experiment
       dev_tasks:
         - !AccuracyEvalTask
           model: !Ref { name: first_task_model }
-          src_file: &first_task_dev_src examples/data/head.ja  # value-sharing between first task dev and final eval
-          ref_file: &first_task_dev_trg examples/data/head.en  # value-sharing between first task dev and final eval
-          hyp_file: examples/output/{EXP}.first_dev_hyp
+          src_file: &first_task_dev_src /home/jialu/xnmt/examples/data/head.ja  # value-sharing between first task dev and final eval
+          ref_file: &first_task_dev_trg /home/jialu/xnmt/examples/data/head.en  # value-sharing between first task dev and final eval
+          hyp_file: /home/jialu/xnmt/examples/output/{EXP}.first_dev_hyp
           eval_metrics: bleu # tasks can specify different dev_metrics
     - !SimpleTrainingTask
       name: second_task
+      run_for_epochs: 10
       batcher: !SrcBatcher
         batch_size: 6
-      src_file: examples/data/head.ja
-      trg_file: examples/data/head.en
+      src_file: /home/jialu/xnmt/examples/data/head.ja
+      trg_file: /home/jialu/xnmt/examples/data/head.en
       model: !DefaultTranslator
         _xnmt_id: second_task_model
         src_reader: !PlainTextReader
@@ -87,9 +89,9 @@ exp1-multi_task: !Experiment
       dev_tasks:
         - !AccuracyEvalTask
           model: !Ref { name: second_task_model }
-          src_file: examples/data/head.ja
-          ref_file: examples/data/head.en
-          hyp_file: examples/output/{EXP}.second_dev_hyp
+          src_file: /home/jialu/xnmt/examples/data/head.ja
+          ref_file: /home/jialu/xnmt/examples/data/head.en
+          hyp_file: /home/jialu/xnmt/examples/output/{EXP}.second_dev_hyp
           eval_metrics: gleu # tasks can specify different dev_metrics
   evaluate:
     - !AccuracyEvalTask
@@ -97,7 +99,7 @@ exp1-multi_task: !Experiment
       eval_metrics: bleu
       src_file: *first_task_dev_src
       ref_file: *first_task_dev_trg
-      hyp_file: examples/output/{EXP}.test_hyp
+      hyp_file: /home/jialu/xnmt/examples/output/{EXP}.test_hyp
 
-exp2-finetune-model: !LoadSerialized
-  filename: examples/output/exp1-multi_task.mod
+#exp2-finetune-model: !LoadSerialized
+#  filename: /home/jialu/xnmt/examples/output/exp1-multi_task.mod

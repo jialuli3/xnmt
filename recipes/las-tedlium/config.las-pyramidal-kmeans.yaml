@@ -1,4 +1,4 @@
-las-pyramidal-kmeans-debug: !Experiment
+las-pyramidal-kmeans-acoustics-debug: !Experiment
   exp_global: !ExpGlobal
     dropout: 0.3
     default_layer_dim: 512
@@ -48,7 +48,7 @@ las-pyramidal-kmeans-debug: !Experiment
       vocab: !Vocab
         vocab_file: '{EXP_DIR}/vocab.char'
     cluster: !KMeans
-      n_dims: 512
+      n_dims: 40
       n_components: 100
       max_iter: 20
   train: !SimpleTrainingRegimen
@@ -73,33 +73,33 @@ las-pyramidal-kmeans-debug: !Experiment
     initial_patience: 15
     dev_every: 0
     restart_trainer: True
-    # dev_tasks:
-    #   - !AccuracyEvalTask
-    #     eval_metrics: wer,cer
-    #     src_file: &dev_src '{DATA_DIR}/dev.h5'
-    #     ref_file: '{DATA_DIR}/dev.words'
-    #     hyp_file: '{EXP_DIR}/logs/{EXP}.dev_hyp'
-    #     inference: !AutoRegressiveInference
-    #       batcher: !InOrderBatcher
-    #         batch_size: 1
-    #         pad_src_to_multiple: 8
-    #         src_pad_token: ~
-    #       max_src_len: 1500
-    #       post_process: join-char
-    #       search_strategy: !BeamSearch
-    #         max_len: 500
-    #         beam_size: 20
-    #         len_norm: !PolynomialNormalization
-    #           apply_during_search: true
-    #           m: 1.5
-    #   - !LossEvalTask
-    #     loss_calculator: !AutoRegressiveKMeansLoss
-    #       truncate_dec_batches: false
-    #       dev_evaluate: true
-    #       test_evaluate: false
-    #     max_src_len: 1500
-    #     src_file: *dev_src
-    #     ref_file: '{DATA_DIR}/dev.char'
+    dev_tasks:
+      - !AccuracyEvalTask
+        eval_metrics: wer,cer
+        src_file: &dev_src '{DATA_DIR}/dev.h5'
+        ref_file: '{DATA_DIR}/dev.words'
+        hyp_file: '{EXP_DIR}/logs/{EXP}.dev_hyp'
+        inference: !AutoRegressiveInference
+          batcher: !InOrderBatcher
+            batch_size: 1
+            pad_src_to_multiple: 8
+            src_pad_token: ~
+          max_src_len: 1500
+          post_process: join-char
+          search_strategy: !BeamSearch
+            max_len: 500
+            beam_size: 20
+            len_norm: !PolynomialNormalization
+              apply_during_search: true
+              m: 1.5
+      - !LossEvalTask
+        loss_calculator: !AutoRegressiveKMeansLoss
+          truncate_dec_batches: false
+          dev_evaluate: true
+          test_evaluate: false
+        max_src_len: 1500
+        src_file: *dev_src
+        ref_file: '{DATA_DIR}/dev.char'
   evaluate:
     - !AccuracyEvalTask
       eval_metrics: wer,cer
@@ -126,4 +126,4 @@ las-pyramidal-kmeans-debug: !Experiment
         test_evaluate: true
       max_src_len: 1500
       src_file: '{DATA_DIR}/test.h5'
-      ref_file: '{DATA_DIR}/dev.char'
+      ref_file: '{DATA_DIR}/test.char'

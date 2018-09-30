@@ -1,0 +1,7 @@
+running XNMT revision 429c2ef on jialu-desktop on 2018-09-30 15:35:10
+initialized exp_global.param_init: GlorotInitializer@140089124958616({})
+initialized exp_global.bias_init: ZeroInitializer@140089124960968({})
+initialized exp_global: ExpGlobal@140089124959064({'model_file': 'examples/output/exp1-multi_task.mod', 'log_file': 'examples/output/exp1-multi_task.log', 'dropout': 0.3, 'weight_noise': 0.0, 'default_layer_dim': 64, 'param_init': GlorotInitializer@140089124845216, 'bias_init': ZeroInitializer@140089124846224, 'truncate_dec_batches': False, 'loss_comb_method': 'sum', 'compute_report': False, 'commandline_args': {'dynet_mem': None, 'dynet_seed': None, 'dynet_autobatch': None, 'dynet_devices': None, 'dynet_viz': False, 'dynet_gpu': True, 'dynet_gpu_ids': None, 'dynet_gpus': None, 'dynet_weight_decay': None, 'dynet_profiling': None, 'settings': 'standard', 'experiments_file': '12_multi_task.yaml', 'experiment_name': [], 'generate_doc': False}})
+ERROR: ERROR: ------ Error Report ------
+ERROR: ERROR: *** yaml_path ***
+ERROR: ERROR: train.tasks.0.model.src_reader.vocab

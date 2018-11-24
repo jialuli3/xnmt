@@ -1,5 +1,5 @@
 las-timit-pretrain-kmeans-acoustic-100-clusters: !LoadSerialized
-  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-timit-pretrain-kmeans-acoustic-100-clusters.mod
+  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-timit-pretrain-kmeans-100-clusters.mod
   overwrite:
   - path: evaluate
     val:
@@ -43,7 +43,7 @@ las-timit-pretrain-kmeans-acoustic-100-clusters: !LoadSerialized
       trg_file: '{DATA_DIR}/train.char'
       max_src_len: 1500
       max_trg_len: 350
-      run_for_epochs: 50
+      run_for_epochs: 1
       batcher: !WordSrcBatcher
         avg_batch_size: 210
         pad_src_to_multiple: 8

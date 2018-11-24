@@ -4,7 +4,7 @@
 #tedliumdir= { set to /some/location/TEDLIUM_release2, the location the TEDLIUM corpus was unzipped to }
 #datadir= { set to a location with sufficient free space, and adjust the DATA_DIR in config.las-pyramidal.yaml accordingly }
 
-mandarindir=/home/jialu/mandarin_dataset/disk1
+mandarindir=/home/jialu/mandarin_dataset/97_man_bcast_news_hub4_Sp
 datadir=/home/jialu/mandarin_dataset
 
 ##### convert to .wav #######

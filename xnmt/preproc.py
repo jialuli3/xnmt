@@ -236,7 +236,7 @@ class SentencepieceTokenizer(Tokenizer, Serializable):
       Please refer to the sentencepiece documentation for more details
     - ``model_prefix``: The trained bpe model will be saved under ``{model_prefix}.model``/``.vocab``
     - ``vocab_size``: fixes the vocabulary size
-    - ``hard_vocab_limit``: setting this to ``False`` will make the vocab size a soft limit. 
+    - ``hard_vocab_limit``: setting this to ``False`` will make the vocab size a soft limit.
       Useful for small datasets. This is ``True`` by default.
   """
 
@@ -281,13 +281,13 @@ class SentencepieceTokenizer(Tokenizer, Serializable):
         self.overwrite):
       # This calls sentencepiece. It's pretty verbose
       spm.SentencePieceTrainer.Train(' '.join(self.sentpiece_train_args))
-    
+
     self.sentpiece_processor = spm.SentencePieceProcessor()
     self.sentpiece_processor.Load('%s.model' % self.model_prefix)
 
     self.sentpiece_encode = self.sentpiece_processor.EncodeAsPieces if self.output_format == 'piece' else self.sentpiece_processor.EncodeAsIds
 
-  
+
   def tokenize(self, sent):
     """Tokenizes a single sentence into pieces."""
     if self.sentpiece_processor is None:
@@ -511,7 +511,13 @@ class MelFiltExtractor(Extractor, Serializable):
         db_by_speaker[speaker_id].append(db_item)
       for speaker_id in db_by_speaker.keys():
         data = []
+        print(speaker_id)
+        #if speaker_id!="mv970520b.wav":
+        #    continue
         for db_item in db_by_speaker[speaker_id]:
+          #if db_item["index"]!=1592:
+            #continue
+          print(db_item)
           y, sr = librosa.load(db_item["wav"], sr=16000,
                                offset=db_item.get("offset", 0.0),
                                duration=db_item.get("duration", None))

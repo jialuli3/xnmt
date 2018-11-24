@@ -89,7 +89,8 @@ class BaseTextReader(InputReader):
     if filter_ids is not None:
       max_id = max(filter_ids)
       filter_ids = set(filter_ids)
-    with open(filename, encoding='utf-8') as f:
+    #with open(filename, encoding='utf-8') as f:
+    with open(filename, encoding='GBK') as f:
       for line in f:
         if filter_ids is None or sent_count in filter_ids:
           yield self.read_sent(line)
@@ -175,7 +176,7 @@ class SentencePieceTextReader(BaseTextReader, Serializable):
   """
   Read in text and segment it with sentencepiece. Optionally perform sampling
   for subword regularization, only at training time.
-  https://arxiv.org/pdf/1804.10959.pdf 
+  https://arxiv.org/pdf/1804.10959.pdf
   """
   yaml_tag = '!SentencePieceTextReader'
 
@@ -237,7 +238,7 @@ class SentencePieceTextReader(BaseTextReader, Serializable):
 
 class SegmentationTextReader(PlainTextReader):
   yaml_tag = '!SegmentationTextReader'
-  
+
   # TODO: document me
 
   @serializable_init
@@ -409,7 +410,7 @@ class NpzReader(InputReader, Serializable):
 class IDReader(BaseTextReader, Serializable):
   """
   Handles the case where we need to read in a single ID (like retrieval problems).
-  
+
   Files must be text files containing a single integer per line.
   """
   yaml_tag = "!IDReader"

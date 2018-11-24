@@ -1,0 +1,20 @@
+preprocess: !Experiment
+  exp_global: !ExpGlobal
+    dropout: 0.2
+    default_layer_dim: 512
+    placeholders:
+      #DATA_DIR: /home/jialu/tedlium/tedlium2
+      DATA_DIR: /home/jialu/mandarin_dataset/data
+  preproc: !PreprocRunner
+    overwrite: True
+    tasks:
+    - !PreprocExtract
+      in_files:
+      - '{DATA_DIR}/train.yaml'
+      - '{DATA_DIR}/test.yaml'
+      #- '{DATA_DIR}/dev.yaml'
+      out_files:
+      - '{DATA_DIR}/train.h5'
+      - '{DATA_DIR}/test.h5'
+      #- '{DATA_DIR}/dev.h5'
+      specs: !MelFiltExtractor {}

@@ -122,8 +122,8 @@ class KMeans(Cluster, Serializable):
         for i in range(x.shape[0]):
             for j in range(self._n_components):
                 inter_results[i][j]=np.sum(np.square(x[i]-self._centroid[j]))
-        loss= np.sum(np.min(inter_results,axis=1))/x.shape[0]
-        #loss = np.sum(np.min(inter_results,axis=1))
+        #loss= np.sum(np.min(inter_results,axis=1))/x.shape[0]
+        loss = np.sum(np.min(inter_results,axis=1))
         return loss
 
     def get_posterior(self, x):

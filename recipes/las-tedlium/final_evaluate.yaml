@@ -9,6 +9,7 @@ las-timit-evaluate-kmeans-100-clusters: !LoadSerialized
           desc: null
           eval_metrics: wer,cer
           hyp_file: '{EXP_DIR}/logs/{EXP}.test_hyp'
+          #hyp_file: '{EXP_DIR}/logs/{EXP}.test_5_sentences_hyp'
           inference: !AutoRegressiveInference
             batcher: !InOrderBatcher
               batch_size: 1
@@ -31,6 +32,8 @@ las-timit-evaluate-kmeans-100-clusters: !LoadSerialized
           model: !Ref {default: 1928437192847, name: null, path: model}
           ref_file: '{DATA_DIR}/test.words'
           src_file: '{DATA_DIR}/test.h5'
+          #ref_file: '{DATA_DIR}/test_5_sentences.words'
+          #src_file: '{DATA_DIR}/test_5_sentences.h5'
       - !LossEvalTask
         loss_calculator: !AutoRegressiveKMeansLoss
           truncate_dec_batches: false
@@ -39,6 +42,8 @@ las-timit-evaluate-kmeans-100-clusters: !LoadSerialized
         max_src_len: 1500
         src_file: '{DATA_DIR}/test.h5'
         ref_file: '{DATA_DIR}/test.char'
+        #src_file: '{DATA_DIR}/test_5_sentences.h5'
+        #ref_file: '{DATA_DIR}/test_5_sentences.char'
         batcher: !InOrderBatcher
           batch_size: 1
           pad_src_to_multiple: 8

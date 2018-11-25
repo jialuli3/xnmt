@@ -1,16 +1,20 @@
-las-pyramidal-multilingual-sequence1: !LoadSerialized
-  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-pyramidal-multilingual-sequence0.mod
+las-pyramidal-multilingual-sequence3: !LoadSerialized
+  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-pyramidal-multilingual-sequence2.mod
   overwrite:
+   - path: evaluate
+     val: null
    - path: train.tasks.0.src_file
-     val: '{ENG_DATA_DIR}/feat/train1.h5'
+     val: '{ENG_DATA_DIR}/feat/train3.h5'
    - path: train.tasks.0.trg_file
-     val: '{ENG_DATA_DIR}/transcript/train1.char'
+     val: '{ENG_DATA_DIR}/transcript/train3.char'
    - path: train.tasks.1.src_file
-     val: '{CHI_DATA_DIR}/train1.h5'
+     val: '{CHI_DATA_DIR}/train3.h5'
    - path: train.tasks.1.trg_file
-     val: '{CHI_DATA_DIR}/train1.char'
-   - path: train.dev_zero
-     val: false
+     val: '{CHI_DATA_DIR}/train3.char'
+   # - path: train.tasks.0.batcher.avg_batch_size
+   #   val: 65
+   # - path: train.tasks.1.batcher.avg_batch_size
+   #   val: 65
    # - path: train
    #   val: !SameBatchMultiTaskTrainingRegimen
    #    trainer: !AdamTrainer {alpha: 0.001}

@@ -22,7 +22,7 @@ class Vocab(Serializable):
   UNK_STR = "<unk>"
 
   @serializable_init
-  def __init__(self, encoding_option="GBK", i2w=None, vocab_file=None, sentencepiece_vocab=False):
+  def __init__(self, encoding_option="utf-8", i2w=None, vocab_file=None, sentencepiece_vocab=False):
     assert i2w is None or vocab_file is None
     if vocab_file:
       i2w = Vocab.i2w_from_vocab_file(vocab_file, encoding_option, sentencepiece_vocab)

@@ -106,7 +106,7 @@ def main(overwrite_args=None):
       print_results(results)
 
       tee.unset_out_file()
-    
+
 def print_results(results):
   print("")
   print("{:<30}|{:<40}".format("Experiment", " Final Scores"))
@@ -115,7 +115,7 @@ def print_results(results):
   for experiment_name, eval_scores in results:
     for i in range(len(eval_scores)):
       print("{:<30}| {:<40}".format((experiment_name if i==0 else ""), str(eval_scores[i])))
-  
+
 
 if __name__ == '__main__':
   sys.exit(main())

@@ -63,6 +63,8 @@ class ParamManager(object):
         if os.path.isfile(data_file):
           ParamManager.param_col.load_subcol_from_data_file(subcol_name, data_file)
           populated_subcols.append(subcol_name)
+    #print(populated_subcols)
+    #print(ParamManager.param_col.subcols)
     if len(ParamManager.param_col.subcols) == len(populated_subcols):
       logger.info(f"> populated DyNet weights of all components from given data files")
     elif len(populated_subcols)==0:

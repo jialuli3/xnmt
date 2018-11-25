@@ -1,0 +1,1 @@
+epoch number 2 learning rate 0.01 sequence 2

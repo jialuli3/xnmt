@@ -8,7 +8,7 @@ from typing import Any, Optional, Sequence, Tuple, Union
 from xnmt.settings import settings
 from xnmt.attender import Attender, MlpAttender
 from xnmt.batcher import Batch, mark_as_batch, is_batched, Mask
-from xnmt.cluster import Cluster,KMeans
+from xnmt.cluster import Cluster, ClusterAdapt,KMeans
 from xnmt.decoder import Decoder, AutoRegressiveDecoder, AutoRegressiveDecoderState
 from xnmt.embedder import Embedder, SimpleWordEmbedder
 from xnmt.events import register_xnmt_event_assign, handle_xnmt_event, register_xnmt_handler
@@ -135,6 +135,9 @@ class DefaultTranslator(AutoRegressiveTranslator, Serializable, Reportable, mode
     embeddings = self.src_embedder.embed_sent(src)
     encodings = self.encoder.transduce(embeddings)
     self.attender.init_sent(encodings)
+    #print(encodings.dim())
+    #print(encodings[0])
+    #print(encodings.dim()[0],encodings.dim()[1])
     if is_batched(src):
       ss = mark_as_batch([Vocab.SS] * src.batch_size())
     else:
@@ -171,6 +174,7 @@ class DefaultTranslator(AutoRegressiveTranslator, Serializable, Reportable, mode
     rnn_output = dec_state.rnn_state.output()
     dec_state.context = self.attender.calc_context(rnn_output)
     word_loss = self.decoder.calc_loss(dec_state, ref_word)
+    #print(dy.pick_batch_elems(rnn_output,[0,2,3]).dim())
     return dec_state, word_loss
 
   def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
@@ -192,6 +196,7 @@ class DefaultTranslator(AutoRegressiveTranslator, Serializable, Reportable, mode
                                                      src_length=[sent.sent_len()],
                                                      forced_trg_ids=cur_forced_trg)
     sorted_outputs = sorted(search_outputs, key=lambda x: x.score[0], reverse=True)
+    #print("sorted_outputs",sorted_outputs)
     assert len(sorted_outputs) >= 1
     for curr_output in sorted_outputs:
       output_actions = [x for x in curr_output.word_ids[0]]
@@ -215,7 +220,7 @@ class DefaultTranslator(AutoRegressiveTranslator, Serializable, Reportable, mode
                                 "src_vocab": getattr(self.src_reader, "vocab", None),
                                 "trg_vocab": getattr(self.trg_reader, "vocab", None),
                                 "output": outputs[0]})
-
+    #print(outputs)
     return outputs
 
   def generate_one_step(self, current_word: Any, current_state: AutoRegressiveDecoderState) -> TranslatorOutput:
@@ -231,6 +236,193 @@ class DefaultTranslator(AutoRegressiveTranslator, Serializable, Reportable, mode
     next_state.context = self.attender.calc_context(next_state.rnn_state.output())
     next_logsoftmax = self.decoder.calc_log_probs(next_state)
     return TranslatorOutput(next_state, next_logsoftmax, self.attender.get_last_attention())
+
+  def global_fertility(self, a):
+    return dy.sum_elems(dy.square(1 - dy.esum(a)))
+
+  def attention_entropy(self, a):
+    entropy = []
+    for a_i in a:
+      a_i += EPSILON
+      entropy.append(dy.cmult(a_i, dy.log(a_i)))
+
+    return -dy.sum_elems(dy.esum(entropy))
+
+class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportable, model_base.EventTrigger):
+  """
+  A default translator based on attentional sequence-to-sequence models.
+
+  Args:
+    src_reader: A reader for the source side.
+    trg_reader: A reader for the target side.
+    src_embedder: A word embedder for the input language
+    encoder: An encoder to generate encoded inputs
+    attender_in2cluster: An attention module for computing attention_input2clutser
+    attender_out2in: An attention module for computing attention_output2input
+    trg_embedder: A word embedder for the output language
+    decoder: A decoder
+    inference: The default inference strategy used for this model
+    search_strategy:
+    calc_global_fertility:
+    calc_attention_entropy:
+  """
+
+  yaml_tag = '!DefaultClusterTranslator'
+
+  @register_xnmt_handler
+  @serializable_init
+  def __init__(self,
+               src_reader: input_reader.InputReader,
+               trg_reader: input_reader.InputReader,
+               src_embedder: Embedder=bare(SimpleWordEmbedder),
+               encoder: transducer.SeqTransducer=bare(BiLSTMSeqTransducer),
+               attender_out2in: Attender=bare(MlpAttender),
+               cluster: Cluster=bare(ClusterAdapt),
+               trg_embedder: Embedder=bare(SimpleWordEmbedder),
+               decoder: Decoder=bare(AutoRegressiveDecoder),
+               inference: xnmt.inference.AutoRegressiveInference=bare(xnmt.inference.AutoRegressiveInference),
+               search_strategy:SearchStrategy=bare(BeamSearch),
+               compute_report:bool = Ref("exp_global.compute_report", default=False),
+               calc_global_fertility:bool=False,
+               calc_attention_entropy:bool=False):
+    super().__init__(src_reader=src_reader, trg_reader=trg_reader)
+    self.src_embedder = src_embedder
+    self.encoder = encoder
+    self.attender_out2in = attender_out2in
+    self.cluster=cluster
+    self.trg_embedder = trg_embedder
+    self.decoder = decoder
+    self.calc_global_fertility = calc_global_fertility
+    self.calc_attention_entropy = calc_attention_entropy
+    self.inference = inference
+    self.search_strategy = search_strategy
+    self.compute_report = compute_report
+    self.decoder_vectors= []
+
+  def shared_params(self):
+    return [{".src_embedder.emb_dim", ".encoder.input_dim"},
+            {".encoder.hidden_dim", ".attender.input_dim", ".decoder.input_dim"},
+            {".attender.state_dim", ".decoder.rnn.hidden_dim"},
+            {".trg_embedder.emb_dim", ".decoder.trg_embed_dim"}]
+
+  def _encode_src(self, src):
+    embeddings = self.src_embedder.embed_sent(src)
+    encodings = self.encoder.transduce(embeddings)
+    self.attender_out2in.init_sent(encodings) #encodings are the input hidden nodes vector
+    self.cluster.input_hidden_nodes=encodings
+    #self.cluster.initalize_cluster_counting()
+    self.cluster.init_attender_cluster()
+    self.cluster.calc_attention_in2cluster()
+
+    if is_batched(src):
+      ss = mark_as_batch([Vocab.SS] * src.batch_size())
+    else:
+      ss = Vocab.SS
+    initial_state = self.decoder.initial_state(self.encoder.get_final_states(), self.trg_embedder.embed(ss))
+    return initial_state
+
+  def calc_loss(self, src, trg, loss_calculator):
+    self.start_sent(src)
+    initial_state = self._encode_src(src)
+    # Compose losses
+    model_loss = FactoredLossExpr()
+    model_loss.add_factored_loss_expr(loss_calculator.calc_loss(self, initial_state, src, trg))
+
+    if self.calc_global_fertility or self.calc_attention_entropy:
+      # philip30: I assume that attention_vecs is already masked src wisely.
+      # Now applying the mask to the target
+      masked_attn = self.attender_out2in.attention_vecs
+      if trg.mask is not None:
+        trg_mask = trg.mask.get_active_one_mask().transpose()
+        masked_attn = [dy.cmult(attn, dy.inputTensor(mask, batched=True)) for attn, mask in zip(masked_attn, trg_mask)]
+
+    if self.calc_global_fertility:
+      model_loss.add_loss("fertility", self.global_fertility(masked_attn))
+    if self.calc_attention_entropy:
+      model_loss.add_loss("H(attn)", self.attention_entropy(masked_attn))
+
+    return model_loss
+
+  def calc_loss_one_step(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch], output_time: int) \
+          -> Tuple[AutoRegressiveDecoderState,dy.Expression]:
+    if input_word is not None:
+      dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
+    rnn_output = dec_state.rnn_state.output()
+    self.decoder_vectors.append(rnn_output)
+    dec_state.context = self.attender_out2in.calc_context(rnn_output)
+    word_loss = self.decoder.calc_loss(dec_state, ref_word)
+    #get correct test tokens
+    self.cluster.attention_out2in_vecs=self.attender_out2in.attention_vecs
+    hidden_dim=rnn_output.dim()[0][0]
+    word_prob = self.decoder.calc_log_probs(dec_state)
+
+    predict_vocab_index=np.argmax(dy.argmax(word_prob,gradient_mode="zero_gradient").npvalue(),axis=0)
+    one_hot_subtract=predict_vocab_index-np.asarray(list(ref_word))
+    correct_predicted_batch_index=np.array(np.argwhere(one_hot_subtract == 0)).flatten()
+
+    correct_vectors=dy.pick_batch_elems(rnn_output,correct_predicted_batch_index)
+    cluster_loss=self.cluster.calc_loss_one_step_context(correct_vectors,output_time,correct_predicted_batch_index)
+    return dec_state, word_loss, cluster_loss
+
+  def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
+    if src.batch_size()!=1:
+      raise NotImplementedError("batched decoding not implemented for DefaultTranslator. "
+                                "Specify inference batcher with batch size 1.")
+    assert src.batch_size() == len(idx), f"src: {src.batch_size()}, idx: {len(idx)}"
+    # Generating outputs
+    self.start_sent(src)
+    outputs = []
+    cur_forced_trg = None
+    sent = src[0]
+    sent_mask = None
+    if src.mask: sent_mask = Mask(np_arr=src.mask.np_arr[0:1])
+    sent_batch = mark_as_batch([sent], mask=sent_mask)
+    initial_state = self._encode_src(sent_batch)
+    if forced_trg_ids is  not None: cur_forced_trg = forced_trg_ids[0]
+    search_outputs = search_strategy.generate_output(self, initial_state,
+                                                     src_length=[sent.sent_len()],
+                                                     forced_trg_ids=cur_forced_trg)
+    sorted_outputs = sorted(search_outputs, key=lambda x: x.score[0], reverse=True)
+    #print("sorted_outputs",sorted_outputs)
+    assert len(sorted_outputs) >= 1
+    for curr_output in sorted_outputs:
+      output_actions = [x for x in curr_output.word_ids[0]]
+      attentions = [x for x in curr_output.attentions[0]]
+      score = curr_output.score[0]
+      #print("output_actions",output_actions,"attentions",attentions,"score",score)
+      if len(sorted_outputs) == 1:
+        outputs.append(TextOutput(actions=output_actions,
+                                  vocab=getattr(self.trg_reader, "vocab", None),
+                                  score=score))
+      else:
+        outputs.append(NbestOutput(TextOutput(actions=output_actions,
+                                              vocab=getattr(self.trg_reader, "vocab", None),
+                                              score=score),
+                                   nbest_id=idx[0]))
+    if self.compute_report:
+      attentions = np.concatenate([x.npvalue() for x in attentions], axis=1)
+      self.add_sent_for_report({"idx": idx[0],
+                                "attentions": attentions,
+                                "src": sent,
+                                "src_vocab": getattr(self.src_reader, "vocab", None),
+                                "trg_vocab": getattr(self.trg_reader, "vocab", None),
+                                "output": outputs[0]})
+    #print(outputs)
+    return outputs
+
+  def generate_one_step(self, current_word: Any, current_state: AutoRegressiveDecoderState) -> TranslatorOutput:
+    if current_word is not None:
+      if type(current_word) == int:
+        current_word = [current_word]
+      if type(current_word) == list or type(current_word) == np.ndarray:
+        current_word = xnmt.batcher.mark_as_batch(current_word)
+      current_word_embed = self.trg_embedder.embed(current_word)
+      next_state = self.decoder.add_input(current_state, current_word_embed)
+    else:
+      next_state = current_state
+    next_state.context = self.attender_in2out.calc_context(next_state.rnn_state.output())
+    next_logsoftmax = self.decoder.calc_log_probs(next_state)
+    return TranslatorOutput(next_state, next_logsoftmax, self.attender_in2out.get_last_attention())
 
   def global_fertility(self, a):
     return dy.sum_elems(dy.square(1 - dy.esum(a)))
@@ -291,6 +483,7 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
     self.inference = inference
     self.search_strategy = search_strategy
     self.compute_report = compute_report
+    self.log_softmax_words=[]
 
   def shared_params(self):
     return [{".src_embedder.emb_dim", ".encoder.input_dim"},
@@ -384,6 +577,8 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
         ht=np.transpose(np.reshape(ht,(40,-1)))
     return dec_state, word_loss, np.transpose(ht), targets_frame_idxes
 
+  #def get_hidden_nodes_assignments(self):
+
   def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
     if src.batch_size()!=1:
       raise NotImplementedError("batched decoding not implemented for DefaultTranslator. "
@@ -442,6 +637,7 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
       next_state = current_state
     next_state.context = self.attender.calc_context(next_state.rnn_state.output())
     next_logsoftmax = self.decoder.calc_log_probs(next_state)
+    self.log_softmax_words.append(next_logsoftmax)
     return TranslatorOutput(next_state, next_logsoftmax, self.attender.get_last_attention())
 
   def global_fertility(self, a):

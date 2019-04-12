@@ -102,13 +102,15 @@ class Inference(object):
       forced_ref_corpus: if given, perform forced decoding with the given trg-side inputs
       assert_scores: if given, raise exception if the scores for generated outputs don't match the given scores
     """
-    with open(trg_file, 'wt', encoding='utf-8') as fp:  # Saving the translated output to a trg file
+    #with open(trg_file, 'wt', encoding='utf-8') as fp:  # Saving the translated output to a trg file
+    with open(trg_file, 'wt', encoding='gbk') as fp:  # Saving the translated output to a trg file
       if forced_ref_corpus:
         src_batches, ref_batches = batcher.pack(src_corpus, forced_ref_corpus)
       else:
         src_batches = batcher.pack(src_corpus, None)
       cur_sent_i = 0
       ref_batch = None
+      #print(src_batches)
       for batch_i, src_batch in enumerate(src_batches):
         batch_size = src_batch.batch_size()
         src_len = src_batch.sent_len()
@@ -128,7 +130,9 @@ class Inference(object):
                 raise ValueError(
                   f'Forced decoding score {outputs[0].score} and loss {assert_scores[cur_sent_i + i]} do not match at '
                   f'sentence {cur_sent_i + i}')
+            #print(outputs[i])
             output_txt = outputs[i].apply_post_processor(self.post_processor)
+            #print(output_txt)
             fp.write(f"{output_txt}\n")
         cur_sent_i += batch_size
         if self.max_num_sents and cur_sent_i >= self.max_num_sents: break

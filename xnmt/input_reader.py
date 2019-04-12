@@ -89,8 +89,9 @@ class BaseTextReader(InputReader):
     if filter_ids is not None:
       max_id = max(filter_ids)
       filter_ids = set(filter_ids)
-    with open(filename, encoding='utf-8', mode='r') as f:
-    #with open(filename, encoding='GBK') as f:
+    print(filename)
+    #with open(filename, encoding='utf-8', mode='r') as f:
+    with open(filename, encoding='GBK') as f:
       for line in f:
         if filter_ids is None or sent_count in filter_ids:
           yield self.read_sent(line)

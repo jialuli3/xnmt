@@ -126,7 +126,7 @@ class Softmax(Scorer, Serializable):
   def calc_scores(self, x: dy.Expression) -> dy.Expression:
     result=self.output_projector(x)
     #print("output_dim",self.output_dim)
-    #print("x",x.dim(),"result",result.dim())
+    #print("x",x.dim(),"result",result.value())
     return result
 
   def calc_loss(self, x: dy.Expression, y: Union[int, List[int]]) -> dy.Expression:
@@ -149,7 +149,9 @@ class Softmax(Scorer, Serializable):
 
       ls_loss = -dy.mean_elems(log_prob)
       loss = ((1 - self.label_smoothing) * pre_loss) + (self.label_smoothing * ls_loss)
-
+    # print("x dim",x.dim())
+    # print("scores",scores.dim())
+    # print("loss",loss.dim())
     return loss
 
   def calc_probs(self, x: dy.Expression) -> dy.Expression:

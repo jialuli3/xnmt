@@ -30,7 +30,7 @@ class ListBatch(list, Batch):
   This class behaves like a Python list, but adds semantics that the contents form a (mini)batch of things.
   An optional mask can be specified to indicate padded parts of the inputs.
   Should be treated as an immutable object.
-  
+
   Args:
     batch_elements: list of things
     mask: optional mask when  batch contains items of unequal size
@@ -88,7 +88,7 @@ class Mask(object):
 
   Masks are represented as numpy array of dimensions batchsize x seq_len, with parts
   belonging to the sequence set to 0, and parts that should be masked set to 1
-  
+
   Args:
     np_arr: numpy array
   """
@@ -269,7 +269,7 @@ class Batcher(object):
 class InOrderBatcher(Batcher, Serializable):
   """
   A class to create batches in order of the original corpus, both across and within batches.
-  
+
   Args:
     batch_size: batch size
     src_pad_token: token used to pad on source side
@@ -431,7 +431,7 @@ class SrcBatcher(SortBatcher, Serializable):
   A batcher that creates fixed-size batches, grouped by src len.
 
   Sentences inside each batch are sorted by reverse trg length.
-  
+
   Args:
     batch_size: batch size
     src_pad_token: token used to pad on source side
@@ -454,7 +454,7 @@ class TrgBatcher(SortBatcher, Serializable):
   A batcher that creates fixed-size batches, grouped by trg len.
 
   Sentences inside each batch are sorted by reverse trg length.
-  
+
   Args:
     batch_size: batch size
     src_pad_token: token used to pad on source side
@@ -477,7 +477,7 @@ class SrcTrgBatcher(SortBatcher, Serializable):
   A batcher that creates fixed-size batches, grouped by src len, then trg len.
 
   Sentences inside each batch are sorted by reverse trg length.
-  
+
   Args:
     batch_size: batch size
     src_pad_token: token used to pad on source side
@@ -501,7 +501,7 @@ class TrgSrcBatcher(SortBatcher, Serializable):
   A batcher that creates fixed-size batches, grouped by trg len, then src len.
 
   Sentences inside each batch are sorted by reverse trg length.
-  
+
   Args:
     batch_size: batch size
     src_pad_token: token used to pad on source side
@@ -525,7 +525,7 @@ class SentShuffleBatcher(ShuffleBatcher, Serializable):
   A batcher that creates fixed-size batches of random order.
 
   Sentences inside each batch are sorted by reverse trg length.
-  
+
   Args:
     batch_size: batch size
     src_pad_token: token used to pad on source side
@@ -545,7 +545,7 @@ class WordShuffleBatcher(ShuffleBatcher, Serializable):
   A batcher that creates fixed-size batches, grouped by src len.
 
   Sentences inside each batch are sorted by reverse trg length.
-  
+
   Args:
     words_per_batch: number of src+trg words in each batch
     src_pad_token: token used to pad on source side

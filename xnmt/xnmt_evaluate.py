@@ -9,8 +9,9 @@ def read_data(loc_, post_process=None):
   """Reads the lines in the file specified in loc_ and return the list after inserting the tokens
   """
   data = list()
-  #with open(loc_, encoding='utf-8') as fp:
-  with open(loc_, encoding="utf-8", mode='r') as fp:
+  print(loc_)
+  with open(loc_, encoding='gbk') as fp:
+  #with open(loc_, encoding="utf-8", mode='r') as fp:
     for line in fp:
       t = line.strip()
       if post_process is not None:

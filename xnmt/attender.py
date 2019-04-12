@@ -1,5 +1,6 @@
 import math
 import dynet as dy
+import numpy as np
 
 from xnmt import logger
 import xnmt.batcher
@@ -72,32 +73,42 @@ class MlpAttender(Attender, Serializable):
     self.pb = param_collection.add_parameters((hidden_dim,), init=bias_init.initializer((hidden_dim,)))
     self.pU = param_collection.add_parameters((1, hidden_dim), init=param_init.initializer((1, hidden_dim)))
     self.curr_sent = None
+    self.attention_vecs = None
+    self.WI = None
 
   def init_sent(self, sent):
     self.attention_vecs = []
+    #self.attention_dy_expressions=[]
     self.curr_sent = sent
-    I = self.curr_sent.as_tensor()
+    if isinstance(self.curr_sent,dy.Expression):
+        I = self.curr_sent
+    else:
+        I=self.curr_sent.as_tensor()
     W = dy.parameter(self.pW)
     b = dy.parameter(self.pb)
     self.WI = dy.affine_transform([b, W, I])
     wi_dim = self.WI.dim()
-    #print("curr sent",self.curr_sent.as_tensor().npvalue().shape)
+    #print(wi_dim)
+    #print(self.input_dim,self.state_dim,self.hidden_dim)
     # TODO(philip30): dynet affine transform bug, should be fixed upstream
     # if the input size is "1" then the last dimension will be dropped.
     if len(wi_dim[0]) == 1:
       self.WI = dy.reshape(self.WI, (wi_dim[0][0], 1), batch_size=wi_dim[1])
 
-  def calc_attention(self, state):
+  def calc_attention(self, state: dy.Expression) -> dy.Expression:
     V = dy.parameter(self.pV)
     U = dy.parameter(self.pU)
 
     WI = self.WI
-    curr_sent_mask = self.curr_sent.mask
+    if isinstance(self.curr_sent, dy.Expression):
+        curr_sent_mask=None
+    else:
+        curr_sent_mask = self.curr_sent.mask
     if self.truncate_dec_batches:
       if curr_sent_mask: state, WI, curr_sent_mask = xnmt.batcher.truncate_batches(state, WI, curr_sent_mask)
       else: state, WI = xnmt.batcher.truncate_batches(state, WI)
-    h = dy.tanh(dy.colwise_add(WI, V * state))
-    scores = dy.transpose(U * h)
+    h = dy.tanh(dy.colwise_add(WI, V * state)) #W*curr_sent+b+V*decoder_state
+    scores = dy.transpose(U * h) #energy = U * tanh(W^T*I+b+V*decoder_state)
     if curr_sent_mask is not None:
       scores = curr_sent_mask.add_to_tensor_expr(scores, multiplicator = -100.0)
     normalized = dy.softmax(scores)
@@ -109,6 +120,7 @@ class MlpAttender(Attender, Serializable):
     I = self.curr_sent.as_tensor()
     if self.truncate_dec_batches: I, attention = xnmt.batcher.truncate_batches(I, attention)
     return I * attention
+
 
 class DotAttender(Attender, Serializable):
   """

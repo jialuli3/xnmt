@@ -52,6 +52,7 @@ class AutoRegressiveMLELoss(Serializable, LossCalculator):
         assert single_trg.sent_len() == seq_len # assert consistent length
         assert 1==len([i for i in range(seq_len) if (trg_mask is None or trg_mask.np_arr[j,i]==0) and single_trg[i]==Vocab.ES]) # assert exactly one unmasked ES token
     input_word = None
+    #print("seq_len",seq_len)
     for i in range(seq_len):
       ref_word = AutoRegressiveMLELoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
       if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
@@ -89,6 +90,76 @@ class AutoRegressiveMLELoss(Serializable, LossCalculator):
       if not xnmt.batcher.is_batched(sent): return sent[index]
       else: return xnmt.batcher.mark_as_batch([single_trg[index] for single_trg in sent])
 
+class AutoRegressiveClusterLoss(Serializable, LossCalculator):
+  """
+  Max likelihood loss calculator for autoregressive models.
+
+  Args:
+    truncate_dec_batches: whether the decoder drops batch elements as soon as these are masked at some time step.
+  """
+  yaml_tag = '!AutoRegressiveClusterLoss'
+  @serializable_init
+  def __init__(self, truncate_dec_batches: bool = Ref("exp_global.truncate_dec_batches", default=False)) -> None:
+    self.truncate_dec_batches = truncate_dec_batches
+
+  def calc_loss(self, translator: 'translator.AutoRegressiveTranslator',
+                initial_state: 'translator.AutoRegressiveDecoderState',
+                src: Union[xnmt.input.Input, 'batcher.Batch'],
+                trg: Union[xnmt.input.Input, 'batcher.Batch']):
+    dec_state = initial_state
+    trg_mask = trg.mask if xnmt.batcher.is_batched(trg) else None
+    word_losses = []
+    cluster_losses=[]
+    seq_len = trg.sent_len()
+    if xnmt.batcher.is_batched(src):
+      for j, single_trg in enumerate(trg):
+        assert single_trg.sent_len() == seq_len # assert consistent length
+        assert 1==len([i for i in range(seq_len) if (trg_mask is None or trg_mask.np_arr[j,i]==0) and single_trg[i]==Vocab.ES]) # assert exactly one unmasked ES token
+    input_word = None
+    #print("seq_len",seq_len)
+
+    for i in range(seq_len):
+      ref_word = AutoRegressiveClusterLoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
+      if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
+        dec_state.rnn_state, ref_word = xnmt.batcher.truncate_batches(dec_state.rnn_state, ref_word)
+      dec_state, word_loss, cluster_loss = translator.calc_loss_one_step(dec_state, ref_word, input_word, i)
+
+      if not self.truncate_dec_batches and xnmt.batcher.is_batched(src) and trg_mask is not None:
+        word_loss = trg_mask.cmult_by_timestep_expr(word_loss, i, inverse=True)
+      word_losses.append(word_loss)
+      cluster_losses.append(cluster_loss)
+      input_word = ref_word
+    # if self.truncate_dec_batches:
+    #   loss_expr_word = dy.esum([dy.sum_batches(wl) for wl in losses])
+    # else:
+    #   loss_expr_word = dy.esum(losses)
+    loss_expr_word=dy.esum(word_losses)
+    loss_expr_cluster=dy.esum(cluster_losses)
+    print("mle",loss_expr_word.value())
+    print("cluster",loss_expr_cluster.value())
+    return FactoredLossExpr({"mle": loss_expr_word, "cluster":loss_expr_cluster})
+
+  @staticmethod
+  def _select_ref_words(sent, index, truncate_masked = False):
+    if truncate_masked:
+      mask = sent.mask if xnmt.batcher.is_batched(sent) else None
+      if not xnmt.batcher.is_batched(sent):
+        return sent[index]
+      else:
+        ret = []
+        found_masked = False
+        for (j, single_trg) in enumerate(sent):
+          if mask is None or mask.np_arr[j, index] == 0 or np.sum(mask.np_arr[:, index]) == mask.np_arr.shape[0]:
+            assert not found_masked, "sentences must be sorted by decreasing target length"
+            ret.append(single_trg[index])
+          else:
+            found_masked = True
+        return xnmt.batcher.mark_as_batch(ret)
+    else:
+      if not xnmt.batcher.is_batched(sent): return sent[index]
+      else: return xnmt.batcher.mark_as_batch([single_trg[index] for single_trg in sent])
+
+
 class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
   """
   Self defined KMeansLoss loss calculator.
@@ -118,7 +189,7 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
                 trg: Union[xnmt.input.Input, 'batcher.Batch']):
     #allHiddenNodes=open("/home/jialu/TIMIT/allHiddenNodes.csv","a")
     #allHiddenNodesPhoneLabel=open("/home/jialu/TIMIT/allHiddenNodesPhoneLabel.csv","a")
-    allMaximalAttendedNodes=open("/home/jialu/TIMIT/knn/allMaximalAttendedNodes.csv","a")
+    #allMaximalAttendedNodes=open("/home/jialu/TIMIT/knn/allMaximalAttendedNodes.csv","a")
     #allMaximalAttendedNodesAttIdx=open("/home/jialu/TIMIT/knn/allMaximalAttendedNodesAttIdx.csv","a")
 
     dec_state = initial_state
@@ -155,11 +226,11 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
     # Perform cluster for all frames in the batch
     print("There are "+str(hidden_units.shape)+" hidden units.")
     hidden_units=np.asarray(hidden_units)
-    cluster_loss=0
-    if hidden_units.size:
-        if not self.dev_evaluate and not self.test_evaluate:
-            translator.cluster.fit(hidden_units)
-        else:
+
+    # if hidden_units.size:
+    #     if not self.dev_evaluate and not self.test_evaluate:
+    #         translator.cluster.fit(hidden_units)
+        #else:
             #every hidden nodes vectors
             #r_ik_all_hidden=translator.cluster._e_step(np.transpose(translator.attender.curr_sent.as_tensor().npvalue()))
             #currHiddenNodes=np.asarray(np.transpose(translator.attender.curr_sent.as_tensor().npvalue()))
@@ -167,15 +238,15 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
             #np.savetxt(allHiddenNodesPhoneLabel,np.asarray(r_ik_all_hidden),fmt='%2d')
             #print("all hidden units frames: "+str(list(r_ik_all_hidden)))
             #r_ik=translator.cluster._e_step(hidden_units)#maximally attended frames
-            np.savetxt(allMaximalAttendedNodes,hidden_units)
+            #np.savetxt(allMaximalAttendedNodes,hidden_units)
             #np.savetxt(allMaximalAttendedNodesAttIdx,np.asarray(atts),fmt='%2d')
             #print("attention frames: "+str(list(r_ik)))
-            print("attention indexes: "+str(atts))
+            #print("attention indexes: "+str(atts))
         #cluster_loss=translator.cluster.calc_loss(hidden_units)
         #print("Current cluster loss is "+ str(cluster_loss))
         #allHiddenNodes.close()
         #allHiddenNodesPhoneLabel.close()
-        allMaximalAttendedNodes.close()
+        #allMaximalAttendedNodes.close()
         #allMaximalAttendedNodesAttIdx.close()
 
     if self.truncate_dec_batches:

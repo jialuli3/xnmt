@@ -4,15 +4,15 @@ las-pyramidal-multilingual-sequence2: !LoadSerialized
    - path: evaluate
      val: null
    - path: train.tasks.0.src_file
-     val: '{ENG_DATA_DIR}/feat/train5.h5'
+     val: '{ENG_DATA_DIR}/feat/train2.h5'
    - path: train.tasks.0.trg_file
-     val: '{ENG_DATA_DIR}/transcript/train5.char'
+     val: '{ENG_DATA_DIR}/transcript/train2.char'
    - path: train.tasks.1.src_file
-     val: '{CHI_DATA_DIR}/train3.h5'
+     val: '{CHI_DATA_DIR}/train2.h5'
    - path: train.tasks.1.trg_file
-     val: '{CHI_DATA_DIR}/train3.char'
+     val: '{CHI_DATA_DIR}/train2.char'
    # - path: train.tasks.0.batcher.avg_batch_size
-   #   val: 65     
+   #   val: 65
    # - path: train.tasks.1.batcher.avg_batch_size
    #   val: 65
    # - path: train

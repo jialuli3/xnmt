@@ -1,5 +1,5 @@
-las-timit-evaluate-kmeans-100-clusters: !LoadSerialized
-   filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-timit-pretrain-test.mod
+final-evaluate-pyramidal-mandarin: !LoadSerialized
+   filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-pyramidal-mandarin.mod
    overwrite:
    - path: train
      val: null
@@ -7,9 +7,9 @@ las-timit-evaluate-kmeans-100-clusters: !LoadSerialized
      val:
        - !AccuracyEvalTask
           eval_metrics: wer,cer
-          src_file: '{DATA_DIR}/test.h5'
-          ref_file: '{DATA_DIR}/test.words'
-          hyp_file: '{EXP_DIR}/logs/{EXP}.test_hyp'
+          src_file: '{DATA_DIR}/dev.h5'
+          ref_file: '{DATA_DIR}/dev.words'
+          hyp_file: '{EXP_DIR}/logs/{EXP}.dev_hyp'
           inference: !AutoRegressiveInference
             batcher: !InOrderBatcher
               batch_size: 1
@@ -23,3 +23,11 @@ las-timit-evaluate-kmeans-100-clusters: !LoadSerialized
               len_norm: !PolynomialNormalization
                 apply_during_search: true
                 m: 1.5
+       - !LossEvalTask
+          max_src_len: 1500
+          src_file: '{DATA_DIR}/dev.h5'
+          ref_file: '{DATA_DIR}/dev.char'
+          batcher: !InOrderBatcher
+            batch_size: 1
+            pad_src_to_multiple: 8
+            src_pad_token: ~

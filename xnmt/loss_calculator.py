@@ -116,7 +116,6 @@ class AutoRegressiveClusterLoss(Serializable, LossCalculator):
         assert single_trg.sent_len() == seq_len # assert consistent length
         assert 1==len([i for i in range(seq_len) if (trg_mask is None or trg_mask.np_arr[j,i]==0) and single_trg[i]==Vocab.ES]) # assert exactly one unmasked ES token
     input_word = None
-    #print("seq_len",seq_len)
 
     for i in range(seq_len):
       ref_word = AutoRegressiveClusterLoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
@@ -135,8 +134,7 @@ class AutoRegressiveClusterLoss(Serializable, LossCalculator):
     #   loss_expr_word = dy.esum(losses)
     loss_expr_word=dy.esum(word_losses)
     loss_expr_cluster=dy.esum(cluster_losses)
-    print("mle",loss_expr_word.value())
-    print("cluster",loss_expr_cluster.value())
+    translator.cluster.query_cluster()
     return FactoredLossExpr({"mle": loss_expr_word, "cluster":loss_expr_cluster})
 
   @staticmethod

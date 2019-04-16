@@ -100,7 +100,7 @@ class SimpleTrainingRegimen(training_task.SimpleTrainingTask, TrainingRegimen, S
                max_trg_len: Optional[int] = None,
                loss_comb_method: str = Ref("exp_global.loss_comb_method", default="sum"),
                update_every: int = 1,
-               commandline_args: dict = Ref("exp_global.commandline_args", default={})) -> None:
+               commandline_args: dict = Ref("exp_global.commandline_args", default={})) -> None: #0 for english_task 1 for mandarin_task
 
     super().__init__(model=model,
                      src_file=src_file,
@@ -268,7 +268,8 @@ class SameBatchMultiTaskTrainingRegimen(MultiTaskTrainingRegimen, Serializable):
                loss_comb_method: str = Ref("exp_global.loss_comb_method", default="sum"),
                update_every: int = 1,
                n_task_steps: Optional[Sequence[int]] = None,
-               commandline_args: dict = Ref("exp_global.commandline_args", default=None)) -> None:
+               commandline_args: dict = Ref("exp_global.commandline_args", default=None)
+               ) -> None: #task_id: english_task =0 mandarin_task =1
     super().__init__(tasks=tasks, trainer=trainer, dev_zero=dev_zero, update_every=update_every,
                      commandline_args=commandline_args)
     self.train_loss_trackers = {task : TrainLossTracker(task) for task in tasks}
@@ -316,7 +317,8 @@ class SameBatchMultiTaskTrainingRegimen(MultiTaskTrainingRegimen, Serializable):
           self.train_loss_trackers[task].report(trg, stats)
         self.checkpoint_and_save(save_fct)
         if self.tasks[0].should_stop_training(): break
-
+    #for task in self.tasks:
+     #  task.model.cluster.split_cluster()
   def checkpoint_and_save(self, save_fct):
     for task_i, task in enumerate(self.tasks):
       if self.dev_zero or task.checkpoint_needed():

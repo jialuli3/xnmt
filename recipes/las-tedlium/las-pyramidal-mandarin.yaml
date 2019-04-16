@@ -1,9 +1,9 @@
-las-pyramidal-timit: !Experiment
+las-pyramidal-mandarin: !Experiment
   exp_global: !ExpGlobal
     dropout: 0.3
     default_layer_dim: 512
     placeholders:
-      DATA_DIR: /home/jialu/TIMIT
+      DATA_DIR: /home/jialu/mandarin_dataset/data
   # preproc: !PreprocRunner
   #   overwrite: False
   #   tasks:
@@ -52,9 +52,9 @@ las-pyramidal-timit: !Experiment
     trg_file: '{DATA_DIR}/train.char'
     max_src_len: 1500
     max_trg_len: 350
-    run_for_epochs: 500
+    run_for_epochs: 10
     batcher: !WordSrcBatcher
-      avg_batch_size: 220
+      avg_batch_size: 250
       pad_src_to_multiple: 8
       src_pad_token: ~
     trainer: !AdamTrainer
@@ -65,45 +65,45 @@ las-pyramidal-timit: !Experiment
     initial_patience: 15
     dev_every: 0
     restart_trainer: True
-    dev_tasks:
-      - !AccuracyEvalTask
-        eval_metrics: wer,cer
-        src_file: &dev_src '{DATA_DIR}/dev.h5'
-        ref_file: '{DATA_DIR}/dev.words'
-        hyp_file: '{EXP_DIR}/logs/{EXP}.dev_hyp'
-        inference: !AutoRegressiveInference
-          batcher: !InOrderBatcher
-            batch_size: 1
-            pad_src_to_multiple: 8
-            src_pad_token: ~
-          max_src_len: 1500
-          post_process: join-char
-          search_strategy: !BeamSearch
-            max_len: 500
-            beam_size: 20
-            len_norm: !PolynomialNormalization
-              apply_during_search: true
-              m: 1.5
-      - !LossEvalTask
-        max_src_len: 1500
-        src_file: *dev_src
-        ref_file: '{DATA_DIR}/dev.char'
-  evaluate:
-    - !AccuracyEvalTask
-      eval_metrics: wer,cer
-      src_file: '{DATA_DIR}/test.h5'
-      ref_file: '{DATA_DIR}/test.words'
-      hyp_file: '{EXP_DIR}/logs/{EXP}.test_hyp'
-      inference: !AutoRegressiveInference
-        batcher: !InOrderBatcher
-          batch_size: 1
-          pad_src_to_multiple: 8
-          src_pad_token: ~
-        max_src_len: 1500
-        post_process: join-char
-        search_strategy: !BeamSearch
-          max_len: 500
-          beam_size: 20
-          len_norm: !PolynomialNormalization
-            apply_during_search: true
-            m: 1.5
+  #   dev_tasks:
+  #     - !AccuracyEvalTask
+  #       eval_metrics: wer,cer
+  #       src_file: &dev_src '{DATA_DIR}/dev.h5'
+  #       ref_file: '{DATA_DIR}/dev.words'
+  #       hyp_file: '{EXP_DIR}/logs/{EXP}.dev_hyp'
+  #       inference: !AutoRegressiveInference
+  #         batcher: !InOrderBatcher
+  #           batch_size: 1
+  #           pad_src_to_multiple: 8
+  #           src_pad_token: ~
+  #         max_src_len: 1500
+  #         post_process: join-char
+  #         search_strategy: !BeamSearch
+  #           max_len: 500
+  #           beam_size: 20
+  #           len_norm: !PolynomialNormalization
+  #             apply_during_search: true
+  #             m: 1.5
+  #     - !LossEvalTask
+  #       max_src_len: 1500
+  #       src_file: *dev_src
+  #       ref_file: '{DATA_DIR}/dev.char'
+  # evaluate:
+  #   - !AccuracyEvalTask
+  #     eval_metrics: wer,cer
+  #     src_file: '{DATA_DIR}/test.h5'
+  #     ref_file: '{DATA_DIR}/test.words'
+  #     hyp_file: '{EXP_DIR}/logs/{EXP}.test_hyp'
+  #     inference: !AutoRegressiveInference
+  #       batcher: !InOrderBatcher
+  #         batch_size: 1
+  #         pad_src_to_multiple: 8
+  #         src_pad_token: ~
+  #       max_src_len: 1500
+  #       post_process: join-char
+  #       search_strategy: !BeamSearch
+  #         max_len: 500
+  #         beam_size: 20
+  #         len_norm: !PolynomialNormalization
+  #           apply_during_search: true
+  #           m: 1.5

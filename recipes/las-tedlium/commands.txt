@@ -1,3 +1,4 @@
+python shuffle_data.py &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence0.yaml --settings=debug &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence1.yaml --settings=debug &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence2.yaml --settings=debug &&
@@ -8,6 +9,8 @@ python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-seque
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence7.yaml --settings=debug &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence8.yaml --settings=debug &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence9.yaml --settings=debug &&
+xnmt --dynet-gpu final-evaluate-multilingual.yaml --settings=debug &&
+python shuffle_data.py &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence0.yaml --settings=debug &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence1.yaml --settings=debug &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence2.yaml --settings=debug &&
@@ -17,4 +20,16 @@ python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-seque
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence6.yaml --settings=debug &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence7.yaml --settings=debug &&
 python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence8.yaml --settings=debug &&
-python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence9.yaml --settings=debug 
+python -m xnmt.xnmt_run_experiments --dynet-gpu las-pyramidal-multilingual-sequence9.yaml --settings=debug &&
+xnmt --dynet-gpu final-evaluate-multilingual.yaml --settings=debug
+
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence0.yaml --settings=debug &&
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence1.yaml --settings=debug &&
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence2.yaml --settings=debug &&
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence3.yaml --settings=debug &&
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence4.yaml --settings=debug &&
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence5.yaml --settings=debug &&
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence6.yaml --settings=debug &&
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence7.yaml --settings=debug &&
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence8.yaml --settings=debug &&
+xnmt --dynet-gpu las-pyramidal-multilingual-experiment-sequence9.yaml --settings=debug 

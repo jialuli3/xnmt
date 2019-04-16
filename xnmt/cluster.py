@@ -33,7 +33,7 @@ class ClusterAdapt(Cluster,Serializable):
     @serializable_init
     def __init__(self,
             n_dims: int = 100,
-            n_components: int = 512,
+            n_components: int = 50,
             attender_in2cluster: Attender=bare(MlpAttender),
             param_init: ParamInitializer = bare(NormalInitializer)
             )-> None:
@@ -46,17 +46,30 @@ class ClusterAdapt(Cluster,Serializable):
         self._n_components = n_components
         self.attender_in2cluster = attender_in2cluster
         self.pc = ParamManager.my_params(self)
-        self._mu=self.pc.add_parameters((n_components,n_dims),init=param_init.initializer((n_components,n_dims)))
+        #self._mu=self.pc.add_parameters((n_components,n_dims),init=param_init.initializer((n_components,n_dims)))
+        self._mu=self.pc.add_parameters((n_components,n_dims),init=param_init.initializer((n_dims,n_components)))
         self.attention_out2in_vecs=None
         self.input_hidden_nodes = None
         self.total_loss=0
         self._curr_occupied_clusters=dict(zip(range(self._n_dims),[0]*self._n_dims))
+        #self._centroid=np.transpose(self._mu.npvalue())
+        self._centroid=self._mu.npvalue()
+        self._prev_centroid=self._centroid
+        self._characters_dist_index_count={}
+        self._characters_dist_context={}
+
+
+    def clear_stale_expressions(self):
+        self._characters_dist_index_count={}
+        self._characters_dist_context={}
 
     def init_attender_cluster(self):
         """
         Initialization of cluster in attender
         """
-        self.attender_in2cluster.init_sent(self._mu.expr(update=True))
+        #self._mu.set_value(np.transpose(self._centroid))
+        self._mu.set_value(self._centroid)
+        self.attender_in2cluster.init_sent(dy.inputTensor(self._centroid))
 
     def calc_attention_in2cluster(self):
         """
@@ -68,6 +81,7 @@ class ClusterAdapt(Cluster,Serializable):
         #Calculate all attention vectors throughout the input vector
         for i in range(input_length):
             attention=self.attender_in2cluster.calc_attention(self.input_hidden_nodes[i])
+            #print("att_in2cluster",np.argmax(attention.value(),axis=0))
             if self.att_in2cluster_dy_expressions==[]:
                 self.att_in2cluster_dy_expressions=attention
             else:
@@ -88,10 +102,8 @@ class ClusterAdapt(Cluster,Serializable):
         att_out2in=self.attention_out2in_vecs[output_time] #att_out2in(i,t)=p(t|i)
         #context_out2in2cluster=np.zeros((self._n_dims,input_length)) #c(k,t|i)=p(t,k|i)
         context_out2cluster=dy.sum_dim(dy.cmult(dy.transpose(dy.pick_batch_elems(att_out2in,[batch_idx])),dy.pick_batch_elems(self.att_in2cluster_dy_expressions,[batch_idx])),[1])
-        #for j in range(input_length):
-        #    context_out2cluster+=dy.cmult(dy.pick_batch_elems(att_out2in[j],[batch_idx]),dy.pick_batch_elems(self.att_in2cluster_vecs[j],[batch_idx]))
 
-        #context_out2cluster=np.sum(context_out2in2cluster,axis=1) #c(i,k)=p(k|i)
+        #print(dy.sum_elems(context_out2cluster).value())
         return context_out2cluster
 
     def predict(self,context_out2cluster):
@@ -105,35 +117,55 @@ class ClusterAdapt(Cluster,Serializable):
         """
         return np.argmax(context_out2cluster.value()) #c(i,k)
 
-    def calc_loss_one_step_context(self, x, output_time, correct_predicted_batch_index):
+    def calc_loss_one_step_context(self, x, output_time, correct_predicted_batch_index, correct_characters_index):
         """
         Calculate cross-entropy loss given the output vectors
         Args:
         x(dy.Expression): all rnn output states for decoder
         output_time(int): output time stamp
         correct_predicted_batch_index(nd.numpyarray): batch index of correct predicted characters
+        correct_characters_index(list of int): list of index of correct predicted characters
         """
-        loss_out2cluster=dy.zeros((1,))
+        loss_out2cluster_same_char=dy.zeros((1,))
+        loss_out2cluster_diff_char=dy.zeros((1,))
         if len(correct_predicted_batch_index) == 0:
             return dy.zeros((1,))
         #print("num_correct_predict_chars",len(correct_predicted_batch_index))
-        context_out2cluster=[]
+
         for i in range(len(correct_predicted_batch_index)):
             curr_vector=dy.pick_batch_elems(x,[i])
-            curr_context_out2cluster=self.fit(curr_vector, correct_predicted_batch_index[i])
+            curr_context_out2cluster=self.fit(curr_vector, output_time, correct_predicted_batch_index[i])
             self._curr_occupied_clusters[self.predict(curr_context_out2cluster)]+=1
-            if context_out2cluster==[]:
-                context_out2cluster=curr_context_out2cluster
+            curr_char=correct_characters_index[i]
+            if curr_char not in self._characters_dist_index_count.keys() or self._characters_dist_index_count[curr_char]==0:
+                self._characters_dist_index_count[curr_char]=1
+                self._characters_dist_context[curr_char]=curr_context_out2cluster
             else:
-                context_out2cluster=dy.concatenate_cols([context_out2cluster, curr_context_out2cluster])
+                self._characters_dist_index_count[curr_char]+=1
+                self._characters_dist_context[curr_char]=dy.concatenate_cols([self._characters_dist_context[curr_char],curr_context_out2cluster])
 
-        if len(correct_predicted_batch_index)==1:
-            context_out2cluster=dy.reshape(context_out2cluster,(self._n_dims,1))
-        loss_out2cluster=-dy.sum_elems(dy.sum_dim(dy.cmult(context_out2cluster,dy.log(context_out2cluster)),[1]))
-        #/len(correct_predicted_batch_index)
+
+        for i in range(len(correct_characters_index)-1):
+            char1=self._characters_dist_context[correct_characters_index[i]]
+            char2=self._characters_dist_context[correct_characters_index[i+1]]
+            char1_count=self._characters_dist_index_count[correct_characters_index[i]]
+            if char1_count==1:
+                loss_out2loss_out2cluster_diff_char+=dy.sum_elems(dy.cmult(char1,dy.log(char2)))
+            else:
+                for ch1 in range(char1_count):
+                    print("ch1",dy.select_cols(char1,[ch1]).dim())
+                    loss_out2cluster_diff_char+=dy.sum_elems(dy.cmult(dy.select_cols(char1,[ch1]),dy.log(char2)))
+
+        for char,count in self._characters_dist_index_count.items():
+            if count>=2:
+                context_out2cluster=self._characters_dist_context[char]
+                for i in range(count-1):
+                    for j in range(i+1,count):
+                        loss_out2cluster_same_char-=dy.sum_elems(dy.cmult(dy.select_cols(context_out2cluster,[i]),dy.log(dy.select_cols(context_out2cluster,[j]))))
+                self._characters_dist_index_count[char]=0
+                self._characters_dist_context[char]=[]
         #print("loss_out2cluster",loss_out2cluster.value())
-        self.split_cluster()
-        return loss_out2cluster
+        return loss_out2cluster_same_char+loss_out2cluster_diff_char
 
     def calc_loss_one_step_frames(self):
         """
@@ -145,32 +177,40 @@ class ClusterAdapt(Cluster,Serializable):
             loss_input2cluster+=curr_loss.value()
         return -loss_input2cluster
 
+    def query_cluster(self):
+        sorted_cluster=sorted(self._curr_occupied_clusters.items(), key=lambda kv:kv[1], reverse=True)
+        occupied_clusters=[k[0] for k in sorted_cluster if k[1]!=0] #occupied cluster index
+        unoccupied_clusters=[c for c in list(range(self._n_dims)) if c not in occupied_clusters] #unoccupied cluster index
+        curr_occupied_clusters_num=len(occupied_clusters)
+        print("There are currently "+str(curr_occupied_clusters_num)+" clusters occupied.")
+        print([k for k in sorted_cluster if k[1]!=0])
+
     def split_cluster(self):
         """
             Perform cluster splitting if not all clusters are occupied
             after each epoch.
         """
         #Calculate clusters to be split
-        print("Performing cluster splitting...")
+        print("performing split cluster")
         sorted_cluster=sorted(self._curr_occupied_clusters.items(), key=lambda kv:kv[1], reverse=True)
         occupied_clusters=[k[0] for k in sorted_cluster if k[1]!=0] #occupied cluster index
         unoccupied_clusters=[c for c in list(range(self._n_dims)) if c not in occupied_clusters] #unoccupied cluster index
         curr_occupied_clusters_num=len(occupied_clusters)
-        print("There are currently "+str(curr_occupied_clusters_num)+" clusters are occupied.")
-        print("Occupied cluster indexes are ",occupied_clusters)
+        print("There are currently "+str(curr_occupied_clusters_num)+" clusters occupied.")
+        print([k for k in sorted_cluster if k[1]!=0])
+
         curr_cluster_index=0
         self._centroid=self._mu.npvalue()
         while len(occupied_clusters)<self._n_dims:
+        #while curr_cluster_index<curr_occupied_clusters_num:
             curr_feature=self._centroid[occupied_clusters[curr_cluster_index],:]
             #Perform bisecting splitting
-            self._centroid[occupied_clusters[curr_cluster_index],:]=0.99*curr_feature
-            self._centroid[unoccupied_clusters[curr_cluster_index],:]=1.01*curr_feature
+            self._centroid[occupied_clusters[curr_cluster_index],:]=0.999*curr_feature
+            self._centroid[unoccupied_clusters[curr_cluster_index],:]=1.001*curr_feature
             occupied_clusters.append(unoccupied_clusters[curr_cluster_index])
             curr_cluster_index+=1
+        #self._mu.set_value(np.transpose(self._centroid))
         self._mu.set_value(self._centroid)
-        self.init_attender_cluster()
-        self.calc_attention_in2cluster()
-
 class KMeans(Cluster, Serializable):
     yaml_tag='!KMeans'
     @serializable_init

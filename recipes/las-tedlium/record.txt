@@ -1,3 +1,241 @@
 Epoch 22 learning rate 0.01
 las-timit-evaluate            | WER: 230.60% ( C/S/I/D: 3889/9202/21019/25; hyp_len=34110, ref_len=13116 )
                               | CER: 142.97% ( C/S/I/D: 27445/31426/53173/1000; hyp_len=112044, ref_len=59871 )
+
+epoch
+12
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 34.13% ( C/S/I/D: 8272/2505/858/478; hyp_len=11635, ref_len=11255 )
+                              | CER: 18.91% ( C/S/I/D: 41538/3887/2764/2391; hyp_len=48189, ref_len=47816 )
+                              | Loss: 0.964
+                              | WER: 93.63% ( C/S/I/D: 193/1602/0/1234; hyp_len=1795, ref_len=3029 )
+                              | CER: 39.28% ( C/S/I/D: 16780/8806/499/1226; hyp_len=26085, ref_len=26812 )
+                              | Loss: 2.684
+13
+                              -----------------------------------------------------------------------
+                              las-evaluate-multilingual     | WER: 30.63% ( C/S/I/D: 8515/2257/707/483; hyp_len=11479, ref_len=11255 )
+                                                            | CER: 16.30% ( C/S/I/D: 42239/3425/2215/2152; hyp_len=47879, ref_len=47816 )
+                                                            | Loss: 0.933
+                                                            | WER: 86.52% ( C/S/I/D: 242/1553/0/0; hyp_len=1795, ref_len=1795 )
+                                                            | CER: 37.40% ( C/S/I/D: 17404/8348/619/1060; hyp_len=26371, ref_len=26812 )
+                                                            | Loss: 2.590
+14
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 29.04% ( C/S/I/D: 8616/2145/630/494; hyp_len=11391, ref_len=11255 )
+                              | CER: 15.51% ( C/S/I/D: 42379/3175/1978/2262; hyp_len=47532, ref_len=47816 )
+                              | Loss: 0.927
+                              | WER: 86.41% ( C/S/I/D: 244/1551/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 36.14% ( C/S/I/D: 17587/8053/466/1172; hyp_len=26106, ref_len=26812 )
+                              | Loss: 2.588
+
+16
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 27.60% ( C/S/I/D: 8709/2053/560/493; hyp_len=11322, ref_len=11255 )
+                              | CER: 14.58% ( C/S/I/D: 42632/2980/1789/2204; hyp_len=47401, ref_len=47816 )
+                              | Loss: 0.918
+                              | WER: 85.35% ( C/S/I/D: 263/1532/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 34.99% ( C/S/I/D: 17900/7699/470/1213; hyp_len=26069, ref_len=26812 )
+                              | Loss: 2.562
+18
+las-evaluate-multilingual     | WER: 25.33% ( C/S/I/D: 8930/1881/526/444; hyp_len=11337, ref_len=11255 )
+                              | CER: 13.33% ( C/S/I/D: 43141/2754/1701/1921; hyp_len=47596, ref_len=47816 )
+                              | Loss: 0.905
+                              | WER: 84.90% ( C/S/I/D: 271/1524/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 34.30% ( C/S/I/D: 18145/7573/530/1094; hyp_len=26248, ref_len=26812 )
+                              | Loss: 2.516
+
+21
+las-evaluate-multilingual     | WER: 24.23% ( C/S/I/D: 9037/1793/509/425; hyp_len=11339, ref_len=11255 )
+                              | CER: 12.57% ( C/S/I/D: 43491/2515/1684/1810; hyp_len=47690, ref_len=47816 )
+                              | Loss: 0.894
+                              | WER: 83.96% ( C/S/I/D: 288/1507/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 33.14% ( C/S/I/D: 18362/7345/436/1105; hyp_len=26143, ref_len=26812 )
+                              | Loss: 2.512
+23
+las-evaluate-multilingual     | WER: 23.47% ( C/S/I/D: 9155/1692/542/408; hyp_len=11389, ref_len=11255 )
+                              | CER: 12.26% ( C/S/I/D: 43757/2400/1801/1659; hyp_len=47958, ref_len=47816 )
+                              | Loss: 0.887
+                              | WER: 83.18% ( C/S/I/D: 302/1493/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 32.05% ( C/S/I/D: 18572/7050/354/1190; hyp_len=25976, ref_len=26812 )
+                              | Loss: 2.494
+26 0.001
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 23.47% ( C/S/I/D: 9155/1692/542/408; hyp_len=11389, ref_len=11255 )
+                              | CER: 12.26% ( C/S/I/D: 43757/2400/1801/1659; hyp_len=47958, ref_len=47816 )
+                              | Loss: 0.887
+                              | WER: 83.18% ( C/S/I/D: 302/1493/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 32.05% ( C/S/I/D: 18572/7050/354/1190; hyp_len=25976, ref_len=26812 )
+                              | Loss: 2.494
+
+27 learning rate 0.0008
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 21.56% ( C/S/I/D: 9227/1580/399/448; hyp_len=11206, ref_len=11255 )
+                              | CER: 10.93% ( C/S/I/D: 43820/2227/1229/1769; hyp_len=47276, ref_len=47816 )
+                              | Loss: 0.872
+                              | WER: 81.34% ( C/S/I/D: 335/1460/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 31.42% ( C/S/I/D: 18861/6908/472/1043; hyp_len=26241, ref_len=26812 )
+                              | Loss: 2.454
+28
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 21.01% ( C/S/I/D: 9298/1565/408/392; hyp_len=11271, ref_len=11255 )
+                              | CER: 10.63% ( C/S/I/D: 44046/2165/1313/1605; hyp_len=47524, ref_len=47816 )
+                              | Loss: 0.870
+                              | WER: 82.34% ( C/S/I/D: 317/1478/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 31.02% ( C/S/I/D: 18872/6870/377/1070; hyp_len=26119, ref_len=26812 )
+                              | Loss: 2.459
+29
+las-evaluate-multilingual     | WER: 20.65% ( C/S/I/D: 9327/1533/396/395; hyp_len=11256, ref_len=11255 )
+                              | CER: 10.53% ( C/S/I/D: 44011/2170/1231/1635; hyp_len=47412, ref_len=47816 )
+                              | Loss: 0.868
+                              | WER: 81.78% ( C/S/I/D: 327/1468/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 31.16% ( C/S/I/D: 18895/6825/438/1092; hyp_len=26158, ref_len=26812 )
+                              | Loss: 2.444
+30
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 20.62% ( C/S/I/D: 9360/1529/426/366; hyp_len=11315, ref_len=11255 )
+                              | CER: 10.24% ( C/S/I/D: 44243/2079/1323/1494; hyp_len=47645, ref_len=47816 )
+                              | Loss: 0.864
+                              | WER: 81.06% ( C/S/I/D: 340/1455/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 30.03% ( C/S/I/D: 19108/6569/347/1135; hyp_len=26024, ref_len=26812 )
+                              | Loss: 2.432
+31
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 20.47% ( C/S/I/D: 9353/1495/402/407; hyp_len=11250, ref_len=11255 )
+                              | CER: 10.33% ( C/S/I/D: 44060/2104/1184/1652; hyp_len=47348, ref_len=47816 )
+                              | Loss: 0.865
+                              | WER: 81.28% ( C/S/I/D: 336/1459/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 30.38% ( C/S/I/D: 19065/6610/399/1137; hyp_len=26074, ref_len=26812 )
+                              | Loss: 2.441
+32 lr=0.0005
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 19.61% ( C/S/I/D: 9415/1423/367/417; hyp_len=11205, ref_len=11255 )
+                              | CER: 9.83% ( C/S/I/D: 44270/1955/1153/1591; hyp_len=47378, ref_len=47816 )
+                              | Loss: 0.860
+                              | WER: 80.67% ( C/S/I/D: 347/1448/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 29.46% ( C/S/I/D: 19265/6428/353/1119; hyp_len=26046, ref_len=26812 )
+                              | Loss: 2.401
+33
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 19.08% ( C/S/I/D: 9435/1398/328/422; hyp_len=11161, ref_len=11255 )
+                              | CER: 9.62% ( C/S/I/D: 44228/1907/1010/1681; hyp_len=47145, ref_len=47816 )
+                              | Loss: 0.858
+                              | WER: 81.39% ( C/S/I/D: 334/1461/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 29.67% ( C/S/I/D: 19231/6478/375/1103; hyp_len=26084, ref_len=26812 )
+                              | Loss: 2.410
+34
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 19.60% ( C/S/I/D: 9419/1459/370/377; hyp_len=11248, ref_len=11255 )
+                              | CER: 9.83% ( C/S/I/D: 44264/1983/1149/1569; hyp_len=47396, ref_len=47816 )
+                              | Loss: 0.856
+                              | WER: 80.39% ( C/S/I/D: 352/1443/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 29.50% ( C/S/I/D: 19339/6482/437/991; hyp_len=26258, ref_len=26812 )
+                              | Loss: 2.402
+35
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 18.99% ( C/S/I/D: 9474/1399/356/382; hyp_len=11229, ref_len=11255 )
+                              | CER: 9.50% ( C/S/I/D: 44357/1924/1082/1535; hyp_len=47363, ref_len=47816 )
+                              | Loss: 0.855
+                              | WER: 80.67% ( C/S/I/D: 347/1448/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 29.61% ( C/S/I/D: 19326/6472/453/1014; hyp_len=26251, ref_len=26812 )
+                              | Loss: 2.400
+36
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 19.69% ( C/S/I/D: 9440/1448/401/367; hyp_len=11289, ref_len=11255 )
+                              | CER: 9.80% ( C/S/I/D: 44363/1973/1235/1480; hyp_len=47571, ref_len=47816 )
+                              | Loss: 0.857
+                              | WER: 80.72% ( C/S/I/D: 346/1449/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 30.19% ( C/S/I/D: 19240/6575/522/997; hyp_len=26337, ref_len=26812 )
+                              | Loss: 2.405
+38
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 18.62% ( C/S/I/D: 9495/1357/336/403; hyp_len=11188, ref_len=11255 )
+                              | CER: 9.42% ( C/S/I/D: 44405/1858/1091/1553; hyp_len=47354, ref_len=47816 )
+                              | Loss: 0.853
+                              | WER: 80.78% ( C/S/I/D: 345/1450/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 29.14% ( C/S/I/D: 19479/6342/480/991; hyp_len=26301, ref_len=26812 )
+                              | Loss: 2.378
+39
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 18.97% ( C/S/I/D: 9472/1375/352/408; hyp_len=11199, ref_len=11255 )
+                              | CER: 9.34% ( C/S/I/D: 44397/1841/1046/1578; hyp_len=47284, ref_len=47816 )
+                              | Loss: 0.853
+                              | WER: 80.45% ( C/S/I/D: 351/1444/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 29.15% ( C/S/I/D: 19421/6391/424/1000; hyp_len=26236, ref_len=26812 )
+                              | Loss: 2.397
+40
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 18.94% ( C/S/I/D: 9452/1401/329/402; hyp_len=11182, ref_len=11255 )
+                              | CER: 9.54% ( C/S/I/D: 44308/1954/1052/1554; hyp_len=47314, ref_len=47816 )
+                              | Loss: 0.852
+                              | WER: 80.33% ( C/S/I/D: 353/1442/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 28.76% ( C/S/I/D: 19554/6227/453/1031; hyp_len=26234, ref_len=26812 )
+                              | Loss: 2.373
+41
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 18.70% ( C/S/I/D: 9466/1369/316/420; hyp_len=11151, ref_len=11255 )
+                              | CER: 9.42% ( C/S/I/D: 44322/1865/1011/1629; hyp_len=47198, ref_len=47816 )
+                              | Loss: 0.852
+                              | WER: 79.72% ( C/S/I/D: 364/1431/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 28.89% ( C/S/I/D: 19402/6298/336/1112; hyp_len=26036, ref_len=26812 )
+                              | Loss: 2.416
+42
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 18.53% ( C/S/I/D: 9513/1358/344/384; hyp_len=11215, ref_len=11255 )
+                              | CER: 9.24% ( C/S/I/D: 44454/1887/1057/1475; hyp_len=47398, ref_len=47816 )
+                              | Loss: 0.850
+                              | WER: 79.78% ( C/S/I/D: 363/1432/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 28.77% ( C/S/I/D: 19507/6279/408/1026; hyp_len=26194, ref_len=26812 )
+                              | Loss: 2.393
+43
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 18.72% ( C/S/I/D: 9517/1372/369/366; hyp_len=11258, ref_len=11255 )
+                              | CER: 9.36% ( C/S/I/D: 44512/1863/1170/1441; hyp_len=47545, ref_len=47816 )
+                              | Loss: 0.850
+                              | WER: 80.50% ( C/S/I/D: 350/1445/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 29.32% ( C/S/I/D: 19442/6388/490/982; hyp_len=26320, ref_len=26812 )
+                              | Loss: 2.387
+44
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 18.37% ( C/S/I/D: 9498/1326/311/431; hyp_len=11135, ref_len=11255 )
+                              | CER: 9.20% ( C/S/I/D: 44410/1822/994/1584; hyp_len=47226, ref_len=47816 )
+                              | Loss: 0.848
+                              | WER: 79.67% ( C/S/I/D: 365/1430/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 29.14% ( C/S/I/D: 19444/6368/446/1000; hyp_len=26258, ref_len=26812 )
+                              | Loss: 2.389
+testing result
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+las-evaluate-multilingual     | WER: 18.50% ( C/S/I/D: 21466/3042/659/1022; hyp_len=25167, ref_len=25530 )
+                              | CER: 9.59% ( C/S/I/D: 98482/4118/2269/3822; hyp_len=104869, ref_len=106422 )
+                              | Loss: 0.848
+                              | WER: 73.04% ( C/S/I/D: 412/1116/0/0; hyp_len=1528, ref_len=1528 )
+                              | CER: 21.39% ( C/S/I/D: 18555/4232/341/384; hyp_len=23128, ref_len=23171 )
+                              | Loss: 2.389
+
+Monogolingual mandarin model
+epoch 10
+Experiment                    | Final Scores
+-----------------------------------------------------------------------
+final-evaluate-pyramidal-mandarin| WER: 100.00% ( C/S/I/D: 0/1795/0/0; hyp_len=1795, ref_len=1795 )
+                              | CER: 481.11% ( C/S/I/D: 51/26761/102233/0; hyp_len=129045, ref_len=26812 )
+                              | Loss: 0.903

@@ -284,7 +284,8 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
                search_strategy:SearchStrategy=bare(BeamSearch),
                compute_report:bool = Ref("exp_global.compute_report", default=False),
                calc_global_fertility:bool=False,
-               calc_attention_entropy:bool=False):
+               calc_attention_entropy:bool=False,
+               task_id: int =0): #task_id: english_task ==0; mandarin_task==1
     super().__init__(src_reader=src_reader, trg_reader=trg_reader)
     self.src_embedder = src_embedder
     self.encoder = encoder
@@ -298,6 +299,7 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
     self.search_strategy = search_strategy
     self.compute_report = compute_report
     self.decoder_vectors= []
+    self.task_id=task_id
 
   def shared_params(self):
     return [{".src_embedder.emb_dim", ".encoder.input_dim"},
@@ -310,7 +312,7 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
     encodings = self.encoder.transduce(embeddings)
     self.attender_out2in.init_sent(encodings) #encodings are the input hidden nodes vector
     self.cluster.input_hidden_nodes=encodings
-    #self.cluster.initalize_cluster_counting()
+    self.cluster.clear_stale_expressions()
     self.cluster.init_attender_cluster()
     self.cluster.calc_attention_in2cluster()
 
@@ -359,9 +361,14 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
     predict_vocab_index=np.argmax(dy.argmax(word_prob,gradient_mode="zero_gradient").npvalue(),axis=0)
     one_hot_subtract=predict_vocab_index-np.asarray(list(ref_word))
     correct_predicted_batch_index=np.array(np.argwhere(one_hot_subtract == 0)).flatten()
+    if self.task_id == 0:
+        correct_characters_index=[ref_word[i] for i in correct_predicted_batch_index]
+    else:
+        correct_characters_index=[ref_word[i]+55 for i in correct_predicted_batch_index]
 
     correct_vectors=dy.pick_batch_elems(rnn_output,correct_predicted_batch_index)
-    cluster_loss=self.cluster.calc_loss_one_step_context(correct_vectors,output_time,correct_predicted_batch_index)
+    cluster_loss=self.cluster.calc_loss_one_step_context(correct_vectors,output_time,correct_predicted_batch_index,correct_characters_index)
+    #self.cluster.split_cluster()
     return dec_state, word_loss, cluster_loss
 
   def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
@@ -389,7 +396,6 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
       output_actions = [x for x in curr_output.word_ids[0]]
       attentions = [x for x in curr_output.attentions[0]]
       score = curr_output.score[0]
-      #print("output_actions",output_actions,"attentions",attentions,"score",score)
       if len(sorted_outputs) == 1:
         outputs.append(TextOutput(actions=output_actions,
                                   vocab=getattr(self.trg_reader, "vocab", None),
@@ -407,7 +413,6 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
                                 "src_vocab": getattr(self.src_reader, "vocab", None),
                                 "trg_vocab": getattr(self.trg_reader, "vocab", None),
                                 "output": outputs[0]})
-    #print(outputs)
     return outputs
 
   def generate_one_step(self, current_word: Any, current_state: AutoRegressiveDecoderState) -> TranslatorOutput:

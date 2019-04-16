@@ -109,6 +109,7 @@ las-pyramidal-multilingual-experiment: !Experiment
             _xnmt_id: trg_eng_vocab
             encoding_option: GBK
             vocab_file: '{EXP_DIR}/vocab.char'
+        task_id: 0
     - !SimpleTrainingTask
       name: mandarin_task
       max_src_len: 1500
@@ -183,6 +184,7 @@ las-pyramidal-multilingual-experiment: !Experiment
             _xnmt_id: trg_chi_vocab
             encoding_option: GBK
             vocab_file: '{EXP_DIR}/chineseVocab.char'
+        task_id: 1
   # evaluate: #used for development test
   #   - !AccuracyEvalTask
   #     model: !Ref { name: english_model }

@@ -345,7 +345,27 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
 
     return model_loss
 
-  def calc_loss_one_step(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch, input_word:Optional[Batch], output_time: int) \
+  def get_batch_characters_index(self,ref_word,ref_word_prev,ref_word_later,correct_predicted_batch_index):
+      """
+      Get the desire batch index. For English words, pick the word index with vowel in center.
+      """
+      char_idx=[]
+      batch_idx=[]
+      vowels_idx=[3,13,24,31,41]
+      for i in range(len(correct_predicted_batch_index)):
+          if self.task_id==0:
+              if ref_word[i] in vowels_idx:
+                  char_idx.append((ref_word_prev[i],ref_word[i],ref_word_later[i]))
+                  batch_idx.append(correct_predicted_batch_index[i])
+          else:
+              if ref_word[i]!=0 and ref_word[i]!=1 and ref_word[i]!=2:
+                  char_idx.append(ref_word[i]+55)
+                  batch_idx.append(correct_predicted_batch_index[i])
+      #print(char_idx,batch_idx)
+      return char_idx, batch_idx
+
+  def calc_loss_one_step(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch,\
+        ref_word_prev:Batch,ref_word_later:Batch,input_word:Optional[Batch], output_time: int) \
           -> Tuple[AutoRegressiveDecoderState,dy.Expression]:
     if input_word is not None:
       dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
@@ -358,17 +378,14 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
     hidden_dim=rnn_output.dim()[0][0]
     word_prob = self.decoder.calc_log_probs(dec_state)
 
+    #max_prob=dy.dot_product(dy.argmax(word_prob,gradient_mode="zero_gradient"),word_prob)
     predict_vocab_index=np.argmax(dy.argmax(word_prob,gradient_mode="zero_gradient").npvalue(),axis=0)
     one_hot_subtract=predict_vocab_index-np.asarray(list(ref_word))
     correct_predicted_batch_index=np.array(np.argwhere(one_hot_subtract == 0)).flatten()
-    if self.task_id == 0:
-        correct_characters_index=[ref_word[i] for i in correct_predicted_batch_index]
-    else:
-        correct_characters_index=[ref_word[i]+55 for i in correct_predicted_batch_index]
+    char_idx,batch_idx=self.get_batch_characters_index(ref_word,ref_word_prev,ref_word_later,correct_predicted_batch_index)
 
-    correct_vectors=dy.pick_batch_elems(rnn_output,correct_predicted_batch_index)
-    cluster_loss=self.cluster.calc_loss_one_step_context(correct_vectors,output_time,correct_predicted_batch_index,correct_characters_index)
-    #self.cluster.split_cluster()
+    correct_vectors=dy.pick_batch_elems(rnn_output,batch_idx)
+    cluster_loss=self.cluster.calc_loss_one_step_context(correct_vectors,word_prob,output_time,batch_idx,char_idx)
     return dec_state, word_loss, cluster_loss
 
   def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
@@ -425,9 +442,9 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
       next_state = self.decoder.add_input(current_state, current_word_embed)
     else:
       next_state = current_state
-    next_state.context = self.attender_in2out.calc_context(next_state.rnn_state.output())
+    next_state.context = self.attender_out2in.calc_context(next_state.rnn_state.output())
     next_logsoftmax = self.decoder.calc_log_probs(next_state)
-    return TranslatorOutput(next_state, next_logsoftmax, self.attender_in2out.get_last_attention())
+    return TranslatorOutput(next_state, next_logsoftmax, self.attender_out2in.get_last_attention())
 
   def global_fertility(self, a):
     return dy.sum_elems(dy.square(1 - dy.esum(a)))

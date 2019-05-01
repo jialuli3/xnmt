@@ -1,0 +1,77 @@
+las-evaluate-multilingual-experiment: !LoadSerialized
+  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-pyramidal-multilingual-experiment-sequence1.mod
+  overwrite:
+  - path: train.tasks.0.run_for_epochs
+    val: 0
+  - path: train.tasks.1.run_for_epochs
+    val: 0
+  - path: evaluate
+    val:
+      - !AccuracyEvalTask
+        model: !Ref {default: 1928437192847, name: null, path: train.tasks.0.model}
+        eval_metrics: wer,cer
+        src_file: '{ENG_DATA_DIR}/feat/dev.h5'
+        ref_file: '{ENG_DATA_DIR}/transcript/dev.words'
+        #src_file: '/home/jialu/TIMIT/test_5.h5'
+        #ref_file: '/home/jialu/TIMIT/test_5.words'
+        hyp_file: '{EXP_DIR}/logs/{EXP}.eng_dev_hyp'
+        inference: !AutoRegressiveInference
+          batcher: !InOrderBatcher
+            batch_size: 1
+            pad_src_to_multiple: 8
+            src_pad_token: ~
+          max_src_len: 1500
+          post_process: join-char
+          search_strategy: !BeamSearch
+            max_len: 500
+            beam_size: 20
+            len_norm: !PolynomialNormalization
+              apply_during_search: true
+              m: 1.5
+      - !LossEvalTask
+        model: !Ref {default: 1928437192847, name: null, path: train.tasks.0.model}
+        max_src_len: 1500
+        src_file: '{ENG_DATA_DIR}/feat/dev.h5'
+        ref_file: '{ENG_DATA_DIR}/transcript/dev.char'
+        #src_file: '/home/jialu/TIMIT/test_5.h5'
+        #ref_file: '/home/jialu/TIMIT/test_5.char'
+        loss_calculator: !AutoRegressiveClusterLoss
+          truncate_dec_batches: False
+        batcher: !InOrderBatcher
+          batch_size: 1
+          pad_src_to_multiple: 8
+          src_pad_token: ~
+      - !AccuracyEvalTask
+        model: !Ref {default: 1928437192847, name: null, path: train.tasks.1.model}
+        eval_metrics: wer,cer
+        #src_file: '{CHI_DATA_DIR}/test_5.h5'
+        #ref_file: '{CHI_DATA_DIR}/test_5.words'
+        src_file: '{CHI_DATA_DIR}/dev.h5'
+        ref_file: '{CHI_DATA_DIR}/dev.words'
+        hyp_file: '{EXP_DIR}/logs/{EXP}.chi_dev_hyp'
+        inference: !AutoRegressiveInference
+          batcher: !InOrderBatcher
+            batch_size: 1
+            pad_src_to_multiple: 8
+            src_pad_token: ~
+          max_src_len: 1500
+          post_process: join-char
+          search_strategy: !BeamSearch
+            max_len: 500
+            beam_size: 20
+            len_norm: !PolynomialNormalization
+              apply_during_search: true
+              m: 1.5
+      - !LossEvalTask
+        model: !Ref {default: 1928437192847, name: null, path: train.tasks.1.model}
+        max_src_len: 1500
+        #src_file: '{CHI_DATA_DIR}/test_5.h5'
+        #ref_file: '{CHI_DATA_DIR}/test_5.char'
+        src_file: '{CHI_DATA_DIR}/dev.h5'
+        ref_file: '{CHI_DATA_DIR}/dev.char'
+        loss_calculator: !AutoRegressiveClusterLoss
+          truncate_dec_batches: False
+        batcher: !InOrderBatcher
+          batch_size: 1
+          pad_src_to_multiple: 8
+          src_pad_token: ~

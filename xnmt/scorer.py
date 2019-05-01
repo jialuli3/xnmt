@@ -132,7 +132,6 @@ class Softmax(Scorer, Serializable):
   def calc_loss(self, x: dy.Expression, y: Union[int, List[int]]) -> dy.Expression:
 
     scores = self.calc_scores(x)
-
     if self.label_smoothing == 0.0:
       # single mode
       if not batcher.is_batched(y):
@@ -149,9 +148,6 @@ class Softmax(Scorer, Serializable):
 
       ls_loss = -dy.mean_elems(log_prob)
       loss = ((1 - self.label_smoothing) * pre_loss) + (self.label_smoothing * ls_loss)
-    # print("x dim",x.dim())
-    # print("scores",scores.dim())
-    # print("loss",loss.dim())
     return loss
 
   def calc_probs(self, x: dy.Expression) -> dy.Expression:

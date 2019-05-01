@@ -53,6 +53,7 @@ class AutoRegressiveMLELoss(Serializable, LossCalculator):
         assert 1==len([i for i in range(seq_len) if (trg_mask is None or trg_mask.np_arr[j,i]==0) and single_trg[i]==Vocab.ES]) # assert exactly one unmasked ES token
     input_word = None
     #print("seq_len",seq_len)
+
     for i in range(seq_len):
       ref_word = AutoRegressiveMLELoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
       if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
@@ -119,9 +120,19 @@ class AutoRegressiveClusterLoss(Serializable, LossCalculator):
 
     for i in range(seq_len):
       ref_word = AutoRegressiveClusterLoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
+      length=len(list(ref_word))
+      if i!=0:
+          ref_word_prev=AutoRegressiveClusterLoss._select_ref_words(trg, i-1, truncate_masked=self.truncate_dec_batches)
+      else:
+          ref_word_prev=[" "]*length
+      if i!=seq_len-1:
+        ref_word_later=AutoRegressiveClusterLoss._select_ref_words(trg, i+1, truncate_masked=self.truncate_dec_batches)
+      else:
+        ref_word_later=[" "]*length
+
       if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
         dec_state.rnn_state, ref_word = xnmt.batcher.truncate_batches(dec_state.rnn_state, ref_word)
-      dec_state, word_loss, cluster_loss = translator.calc_loss_one_step(dec_state, ref_word, input_word, i)
+      dec_state, word_loss, cluster_loss = translator.calc_loss_one_step(dec_state, ref_word, ref_word_prev,ref_word_later,input_word, i)
 
       if not self.truncate_dec_batches and xnmt.batcher.is_batched(src) and trg_mask is not None:
         word_loss = trg_mask.cmult_by_timestep_expr(word_loss, i, inverse=True)
@@ -132,8 +143,8 @@ class AutoRegressiveClusterLoss(Serializable, LossCalculator):
     #   loss_expr_word = dy.esum([dy.sum_batches(wl) for wl in losses])
     # else:
     #   loss_expr_word = dy.esum(losses)
-    loss_expr_word=dy.esum(word_losses)
-    loss_expr_cluster=dy.esum(cluster_losses)
+    loss_expr_word=0.9*dy.esum(word_losses)
+    loss_expr_cluster=0.1*dy.esum(cluster_losses)
     translator.cluster.query_cluster()
     return FactoredLossExpr({"mle": loss_expr_word, "cluster":loss_expr_cluster})
 

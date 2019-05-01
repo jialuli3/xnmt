@@ -119,6 +119,9 @@ class PlainTextReader(BaseTextReader, Serializable):
       self.vocab.set_unk(Vocab.UNK_STR)
 
   def read_sent(self, line):
+    #print(line)
+    #print(line.strip().split()[0])
+    #print(self.vocab.convert(line.strip().split()[0]))
     if self.vocab:
       self.convert_fct = self.vocab.convert
     else:

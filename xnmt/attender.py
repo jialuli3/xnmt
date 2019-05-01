@@ -75,6 +75,7 @@ class MlpAttender(Attender, Serializable):
     self.curr_sent = None
     self.attention_vecs = None
     self.WI = None
+    self._prev_pv=self.pV
 
   def init_sent(self, sent):
     self.attention_vecs = []
@@ -98,7 +99,7 @@ class MlpAttender(Attender, Serializable):
   def calc_attention(self, state: dy.Expression) -> dy.Expression:
     V = dy.parameter(self.pV)
     U = dy.parameter(self.pU)
-
+    #print("V",V.value())
     WI = self.WI
     if isinstance(self.curr_sent, dy.Expression):
         curr_sent_mask=None

@@ -12,6 +12,6 @@ las-pyramidal-multilingual-experiment-sequence6: !LoadSerialized
    - path: train.tasks.1.trg_file
      val: '{CHI_DATA_DIR}/train2.char'
    - path: train.tasks.0.batcher.avg_batch_size
-     val: 38
+     val: 28
    - path: train.tasks.1.batcher.avg_batch_size
-     val: 38
+     val: 28

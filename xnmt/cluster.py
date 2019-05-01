@@ -5,6 +5,7 @@ import numpy as np
 import dynet as dy
 
 from typing import List, Union, Optional
+from pypinyin import pinyin,lazy_pinyin,Style
 from math import ceil
 from xnmt.attender import Attender, MlpAttender
 from xnmt.param_collection import ParamManager
@@ -34,6 +35,7 @@ class ClusterAdapt(Cluster,Serializable):
     def __init__(self,
             n_dims: int = 100,
             n_components: int = 50,
+            threshold: float =0.01,
             attender_in2cluster: Attender=bare(MlpAttender),
             param_init: ParamInitializer = bare(NormalInitializer)
             )-> None:
@@ -46,30 +48,53 @@ class ClusterAdapt(Cluster,Serializable):
         self._n_components = n_components
         self.attender_in2cluster = attender_in2cluster
         self.pc = ParamManager.my_params(self)
-        #self._mu=self.pc.add_parameters((n_components,n_dims),init=param_init.initializer((n_components,n_dims)))
-        self._mu=self.pc.add_parameters((n_components,n_dims),init=param_init.initializer((n_dims,n_components)))
+        self._mu=self.pc.add_parameters((n_components,n_dims),init=param_init.initializer((n_components,n_dims)))
         self.attention_out2in_vecs=None
         self.input_hidden_nodes = None
-        self.total_loss=0
         self._curr_occupied_clusters=dict(zip(range(self._n_dims),[0]*self._n_dims))
-        #self._centroid=np.transpose(self._mu.npvalue())
-        self._centroid=self._mu.npvalue()
-        self._prev_centroid=self._centroid
-        self._characters_dist_index_count={}
-        self._characters_dist_context={}
+        #self._centroid=self._mu.npvalue()
+        self._characters_dist={}
+        self.convert_dictionary("/home/jialu/xnmt/recipes/las-tedlium/chineseVocab.char","/home/jialu/xnmt/recipes/las-tedlium/vocab.char",False)
+        self.char_cluster_count=dict()
+        self.cluster_char_count=dict()
+        self.cluster_py_count=dict()
 
+        self.COUNT=0
+        self.CONTEXT=1
+        self.PRIOR=2
+    def convert_dictionary(self,vocab,char,heter):
+        """
+        style: 0-no tone, 1 - tone
+        """
+        self.vocab_dict={}
+        self.vocab_list=["SS","ES"]
+        self.char_list=["SS","ES"]
+        f=open(vocab,"r",encoding="GBK")
+        vocabs = f.readlines()
+        for v in vocabs:
+            v=v.strip()
+            if pinyin(v,heteronym=heter) == []:
+                self.vocab_dict[v]=' '
+            else:
+                self.vocab_dict[v]=pinyin(v,heteronym=heter)[0]
+            self.vocab_list.append(v)
+        f.close()
+        f=open(char,"r")
+        chars=f.readlines()
+        for ch in chars:
+            ch=ch.strip()
+            self.char_list.append(ch)
+        f.close()
 
     def clear_stale_expressions(self):
-        self._characters_dist_index_count={}
-        self._characters_dist_context={}
+        self._characters_dist.clear()
 
     def init_attender_cluster(self):
         """
         Initialization of cluster in attender
         """
-        #self._mu.set_value(np.transpose(self._centroid))
-        self._mu.set_value(self._centroid)
-        self.attender_in2cluster.init_sent(dy.inputTensor(self._centroid))
+        mu=dy.parameter(self._mu)
+        self.attender_in2cluster.init_sent(mu)
 
     def calc_attention_in2cluster(self):
         """
@@ -98,12 +123,9 @@ class ClusterAdapt(Cluster,Serializable):
         Returns:
             context_out2cluster(batch_size*# of clusters)
         """
-        input_length=self.input_hidden_nodes.dim()[0][1]
+        #input_length=self.input_hidden_nodes.dim()[0][1]
         att_out2in=self.attention_out2in_vecs[output_time] #att_out2in(i,t)=p(t|i)
-        #context_out2in2cluster=np.zeros((self._n_dims,input_length)) #c(k,t|i)=p(t,k|i)
         context_out2cluster=dy.sum_dim(dy.cmult(dy.transpose(dy.pick_batch_elems(att_out2in,[batch_idx])),dy.pick_batch_elems(self.att_in2cluster_dy_expressions,[batch_idx])),[1])
-
-        #print(dy.sum_elems(context_out2cluster).value())
         return context_out2cluster
 
     def predict(self,context_out2cluster):
@@ -117,57 +139,260 @@ class ClusterAdapt(Cluster,Serializable):
         """
         return np.argmax(context_out2cluster.value()) #c(i,k)
 
-    def calc_loss_one_step_context(self, x, output_time, correct_predicted_batch_index, correct_characters_index):
+    def record_charclustercount(self,char,cluster):
+        if not isinstance(char,int):
+            #print(char)
+            if char[0]==' ':
+                char_str="".join([' ',self.char_list[char[1]],self.char_list[char[2]]])
+            elif char[2]==' ':
+                char_str="".join([self.char_list[char[0]],self.char_list[char[1]],' '])
+            else:
+                char_str="".join([self.char_list[char[0]],self.char_list[char[1]],self.char_list[char[2]]])
+            #print(char_str)
+            # if char_str not in self.char_cluster_count:
+            #     self.char_cluster_count[char_str]=dict()
+            # if cluster not in self.char_cluster_count[char_str]:
+            #     self.char_cluster_count[char_str][cluster]=0
+            # self.char_cluster_count[char_str][cluster]+=1
+
+            if cluster not in self.cluster_char_count:
+                self.cluster_char_count[cluster]=dict()
+            if char_str not in self.cluster_char_count[cluster]:
+                self.cluster_char_count[cluster][char_str]=0
+            self.cluster_char_count[cluster][char_str]+=1
+        else:
+            char=char-55
+            v=self.vocab_list[char]
+            py_str=self.vocab_dict[v][0]
+
+            # if py_str not in self.char_cluster_count:
+            #     self.char_cluster_count[char_str]=dict()
+            # if cluster not in self.char_cluster_count[char_str]:
+            #     self.char_cluster_count[char_str][cluster]=0
+            # self.char_cluster_count[char_str][cluster]+=1
+
+            if cluster not in self.cluster_py_count:
+                self.cluster_py_count[cluster]=dict()
+            if py_str not in self.cluster_py_count[cluster]:
+                self.cluster_py_count[cluster][py_str]=0
+            self.cluster_py_count[cluster][py_str]+=1
+
+    def calc_impurity(self,task_id):
+        """
+        calc impurity loss as one training criteria per batch.
+        cluster impurity: sum k (1-q(k))=sum k (1-p(k|i)p(i)/(sum j p(k|j)p(j)))       
+        """
+        char_loss=0
+        total_char_count=0
+        cluster_loss=0
+        total_count=[]
+
+        if task_id==0:
+            cluster_char_count=self.cluster_char_count
+        else:
+            cluster_char_count=self.cluster_py_count
+
+        for cluster in cluster_char_count:
+            curr_total_count=sum(cluster_char_count[cluster].values())
+            total_count.append(curr_total_count)
+            if len(cluster_char_count[cluster].keys())>5:
+                curr_loss=(curr_total_count-sum(sorted(cluster_char_count[cluster].values(),reverse=True)[0:5]))/curr_total_count
+                char_loss+=curr_loss
+                total_char_count+=1
+
+        if total_char_count!=0:
+            char_loss/=total_char_count
+        total_count=sorted(total_count,reverse=True)
+        cluster_loss=sum(total_count[0:50])/sum(total_count)
+
+        #print("char_loss: "+str(char_loss)+" py_loss: "+str(py_loss))
+        #return char_loss, py_loss, (cluster_char_loss+cluster_py_loss)/2
+        return char_loss, cluster_loss
+
+    def calc_KL_loss_diff_cluster_helper(self,context,prior):
+        """
+        Calculate different char cluster loss helper
+        """
+        num_char=prior.dim()[0][0]
+        context=dy.reshape(context,(1,self._n_dims))
+        prior=dy.reshape(prior,(num_char,1))       
+        diff_cluster_loss=dy.zeros((1,))
+        #print(np.sort(context.value())[::-1][0:6])
+        context_sort=np.argsort(context.value())[::-1][0][0:6]
+        #print(context_sort,dy.select_cols(context,context_sort[1:6]).value())
+        cluster=self.predict(context)
+        max_char_dist=prior*dy.select_cols(context,[cluster])       
+        char_dist=prior*dy.select_cols(context,context_sort[1:6])
+        #print(max_char_dist.dim(),char_dist.dim())
+        diff_cluster_loss=dy.sum_elems(dy.cmult(max_char_dist+1e-6,dy.log(char_dist+1e-6)))
+        return diff_cluster_loss
+
+    def calc_KL_loss_same_char_helper(self,context1,context2,prior1,prior2):
+        """
+        Calculate different char cluster loss helper
+        """
+        num_char=prior1.dim()[0][0]
+        char_dist1=dy.reshape(prior1,(num_char,1))*dy.reshape(context1,(1,self._n_dims))
+        char_dist2=dy.reshape(prior2,(num_char,1))*dy.reshape(context2,(1,self._n_dims))
+        same_char_loss=dy.sum_elems(dy.cmult(char_dist1+1e-6,dy.log(char_dist2+1e-6)))
+        return same_char_loss
+
+    def calc_KL_loss(self):
+        """
+        Calculate KL divergence measurement
+        max D(pk1||pk2)= min - D(pk1||pk2)=min sum i sum k2!=k1 
+        Args:
+        char_dist(dy.expression):prior distribution
+        """
+        same_cluster_loss=dy.zeros((1,))
+        diff_cluster_loss=dy.zeros((1,))
+        total_count=0
+        for char in self._characters_dist.keys():
+            context=self._characters_dist[char][self.CONTEXT]
+            prior=self._characters_dist[char][self.PRIOR]
+            count=self._characters_dist[char][self.COUNT]
+            total_count+=count
+            if count==1:
+                diff_cluster_loss+=self.calc_KL_loss_diff_cluster_helper(context,prior)
+            else:
+                for i in range(count):
+                    diff_cluster_loss+=self.calc_KL_loss_diff_cluster_helper(dy.select_cols(context,[i])\
+                        ,dy.select_cols(prior,[i]))
+                # for i in range(count-1):       
+                #     for j in range(i+1,count):
+                #         same_cluster_loss-=self.calc_KL_loss_same_char_helper(dy.select_cols(context,[i]),\
+                #             dy.select_cols(context,[j]),dy.select_cols(prior,[i]),dy.select_cols(prior,[j]))
+        if total_count!=0:
+            diff_cluster_loss/=total_count
+        return same_cluster_loss, diff_cluster_loss
+
+    def calc_char_loss(self,correct_characters_index):
+        """
+        Calculate context vector loss
+        """
+        loss_out2cluster_same_char=dy.zeros((1,))
+        loss_out2cluster_diff_char=dy.zeros((1,))        
+        #total_same=0
+        # for char in self._characters_dist.keys():
+        #     if self._characters_dist[char][self.COUNT]>=2:
+        #         context_out2cluster=self._characters_dist[char][self.CONTEXT]
+        #         count=self._characters_dist[char][self.COUNT]
+        #         for i in range(count-1):
+        #             for j in range(i+1,count):
+        #                 total_same+=1
+        #                 curr_loss_out2cluster_same_char=dy.sum_elems(dy.cmult(dy.select_cols(context_out2cluster,[i])+1e-6\
+        #                     ,dy.log(dy.select_cols(context_out2cluster,[j])+1e-6)))
+        #                 loss_out2cluster_same_char-=curr_loss_out2cluster_same_char
+
+        # if total_same!=0:
+        #     loss_out2cluster_same_char/=total_same
+        ### count all chars for distribution
+        # total_diff=0
+        # for i in range(len(correct_characters_index)-1):
+        #     char1 = correct_characters_index[i]
+        #     char1_context= self._characters_dist_context[char1]
+        #     char1_count=self._characters_dist_index_count[char1]
+        #     if char1_count==1:
+        #         char1_context=dy.reshape(char1_context,(self._n_dims,1))
+        #     for j in range(i+1,len(correct_characters_index)):
+        #         char2 = correct_characters_index[j]
+        #         char2_context= self._characters_dist_context[char2]
+        #         char2_count= self._characters_dist_index_count[char2]
+        #         if char2_count==1:
+        #             char2_context=dy.reshape(char2_context,(self._n_dims,1))
+        #         #print(char1_count,char2_count)
+        #         for ch1 in range(char1_count):
+        #             for ch2 in range(char2_count):
+        #                 curr_loss_out2cluster_diff_char=-dy.sum_elems(dy.cmult(dy.select_cols(char1_context,[ch1]),\
+        #                         dy.log(dy.select_cols(char2_context,[ch2]))))
+        #                 #self.diff_char.append(curr_loss_out2cluster_diff_char.value())
+        #                 #print(curr_loss_out2cluster_diff_char.value())
+        #                 if curr_loss_out2cluster_diff_char.value()>0:
+        #                     total_diff+=1
+        #                     loss_out2cluster_diff_char-=curr_loss_out2cluster_diff_char
+        # if total_diff!=0:
+        #     loss_out2cluster_diff_char/=total_diff
+
+        ### count chars with mean calculation for particular dimension
+        # for i in range(len(correct_characters_index)):
+            char=correct_characters_index[i]
+            char_count=self._characters_dist[char][self.COUNT]
+            if char_count==1:
+                context_vec=self._characters_dist[char][self.CONTEXT]
+            else:
+                context_vec=dy.mean_dim(self._characters_dist[char][self.CONTEXT],[1],False)
+            if i==0:
+                avg_context=context_vec
+            else:
+                avg_context=dy.concatenate_cols([avg_context,context_vec])
+
+        total_diff=0
+        for i in range(len(correct_characters_index)):
+            for j in range(i+1,len(correct_characters_index)):
+                curr_loss_out2cluster_diff_char=dy.sum_elems(dy.cmult(dy.select_cols(avg_context,[i])+1e-6,dy.log(dy.select_cols(avg_context,[j])+1e-6)))
+                if curr_loss_out2cluster_diff_char.value()<0:
+                    total_diff+=1
+                    loss_out2cluster_diff_char+=curr_loss_out2cluster_diff_char
+                    
+        if total_diff!=0:
+            loss_out2cluster_diff_char/=total_diff
+
+        # total_diff=0
+        # for i in range(len(correct_characters_index)-1):
+        #     char1=correct_characters_index[i]
+        #     char2=correct_characters_index[i+1]
+        #     if self._characters_dist[char1][self.COUNT]<2:
+        #         context1=self._characters_dist[char1][self.CONTEXT]
+        #     else:
+        #         context1=dy.select_cols(self._characters_dist[char1][self.CONTEXT],[0])
+        #     if self._characters_dist[char2][self.COUNT]<2:
+        #         context2=self._characters_dist[char2][self.CONTEXT]
+        #     else:
+        #         context2=dy.select_cols(self._characters_dist[char2][self.CONTEXT],[0])
+
+        #     curr_loss_out2cluster_diff_char=dy.sum_elems(dy.cmult(context1+1e-6,dy.log(context2+1e-6)))
+        #     if curr_loss_out2cluster_diff_char.value()<0:
+        #         total_diff+=1
+        #         loss_out2cluster_diff_char+=curr_loss_out2cluster_diff_char
+                    
+        # if total_diff!=0:
+        #     loss_out2cluster_diff_char/=total_diff
+        return loss_out2cluster_same_char,loss_out2cluster_diff_char
+
+    def calc_loss_one_step_context(self, x, word_prob, output_time, correct_predicted_batch_index, correct_characters_index):
         """
         Calculate cross-entropy loss given the output vectors
         Args:
         x(dy.Expression): all rnn output states for decoder
+        word_prob(dy.Expression): log probability of word distribution
         output_time(int): output time stamp
         correct_predicted_batch_index(nd.numpyarray): batch index of correct predicted characters
         correct_characters_index(list of int): list of index of correct predicted characters
         """
-        loss_out2cluster_same_char=dy.zeros((1,))
-        loss_out2cluster_diff_char=dy.zeros((1,))
+
         if len(correct_predicted_batch_index) == 0:
             return dy.zeros((1,))
-        #print("num_correct_predict_chars",len(correct_predicted_batch_index))
-
         for i in range(len(correct_predicted_batch_index)):
             curr_vector=dy.pick_batch_elems(x,[i])
             curr_context_out2cluster=self.fit(curr_vector, output_time, correct_predicted_batch_index[i])
             self._curr_occupied_clusters[self.predict(curr_context_out2cluster)]+=1
             curr_char=correct_characters_index[i]
-            if curr_char not in self._characters_dist_index_count.keys() or self._characters_dist_index_count[curr_char]==0:
-                self._characters_dist_index_count[curr_char]=1
-                self._characters_dist_context[curr_char]=curr_context_out2cluster
+            self.record_charclustercount(curr_char,self.predict(curr_context_out2cluster))
+            curr_word_prob=dy.exp(dy.pick_batch_elems(word_prob,[correct_predicted_batch_index[i]]))
+            if curr_char not in self._characters_dist.keys():
+                self._characters_dist[curr_char]=[1,curr_context_out2cluster,curr_word_prob]
             else:
-                self._characters_dist_index_count[curr_char]+=1
-                self._characters_dist_context[curr_char]=dy.concatenate_cols([self._characters_dist_context[curr_char],curr_context_out2cluster])
+                self._characters_dist[curr_char][self.COUNT]+=1
+                self._characters_dist[curr_char][self.CONTEXT]=dy.concatenate_cols([self._characters_dist[curr_char][self.CONTEXT],curr_context_out2cluster])
+                self._characters_dist[curr_char][self.PRIOR]=dy.concatenate_cols([self._characters_dist[curr_char][self.PRIOR],curr_word_prob])
 
+        loss_out2cluster_same_char,loss_out2cluster_diff_char=self.calc_char_loss(correct_characters_index)
+        loss_kl_same_char,loss_kl_diff_char=self.calc_KL_loss()
+        #return 0.2*loss_out2cluster_same_char+0.8*loss_out2cluster_diff_char+loss_kl_same_char+loss_kl_diff_char
+        return loss_out2cluster_diff_char+loss_kl_diff_char
+        #return loss_out2cluster_diff_char
 
-        for i in range(len(correct_characters_index)-1):
-            char1=self._characters_dist_context[correct_characters_index[i]]
-            char2=self._characters_dist_context[correct_characters_index[i+1]]
-            char1_count=self._characters_dist_index_count[correct_characters_index[i]]
-            if char1_count==1:
-                loss_out2loss_out2cluster_diff_char+=dy.sum_elems(dy.cmult(char1,dy.log(char2)))
-            else:
-                for ch1 in range(char1_count):
-                    print("ch1",dy.select_cols(char1,[ch1]).dim())
-                    loss_out2cluster_diff_char+=dy.sum_elems(dy.cmult(dy.select_cols(char1,[ch1]),dy.log(char2)))
-
-        for char,count in self._characters_dist_index_count.items():
-            if count>=2:
-                context_out2cluster=self._characters_dist_context[char]
-                for i in range(count-1):
-                    for j in range(i+1,count):
-                        loss_out2cluster_same_char-=dy.sum_elems(dy.cmult(dy.select_cols(context_out2cluster,[i]),dy.log(dy.select_cols(context_out2cluster,[j]))))
-                self._characters_dist_index_count[char]=0
-                self._characters_dist_context[char]=[]
-        #print("loss_out2cluster",loss_out2cluster.value())
-        return loss_out2cluster_same_char+loss_out2cluster_diff_char
-
-    def calc_loss_one_step_frames(self):
+    def calc_loss_one_step_in2cluster(self):
         """
         Calculate entropy loss given input2cluster attention vectors
         """
@@ -178,12 +403,26 @@ class ClusterAdapt(Cluster,Serializable):
         return -loss_input2cluster
 
     def query_cluster(self):
-        sorted_cluster=sorted(self._curr_occupied_clusters.items(), key=lambda kv:kv[1], reverse=True)
+        sorted_cluster=sorted(self._curr_occupied_clusters.items(), key=lambda kv:kv[1])
         occupied_clusters=[k[0] for k in sorted_cluster if k[1]!=0] #occupied cluster index
-        unoccupied_clusters=[c for c in list(range(self._n_dims)) if c not in occupied_clusters] #unoccupied cluster index
+        #unoccupied_clusters=[c for c in list(range(self._n_dims)) if c not in occupied_clusters] #unoccupied cluster index
+        for cl in occupied_clusters:
+            print("current occupied cluster index is "+str(cl))
+            if cl in self.cluster_char_count:
+                sorted_cl=sorted(self.cluster_char_count[cl].items(),key=lambda kv:kv[1], reverse=True)
+                print(str(sum(self.cluster_char_count[cl].values()))+" "+str(sorted_cl[0:5]))
+            if cl in self.cluster_py_count:
+                sorted_cl=sorted(self.cluster_py_count[cl].items(),key=lambda kv:kv[1], reverse=True)
+                print(str(sum(self.cluster_py_count[cl].values()))+" "+str(sorted_cl[0:5]))
+            print("\n")
+
+        char_loss,cluster_loss=self.calc_impurity(0)
+        print("char_impurity: "+str(char_loss)+" cluster_percentage: "+str(cluster_loss))
+        if len(self.cluster_py_count)!=0:
+            py_loss,cluster_loss=self.calc_impurity(1)
+            print("py_impurity: "+str(py_loss)+" cluster_percentage: "+str(cluster_loss))
         curr_occupied_clusters_num=len(occupied_clusters)
         print("There are currently "+str(curr_occupied_clusters_num)+" clusters occupied.")
-        print([k for k in sorted_cluster if k[1]!=0])
 
     def split_cluster(self):
         """
@@ -203,14 +442,15 @@ class ClusterAdapt(Cluster,Serializable):
         self._centroid=self._mu.npvalue()
         while len(occupied_clusters)<self._n_dims:
         #while curr_cluster_index<curr_occupied_clusters_num:
-            curr_feature=self._centroid[occupied_clusters[curr_cluster_index],:]
+            curr_feature=self._centroid[:,occupied_clusters[curr_cluster_index]]
             #Perform bisecting splitting
-            self._centroid[occupied_clusters[curr_cluster_index],:]=0.999*curr_feature
-            self._centroid[unoccupied_clusters[curr_cluster_index],:]=1.001*curr_feature
+            self._centroid[:,occupied_clusters[curr_cluster_index]]=0.99*curr_feature
+            self._centroid[:,unoccupied_clusters[curr_cluster_index]]=1.01*curr_feature
             occupied_clusters.append(unoccupied_clusters[curr_cluster_index])
             curr_cluster_index+=1
         #self._mu.set_value(np.transpose(self._centroid))
         self._mu.set_value(self._centroid)
+
 class KMeans(Cluster, Serializable):
     yaml_tag='!KMeans'
     @serializable_init

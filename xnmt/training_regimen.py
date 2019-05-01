@@ -280,6 +280,7 @@ class SameBatchMultiTaskTrainingRegimen(MultiTaskTrainingRegimen, Serializable):
       raise ValueError(f"number of tasks and steps per task do not match: {len(tasks)} != {len(self.n_task_steps)}")
 
   def run_training(self, save_fct):
+    self.trainer.set_clip_threshold(0.05)
     task_generators = OrderedDict()
     for task in self.tasks:
       task_generators[task] = task.next_minibatch()
@@ -318,7 +319,7 @@ class SameBatchMultiTaskTrainingRegimen(MultiTaskTrainingRegimen, Serializable):
         self.checkpoint_and_save(save_fct)
         if self.tasks[0].should_stop_training(): break
     #for task in self.tasks:
-     #  task.model.cluster.split_cluster()
+      #task.model.cluster.split_cluster()
   def checkpoint_and_save(self, save_fct):
     for task_i, task in enumerate(self.tasks):
       if self.dev_zero or task.checkpoint_needed():

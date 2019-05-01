@@ -1,1 +1,1 @@
-CUR_GIT_REVISION = "1940486" # via setup.py
+CUR_GIT_REVISION = "d9c89e5" # via setup.py

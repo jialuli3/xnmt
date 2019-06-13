@@ -88,8 +88,8 @@ class LossEvalTask(EvalTask, Serializable):
 
         ref_words_cnt += sum([trg_i.len_unpadded() for trg_i in trg])
         loss_val += loss_builder.get_factored_loss_val(comb_method=self.loss_comb_method)
-        #print(ref_words_cnt,loss_val)
 
+    #self.model.cluster.visualize_data(self.model.cluster.cache_x,self.model.cluster.cache_clusters,self.model.cluster.cache_char)
     loss_stats = {k: v/ref_words_cnt for k, v in loss_val.items()}
 
     try:

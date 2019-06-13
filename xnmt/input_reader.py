@@ -89,9 +89,7 @@ class BaseTextReader(InputReader):
     if filter_ids is not None:
       max_id = max(filter_ids)
       filter_ids = set(filter_ids)
-    print(filename)
-    #with open(filename, encoding='utf-8', mode='r') as f:
-    with open(filename, encoding='GBK') as f:
+    with open(filename, encoding=self.encoding) as f:
       for line in f:
         if filter_ids is None or sent_count in filter_ids:
           yield self.read_sent(line)
@@ -111,17 +109,19 @@ class PlainTextReader(BaseTextReader, Serializable):
   yaml_tag = '!PlainTextReader'
 
   @serializable_init
-  def __init__(self, vocab: Optional[Vocab] = None, read_sent_len: bool = False):
+  def __init__(self, vocab: Optional[Vocab] = None, read_sent_len: bool = False, encoding_option='utf-8'):
     self.vocab = vocab
     self.read_sent_len = read_sent_len
+    self.encoding=encoding_option
     if vocab is not None:
       self.vocab.freeze()
       self.vocab.set_unk(Vocab.UNK_STR)
 
   def read_sent(self, line):
     #print(line)
-    #print(line.strip().split()[0])
+    #print(line.strip().split())
     #print(self.vocab.convert(line.strip().split()[0]))
+
     if self.vocab:
       self.convert_fct = self.vocab.convert
     else:

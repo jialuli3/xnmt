@@ -99,7 +99,7 @@ class MlpAttender(Attender, Serializable):
   def calc_attention(self, state: dy.Expression) -> dy.Expression:
     V = dy.parameter(self.pV)
     U = dy.parameter(self.pU)
-    #print("V",V.value())
+
     WI = self.WI
     if isinstance(self.curr_sent, dy.Expression):
         curr_sent_mask=None

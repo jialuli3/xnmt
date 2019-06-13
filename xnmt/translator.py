@@ -23,6 +23,7 @@ from xnmt.lstm import BiLSTMSeqTransducer
 from xnmt.output import TextOutput, Output, NbestOutput
 import xnmt.plot
 from xnmt.reports import Reportable
+from xnmt.scorer import Scorer, Softmax
 from xnmt.persistence import serializable_init, Serializable, bare, Ref
 from xnmt.search_strategy import BeamSearch, SearchStrategy
 from xnmt import transducer
@@ -135,9 +136,6 @@ class DefaultTranslator(AutoRegressiveTranslator, Serializable, Reportable, mode
     embeddings = self.src_embedder.embed_sent(src)
     encodings = self.encoder.transduce(embeddings)
     self.attender.init_sent(encodings)
-    #print(encodings.dim())
-    #print(encodings[0])
-    #print(encodings.dim()[0],encodings.dim()[1])
     if is_batched(src):
       ss = mark_as_batch([Vocab.SS] * src.batch_size())
     else:
@@ -248,6 +246,72 @@ class DefaultTranslator(AutoRegressiveTranslator, Serializable, Reportable, mode
 
     return -dy.sum_elems(dy.esum(entropy))
 
+class DefaultCTCTranslator(AutoRegressiveTranslator, Serializable, Reportable, model_base.EventTrigger):
+  """
+  A default translator based on attentional sequence-to-sequence models.
+
+  Args:
+    src_reader: A reader for the source side.
+    trg_reader: A reader for the target side.
+    src_embedder: A word embedder for the input language
+    encoder: An encoder to generate encoded inputs
+    attender: An attention module
+    trg_embedder: A word embedder for the output language
+    decoder: A decoder
+    inference: The default inference strategy used for this model
+    search_strategy:
+    calc_global_fertility:
+    calc_attention_entropy:
+  """
+
+  yaml_tag = '!DefaultCTCTranslator'
+
+  @register_xnmt_handler
+  @serializable_init
+  def __init__(self,
+               src_reader: input_reader.InputReader,
+               trg_reader: input_reader.InputReader,
+               src_embedder: Embedder=bare(SimpleWordEmbedder),
+               encoder: transducer.SeqTransducer=bare(BiLSTMSeqTransducer),
+               scorer: Scorer = bare(Softmax),
+               #decoder: Decoder=bare(AutoRegressiveDecoder),
+               inference: xnmt.inference.AutoRegressiveInference=bare(xnmt.inference.AutoRegressiveInference),
+               search_strategy: SearchStrategy=bare(BeamSearch),
+               compute_report: bool = Ref("exp_global.compute_report", default=False),
+               calc_global_fertility: bool=False,
+               calc_attention_entropy: bool=False):
+    super().__init__(src_reader=src_reader, trg_reader=trg_reader)
+    self.src_embedder = src_embedder
+    self.encoder = encoder
+    self.scorer = scorer
+    #self.decoder = decoder
+    self.calc_global_fertility = calc_global_fertility
+    self.inference = inference
+    self.search_strategy = search_strategy
+    self.compute_report = compute_report
+    
+
+  def shared_params(self):
+    return [{".src_embedder.emb_dim", ".encoder.input_dim"},
+            {".encoder.hidden_dim", ".attender.input_dim", ".decoder.input_dim"},
+            {".attender.state_dim", ".decoder.rnn.hidden_dim"},
+            {".trg_embedder.emb_dim", ".decoder.trg_embed_dim"}]
+
+  def _encode_src(self, src):
+    embeddings = self.src_embedder.embed_sent(src)
+    encodings = self.encoder.transduce(embeddings)
+    return encodings
+
+  def calc_loss(self, src, trg, loss_calculator):
+    self.start_sent(src)
+    encodings = self._encode_src(src).as_tensor()
+
+    # Compose losses
+    model_loss = FactoredLossExpr()
+    model_loss.add_factored_loss_expr(loss_calculator.calc_loss(self, encodings, trg))
+    return model_loss
+
+
 class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportable, model_base.EventTrigger):
   """
   A default translator based on attentional sequence-to-sequence models.
@@ -285,7 +349,8 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
                compute_report:bool = Ref("exp_global.compute_report", default=False),
                calc_global_fertility:bool=False,
                calc_attention_entropy:bool=False,
-               task_id: int =0): #task_id: english_task ==0; mandarin_task==1
+               task_id: int =0,#task_id: english_task ==0; mandarin_task==1
+               cluster_type: int =0): #task_id: nerual network ==0; fuzzy c means==1
     super().__init__(src_reader=src_reader, trg_reader=trg_reader)
     self.src_embedder = src_embedder
     self.encoder = encoder
@@ -300,6 +365,7 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
     self.compute_report = compute_report
     self.decoder_vectors= []
     self.task_id=task_id
+    self.cluster_type=cluster_type
 
   def shared_params(self):
     return [{".src_embedder.emb_dim", ".encoder.input_dim"},
@@ -308,13 +374,15 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
             {".trg_embedder.emb_dim", ".decoder.trg_embed_dim"}]
 
   def _encode_src(self, src):
+    
     embeddings = self.src_embedder.embed_sent(src)
     encodings = self.encoder.transduce(embeddings)
     self.attender_out2in.init_sent(encodings) #encodings are the input hidden nodes vector
-    self.cluster.input_hidden_nodes=encodings
-    self.cluster.clear_stale_expressions()
-    self.cluster.init_attender_cluster()
-    self.cluster.calc_attention_in2cluster()
+    if self.cluster_type==0:
+      self.cluster.input_hidden_nodes=encodings
+      self.cluster.clear_stale_expressions()
+      self.cluster.init_attender_cluster()
+      self.cluster.calc_attention_in2cluster()
 
     if is_batched(src):
       ss = mark_as_batch([Vocab.SS] * src.batch_size())
@@ -345,27 +413,65 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
 
     return model_loss
 
-  def get_batch_characters_index(self,ref_word,ref_word_prev,ref_word_later,correct_predicted_batch_index):
+  def align_acoustic_vector(self,src,char_idx,batch_idx,evaluate_mode):
+    char_indexes_augment=[]
+    src_align=np.asarray([])
+    if len(batch_idx)==0:
+      return src_align,char_indexes_augment
+    
+    curr_attention=(np.transpose(np.squeeze(self.attender_out2in.get_last_attention().npvalue(),axis=1)))
+    if evaluate_mode or len(curr_attention.shape)<=1:
+      #print(self.attender_out2in.get_last_attention().npvalue().shape,batch_idx)
+      curr_attention=np.argmax(curr_attention[:,None],axis=0)
+    else:
+      curr_attention=np.argmax(curr_attention,axis=1)
+
+    for i in range(len(batch_idx)):
+      idx=batch_idx[i]
+      curr_src=src[idx].get_array()
+      start=curr_attention[idx]*8
+
+      end=start+8
+      if end==curr_src.shape[1]:
+        for j in range(start,end-1):
+          if np.array_equal(curr_src[:,j],curr_src[:,j+1]):
+            end=j+1
+            break
+        #print(curr_src[:,start:end])
+      #print(str(curr_src.shape[1])+" "+str(start)+" "+str(end))
+      char_indexes_augment+=[char_idx[i]]*(end-start)
+      if src_align.shape==(0,):
+        src_align=curr_src[:,start:end]
+      else:
+        src_align=np.hstack((src_align,curr_src[:,start:end]))
+    #print("src "+str(src_align.shape[1])+" char_indexes_augment "+str(len(char_indexes_augment)))
+    return np.transpose(src_align),char_indexes_augment
+
+  def get_batch_characters_index(self,ref_word,ref_word_prev,ref_word_later,\
+    target_batch_index):
       """
       Get the desire batch index. For English words, pick the word index with vowel in center.
       """
       char_idx=[]
       batch_idx=[]
       vowels_idx=[3,13,24,31,41]
-      for i in range(len(correct_predicted_batch_index)):
+     
+      for i in range(len(target_batch_index)):
           if self.task_id==0:
-              if ref_word[i] in vowels_idx:
-                  char_idx.append((ref_word_prev[i],ref_word[i],ref_word_later[i]))
-                  batch_idx.append(correct_predicted_batch_index[i])
+              #if ref_word[i] in vowels_idx:
+              if ref_word[i]!=0 and ref_word[i]!=1 and ref_word[i]!=2 and ref_word_prev[i]!=2 and ref_word_later[i]!=2:
+                char_idx.append((ref_word_prev[i],ref_word[i],ref_word_later[i]))
+                batch_idx.append(target_batch_index[i])
           else:
               if ref_word[i]!=0 and ref_word[i]!=1 and ref_word[i]!=2:
                   char_idx.append(ref_word[i]+55)
-                  batch_idx.append(correct_predicted_batch_index[i])
-      #print(char_idx,batch_idx)
+                  batch_idx.append(target_batch_index[i])
+
       return char_idx, batch_idx
 
-  def calc_loss_one_step(self, dec_state:AutoRegressiveDecoderState, ref_word:Batch,\
-        ref_word_prev:Batch,ref_word_later:Batch,input_word:Optional[Batch], output_time: int) \
+  def calc_loss_one_step(self, dec_state:AutoRegressiveDecoderState, src: Union[xnmt.input.Input, 'batcher.Batch'],\
+    acoustic:bool,ref_word:Batch,ref_word_prev:Batch,ref_word_later:Batch,input_word:Optional[Batch], output_time: int,\
+      evaluate_mode: bool) \
           -> Tuple[AutoRegressiveDecoderState,dy.Expression]:
     if input_word is not None:
       dec_state = self.decoder.add_input(dec_state, self.trg_embedder.embed(input_word))
@@ -374,19 +480,51 @@ class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportabl
     dec_state.context = self.attender_out2in.calc_context(rnn_output)
     word_loss = self.decoder.calc_loss(dec_state, ref_word)
     #get correct test tokens
-    self.cluster.attention_out2in_vecs=self.attender_out2in.attention_vecs
-    hidden_dim=rnn_output.dim()[0][0]
-    word_prob = self.decoder.calc_log_probs(dec_state)
 
-    #max_prob=dy.dot_product(dy.argmax(word_prob,gradient_mode="zero_gradient"),word_prob)
+    word_prob = self.decoder.calc_log_probs(dec_state)
     predict_vocab_index=np.argmax(dy.argmax(word_prob,gradient_mode="zero_gradient").npvalue(),axis=0)
     one_hot_subtract=predict_vocab_index-np.asarray(list(ref_word))
     correct_predicted_batch_index=np.array(np.argwhere(one_hot_subtract == 0)).flatten()
-    char_idx,batch_idx=self.get_batch_characters_index(ref_word,ref_word_prev,ref_word_later,correct_predicted_batch_index)
+    char_idx,batch_idx=self.get_batch_characters_index(ref_word,ref_word_prev,ref_word_later,\
+      correct_predicted_batch_index)
+    
+    acoustic_vectors,char_idx_augment=self.align_acoustic_vector(src,char_idx,batch_idx,evaluate_mode) #acoustic vectors
+    correct_vectors=dy.pick_batch_elems(rnn_output,batch_idx) #output vectors
 
-    correct_vectors=dy.pick_batch_elems(rnn_output,batch_idx)
-    cluster_loss=self.cluster.calc_loss_one_step_context(correct_vectors,word_prob,output_time,batch_idx,char_idx)
-    return dec_state, word_loss, cluster_loss
+    #print(acoustic_vectors.shape,len(char_idx_augment))
+    if self.cluster_type==0:
+      self.cluster.attention_out2in_vecs=self.attender_out2in.attention_vecs
+      cluster_loss=self.cluster.calc_loss_one_step_context(correct_vectors,word_prob,\
+        output_time,batch_idx,char_idx)
+    else:
+      if acoustic==True:
+        return dec_state,word_loss,acoustic_vectors,batch_idx,char_idx_augment
+      cluster_data=np.asarray([]) 
+      if len(batch_idx)!=0:
+        context_out2in=dy.pick_batch_elems(dec_state.context,batch_idx)
+        if len(batch_idx)==1:
+          cluster_data=np.transpose(context_out2in.npvalue())
+        else:
+          cluster_data=np.transpose(np.reshape(context_out2in.npvalue(),(-1,len(batch_idx))))
+    return dec_state, word_loss, cluster_data, batch_idx, char_idx
+
+    # if self.cluster_type==0:
+    #   self.cluster.attention_out2in_vecs=self.attender_out2in.attention_vecs
+    #   cluster_loss=self.cluster.calc_loss_one_step_context(correct_vectors,word_prob,output_time,batch_idx,char_idx)
+    # else:
+    #   cluster_loss=dy.zeros((1,))        
+    #   if len(batch_idx)!=0:
+    #     context_out2in=dy.pick_batch_elems(dec_state.context,batch_idx)
+    #     if len(batch_idx)==1:
+    #       sum_of_context=np.transpose(context_out2in.npvalue())
+    #     else:
+    #       sum_of_context=np.transpose(np.reshape(context_out2in.npvalue(),(-1,len(batch_idx))))
+    #     print("task_id",self.task_id)
+    #     self.cluster.initialize(sum_of_context)
+    #     self.cluster.fit(sum_of_context)
+    #     cluster_loss=dy.constant(1,self.cluster.calc_loss(sum_of_context))
+    #     self.cluster.record_cluster_assignment(char_idx)
+    # return dec_state, word_loss, cluster_loss
 
   def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
     if src.batch_size()!=1:
@@ -565,8 +703,6 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
         curr_attention=self.attender.get_last_attention().npvalue()[:,:,correct_predicted_batch_index]
         #attention idx dim(src_idx x 1 x batch_idx)
         targets_frame_idxes=np.argmax(curr_attention,axis=0).flatten()
-        #print("targets frame",targets_frame_idxes,"correct_predicted_batch_index",correct_predicted_batch_index)
-        #print("source length",acoustics.shape)
         if acoustics is None:
             curr_sent=self.attender.curr_sent.as_tensor().npvalue()
             ht=np.transpose(curr_sent[:,targets_frame_idxes,correct_predicted_batch_index])
@@ -598,8 +734,6 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
         ht=acoustics[targets_frame_idxes,:]
         ht=np.transpose(np.reshape(ht,(40,-1)))
     return dec_state, word_loss, np.transpose(ht), targets_frame_idxes
-
-  #def get_hidden_nodes_assignments(self):
 
   def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
     if src.batch_size()!=1:
@@ -636,7 +770,6 @@ class DefaultKMeansTranslator(AutoRegressiveTranslator, Serializable, Reportable
                                    nbest_id=idx[0]))
     if self.compute_report:
       attentions = np.concatenate([x.npvalue() for x in attentions], axis=1)
-      #print(attentions)
       self.add_sent_for_report({"idx": idx[0],
                                 "attentions": attentions,
                                 "src": sent,

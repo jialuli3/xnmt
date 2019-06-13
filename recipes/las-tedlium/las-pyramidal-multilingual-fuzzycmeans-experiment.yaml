@@ -1,0 +1,227 @@
+las-pyramidal-multilingual-fuzzycmeans-experiment: !Experiment
+  exp_global: !ExpGlobal
+    dropout: 0.3
+    default_layer_dim: 512
+    placeholders:
+      ENG_DATA_DIR: /home/jialu/tedlium/tedlium2
+      CHI_DATA_DIR: /home/jialu/mandarin_dataset/data
+  # preproc: !PreprocRunner
+  #   overwrite: False
+  #   tasks:
+  #   - !PreprocExtract
+  #     in_files:
+  #     - '{DATA_DIR}/db/dev.yaml'
+  #     - '{DATA_DIR}/db/test.yaml'
+  #     - '{DATA_DIR}/db/train.yaml'
+  #     out_files:
+  #     - '{DATA_DIR}/feat/dev.h5'
+  #     - '{DATA_DIR}/feat/test.h5'
+  #     - '{DATA_DIR}/feat/train.h5'
+  #     specs: !MelFiltExtractor {}
+  train: !SameBatchMultiTaskTrainingRegimen
+    trainer: !AdamTrainer {alpha: 0.001}
+    #n_task_steps: [1,1]
+    dev_zero: True
+    tasks:
+    - !SimpleTrainingTask
+      name: english_task
+      max_src_len: 1500
+      max_trg_len: 350
+      run_for_epochs: 1
+      lr_decay: 0.5
+      lr_decay_times: 3
+      patience: 8
+      initial_patience: 15
+      dev_every: 1
+      restart_trainer: True
+      batcher: !WordSrcBatcher
+        avg_batch_size: 30
+        pad_src_to_multiple: 8
+        src_pad_token: ~
+      loss_calculator: !AutoRegressiveClusterLoss
+        truncate_dec_batches: false
+      src_file: '{ENG_DATA_DIR}/feat/train0.h5'
+      trg_file: '{ENG_DATA_DIR}/transcript/train0.char'
+      # dev_tasks:
+      #   - !AccuracyEvalTask
+      #     model: !Ref {name: english_model}
+      #     eval_metrics: wer,cer
+      #     src_file: &eng_dev_src '{ENG_DATA_DIR}/feat/dev.h5'
+      #     ref_file: '{ENG_DATA_DIR}/transcript/dev.words'
+      #     hyp_file: '{EXP_DIR}/logs/{EXP}.eng_dev_hyp'
+      #     inference: !AutoRegressiveInference
+      #       batcher: !InOrderBatcher
+      #         batch_size: 1
+      #         pad_src_to_multiple: 8
+      #         src_pad_token: ~
+      #       max_src_len: 1500
+      #       post_process: join-char
+      #       search_strategy: !BeamSearch
+      #         max_len: 500
+      #         beam_size: 20
+      #         len_norm: !PolynomialNormalization
+      #           apply_during_search: true
+      #           m: 1.5
+      #   - !LossEvalTask
+      #     model: !Ref {name: english_model}
+      #     max_src_len: 1500
+      #     src_file: *eng_dev_src
+      #     ref_file: '{ENG_DATA_DIR}/transcript/dev.char'
+      model: !DefaultClusterTranslator
+        _xnmt_id: english_model
+        src_embedder: !NoopEmbedder
+          emb_dim: 40
+        encoder: !ModularSeqTransducer
+          _xnmt_id: shared_encoder
+          modules:
+            - !PyramidalLSTMSeqTransducer
+              layers: 4
+              reduce_factor: 2
+              downsampling_method: concat
+              input_dim: 40
+              hidden_dim: 512
+        attender_out2in: !MlpAttender
+          _xnmt_id: eng_out2in
+          hidden_dim: 128
+        cluster: !FuzzyCMeans
+          _xnmt_id: shared_cluster
+          n_dims: 400
+          n_components: 512
+        trg_embedder: !SimpleWordEmbedder
+          emb_dim: 64
+          word_dropout: 0.1
+          fix_norm: 1
+          vocab: !Ref {name: trg_eng_vocab}
+        decoder: !AutoRegressiveDecoder
+          rnn: !UniLSTMSeqTransducer
+            layers: 1
+            hidden_dim: 512
+          input_feeding: True
+          bridge: !CopyBridge {}
+          scorer: !Softmax
+            vocab: !Ref {name: trg_eng_vocab}
+            label_smoothing: 0.1
+        src_reader: !H5Reader
+          transpose: true
+        trg_reader: !PlainTextReader
+          vocab: !Vocab
+            _xnmt_id: trg_eng_vocab
+            encoding_option: GBK
+            vocab_file: '{EXP_DIR}/vocab.char'
+        task_id: 0
+        cluster_type: 1
+    - !SimpleTrainingTask
+      name: mandarin_task
+      max_src_len: 1500
+      max_trg_len: 350
+      run_for_epochs: 1
+      lr_decay: 0.5
+      lr_decay_times: 3
+      patience: 8
+      initial_patience: 15
+      dev_every: 1
+      restart_trainer: True
+      batcher: !WordSrcBatcher
+        avg_batch_size: 30
+        pad_src_to_multiple: 8
+        src_pad_token: ~
+      loss_calculator: !AutoRegressiveClusterLoss
+        truncate_dec_batches: false
+      src_file: '{CHI_DATA_DIR}/train0.h5'
+      trg_file: '{CHI_DATA_DIR}/train0.char'
+      # dev_tasks:
+      #   - !AccuracyEvalTask
+      #     model: !Ref {name: mandarin_model}
+      #     eval_metrics: wer,cer
+      #     src_file: &chi_dev_src '{CHI_DATA_DIR}/dev.h5'
+      #     ref_file: '{CHI_DATA_DIR}/dev.words'
+      #     hyp_file: '{EXP_DIR}/logs/{EXP}.chi_dev_hyp'
+      #     inference: !AutoRegressiveInference
+      #       batcher: !InOrderBatcher
+      #         batch_size: 1
+      #         pad_src_to_multiple: 8
+      #         src_pad_token: ~
+      #       max_src_len: 1500
+      #       post_process: join-char
+      #       search_strategy: !BeamSearch
+      #         max_len: 500
+      #         beam_size: 20
+      #         len_norm: !PolynomialNormalization
+      #           apply_during_search: true
+      #           m: 1.5
+      #   - !LossEvalTask
+      #     model: !Ref {name: mandarin_model}
+      #     max_src_len: 1500
+      #     src_file: *chi_dev_src
+      #     ref_file: '{CHI_DATA_DIR}/dev.char'
+      model: !DefaultClusterTranslator
+        _xnmt_id: mandarin_model
+        src_embedder: !NoopEmbedder
+          emb_dim: 40
+        encoder: !Ref {name: shared_encoder}
+        attender_out2in: !MlpAttender
+          _xnmt_id: man_out2in
+          hidden_dim: 128
+        cluster: !Ref { name: shared_cluster }
+        trg_embedder: !SimpleWordEmbedder
+          emb_dim: 64
+          word_dropout: 0.1
+          fix_norm: 1
+          vocab: !Ref {name: trg_chi_vocab}
+        decoder: !AutoRegressiveDecoder
+          rnn: !UniLSTMSeqTransducer
+            layers: 1
+            hidden_dim: 512
+          input_feeding: True
+          bridge: !CopyBridge {}
+          scorer: !Softmax
+            vocab: !Ref {name: trg_chi_vocab}
+            label_smoothing: 0.1
+        src_reader: !H5Reader
+          transpose: true
+        trg_reader: !PlainTextReader
+          vocab: !Vocab
+            _xnmt_id: trg_chi_vocab
+            encoding_option: GBK
+            vocab_file: '{EXP_DIR}/chineseVocab.char'
+        task_id: 1
+        cluster_type: 1
+  # evaluate: #used for development test
+  #   - !AccuracyEvalTask
+  #     model: !Ref { name: english_model }
+  #     eval_metrics: wer,cer
+  #     src_file: '{ENG_DATA_DIR}/feat/test.h5'
+  #     ref_file: '{ENG_DATA_DIR}/transcript/test.words'
+  #     hyp_file: '{EXP_DIR}/logs/{EXP}.eng_test_hyp'
+  #     inference: !AutoRegressiveInference
+  #       batcher: !InOrderBatcher
+  #         batch_size: 1
+  #         pad_src_to_multiple: 8
+  #         src_pad_token: ~
+  #       max_src_len: 1500
+  #       post_process: join-char
+  #       search_strategy: !BeamSearch
+  #         max_len: 500
+  #         beam_size: 20
+  #         len_norm: !PolynomialNormalization
+  #           apply_during_search: true
+  #           m: 1.5
+  #   - !AccuracyEvalTask
+  #     model: !Ref { name: mandarin_model }
+  #     eval_metrics: wer,cer
+  #     src_file: '{CHI_DATA_DIR}/test.h5'
+  #     ref_file: '{CHI_DATA_DIR}/test.words'
+  #     hyp_file: '{EXP_DIR}/logs/{EXP}.chi_test_hyp'
+  #     inference: !AutoRegressiveInference
+  #       batcher: !InOrderBatcher
+  #         batch_size: 1
+  #         pad_src_to_multiple: 8
+  #         src_pad_token: ~
+  #       max_src_len: 1500
+  #       post_process: join-char
+  #       search_strategy: !BeamSearch
+  #         max_len: 500
+  #         beam_size: 20
+  #         len_norm: !PolynomialNormalization
+  #           apply_during_search: true
+  #           m: 1.5

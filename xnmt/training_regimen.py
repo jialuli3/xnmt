@@ -211,7 +211,6 @@ class MultiTaskTrainingRegimen(TrainingRegimen):
     self.update_every = update_every
     self.num_updates_skipped = 0
 
-
   def trigger_train_event(self, value):
     """
     Trigger set_train event, but only if that would lead to a change of the value
@@ -318,8 +317,13 @@ class SameBatchMultiTaskTrainingRegimen(MultiTaskTrainingRegimen, Serializable):
           self.train_loss_trackers[task].report(trg, stats)
         self.checkpoint_and_save(save_fct)
         if self.tasks[0].should_stop_training(): break
-    #for task in self.tasks:
+    # for task in self.tasks:
+    #   if task.model.cluster.round % 5 !=0:
+    #     task.model.cluster.reassign()
+    #     task.model.cluster.split_cluster_after_reassign()
+    #     task.model.cluster.query_cluster()
       #task.model.cluster.split_cluster()
+      
   def checkpoint_and_save(self, save_fct):
     for task_i, task in enumerate(self.tasks):
       if self.dev_zero or task.checkpoint_needed():

@@ -1,0 +1,17 @@
+las-pyramidal-multilingual-kmeans-vowels-separate-cluster-sequence7: !LoadSerialized
+  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-pyramidal-multilingual-kmeans-vowels-separate-cluster-sequence6.mod
+  overwrite:
+   - path: evaluate
+     val: null
+   - path: train.tasks.0.src_file
+     val: '{ENG_DATA_DIR}/feat/train7.h5'
+   - path: train.tasks.0.trg_file
+     val: '{ENG_DATA_DIR}/transcript/train7.char'
+   - path: train.tasks.1.src_file
+     val: '{CHI_DATA_DIR}/train3.h5'
+   - path: train.tasks.1.trg_file
+     val: '{CHI_DATA_DIR}/train3.char'
+   - path: train.tasks.0.batcher.avg_batch_size
+     val: 50
+   - path: train.tasks.1.batcher.avg_batch_size
+     val: 50

@@ -187,6 +187,7 @@ class Inference(object):
       ref_corpus = []
       with open(ref_file, "r", encoding="utf-8") as fp:
         for line in fp:
+          print(line)
           if mode == "score":
             nbest = line.split("|||")
             assert len(nbest) > 1, "When performing scoring, ref_file must have nbest format 'index ||| hypothesis'"

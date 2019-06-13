@@ -1,0 +1,17 @@
+las-pyramidal-multilingual-kmeans-separate-cluster-sequence0: !LoadSerialized
+  filename: /home/jialu/xnmt/recipes/las-tedlium/models/las-pyramidal-multilingual-kmeans-separate-cluster-pretrain.mod
+  overwrite:
+   - path: evaluate
+     val: null
+   - path: train.tasks.0.src_file
+     val: '{ENG_DATA_DIR}/feat/train0.h5'
+   - path: train.tasks.0.trg_file
+     val: '{ENG_DATA_DIR}/transcript/train0.char'
+   - path: train.tasks.1.src_file
+     val: '{CHI_DATA_DIR}/train0.h5'
+   - path: train.tasks.1.trg_file
+     val: '{CHI_DATA_DIR}/train0.char'
+   - path: train.tasks.0.batcher.avg_batch_size
+     val: 30
+   - path: train.tasks.1.batcher.avg_batch_size
+     val: 40

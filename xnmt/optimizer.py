@@ -36,6 +36,12 @@ class XnmtOptimizer(object):
     """
     try:
       if not (self.skip_noisy and self._check_gradients_noisy()):
+        # sum_grad=0
+        # for subcol in ParamManager.param_col.subcols.values():
+        #   for param in subcol.parameters_list():
+        #     sum_grad+=np.linalg.norm(param.grad_as_array())
+        #     print(str(param)+" "+str(np.linalg.norm(param.grad_as_array())))
+        # print("sum_grad",sum_grad)
         self.optimizer.update()
       else:
         logger.info("skipping noisy update")

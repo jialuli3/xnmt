@@ -1,13 +1,16 @@
-from typing import Union
-
 import dynet as dy
 import numpy as np
 
+from sklearn.mixture import GaussianMixture as GMM
+from typing import Union
+
+from xnmt.input import SimpleSentenceInput
 from xnmt.loss import FactoredLossExpr
 from xnmt.persistence import serializable_init, Serializable, Ref
 from xnmt.vocab import Vocab
 from xnmt.constants import INFINITY
 from xnmt.transform import Linear
+from xnmt.param_collection import ParamManager
 import xnmt.evaluator
 import xnmt.batcher
 
@@ -53,7 +56,6 @@ class AutoRegressiveMLELoss(Serializable, LossCalculator):
         assert 1==len([i for i in range(seq_len) if (trg_mask is None or trg_mask.np_arr[j,i]==0) and single_trg[i]==Vocab.ES]) # assert exactly one unmasked ES token
     input_word = None
     #print("seq_len",seq_len)
-
     for i in range(seq_len):
       ref_word = AutoRegressiveMLELoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
       if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
@@ -61,14 +63,14 @@ class AutoRegressiveMLELoss(Serializable, LossCalculator):
       dec_state, word_loss = translator.calc_loss_one_step(dec_state, ref_word, input_word)
       if not self.truncate_dec_batches and xnmt.batcher.is_batched(src) and trg_mask is not None:
         word_loss = trg_mask.cmult_by_timestep_expr(word_loss, i, inverse=True)
-      losses.append(word_loss)
+      losses.append(0.9*word_loss)
       input_word = ref_word
 
     if self.truncate_dec_batches:
       loss_expr = dy.esum([dy.sum_batches(wl) for wl in losses])
     else:
       loss_expr = dy.esum(losses)
-    #print(losses)
+    #print("las_loss "+str(loss_expr.value()))
     return FactoredLossExpr({"mle": loss_expr})
 
   @staticmethod
@@ -91,6 +93,228 @@ class AutoRegressiveMLELoss(Serializable, LossCalculator):
       if not xnmt.batcher.is_batched(sent): return sent[index]
       else: return xnmt.batcher.mark_as_batch([single_trg[index] for single_trg in sent])
 
+class CTCLoss(Serializable, LossCalculator):
+  """
+  calculate MLE loss of ctc decoder
+  """
+  yaml_tag= '!CTCLoss'
+
+  @serializable_init
+  def __init__(self, truncate_dec_batches: bool = Ref("exp_global.truncate_dec_batches", default=False)) -> None:
+    self.truncate_dec_batches = truncate_dec_batches
+    self.param_collection=ParamManager.my_params(self)
+
+  def forward_recursion(self,t,s,softmax_mat,trg,blank):
+    """
+    maximum likelihood training loss
+    """ 
+    if s < 0:
+        return -np.Inf
+
+    # sub-problem already computed
+    if not np.isnan(self.cache_forward[t][s]):
+        return self.cache_forward[t][s]
+
+    # initial values
+    if t == 0:
+        if s == 0:
+            res = np.log(softmax_mat[blank][0].value())
+        elif s == 1:
+            res = np.log(softmax_mat[trg[1]][0].value())
+        else:
+            #res = np.log(1e-6)
+            res = -np.Inf
+
+        self.cache_forward[t][s] = res
+        #print("initial t "+str(t)+" s "+str(s)+ " value "+str(self.cache_forward[t][s]))
+        return res
+
+    # recursion on s and t
+    res = np.log(np.exp(self.forward_recursion(t-1, s, softmax_mat, trg, blank)) +\
+          np.exp(self.forward_recursion(t-1, s-1, softmax_mat, trg, blank))) + \
+          np.log(softmax_mat[trg[s]][t].value())
+
+    # in case of a blank or a repeated label, we only consider s and s-1 at t-1, so we're done
+    if trg[s] == blank or (s >= 2 and trg[s-2] == trg[s]):
+        self.cache_forward[t][s] = res
+        #print("blank or repeated label t "+str(t)+" s "+str(s)+ " value "+str(self.cache_forward[t][s]))
+        return res
+
+    # otherwise, in case of a non-blank and non-repeated label, we additionally add s-2 at t-1
+    res = np.log(np.exp(self.forward_recursion(t-1, s, softmax_mat, trg, blank)) +\
+          np.exp(self.forward_recursion(t-1, s-1, softmax_mat, trg, blank))+\
+          np.exp(self.forward_recursion(t-1, s-2, softmax_mat, trg, blank))) + \
+          np.log(softmax_mat[trg[s]][t].value())
+    self.cache_forward[t][s] = res
+    #print("non blank non repeated label t "+str(t)+" s "+str(s)+ " value "+str(self.cache_forward[t][s]))
+    return res
+
+  def backward_recursion(self,t,s,softmax_mat,trg,blank):
+    """
+    maximum likelihood training loss
+    """
+    _,T = softmax_mat.dim()[0]
+
+    if s > trg.sent_len()-1:
+        #return np.log(1e-6)
+        return -np.Inf
+
+    # sub-problem already computed
+    if not np.isnan(self.cache_backward[t][s]):
+        return self.cache_backward[t][s]
+
+    # initial values
+    if t == T-1:
+        if s == trg.sent_len()-1:
+            res = np.log(softmax_mat[blank][t].value())
+        elif s == trg.sent_len()-2:
+            res = np.log(softmax_mat[trg[s]][t].value())
+        else:
+            #res = np.log(1e-6)
+            res = -np.Inf
+
+        self.cache_backward[t][s] = res
+        #print("t "+str(t)+" s "+str(s)+ " value "+str(self.cache_backward[t][s]))
+        return res
+
+    # recursion on s and t
+    res = np.log(np.exp(self.backward_recursion(t+1, s, softmax_mat, trg, blank)) +\
+       np.exp(self.backward_recursion(t+1, s+1, softmax_mat, trg, blank))) +\
+       np.log(softmax_mat[trg[s]][t].value())
+
+    # in case of a blank or a repeated label, we only consider s and s-1 at t-1, so we're done
+    if trg[s] == blank or (s + 2 < trg.sent_len() and trg[s+2] == trg[s]):
+        self.cache_backward[t][s] = res
+        #print("t "+str(t)+" s "+str(s)+ " value "+str(self.cache_backward[t][s]))
+        return res
+
+    # otherwise, in case of a non-blank and non-repeated label, we additionally add s-2 at t-1
+    res = np.log(np.exp(self.backward_recursion(t+1, s, softmax_mat, trg, blank)) +\
+       np.exp(self.backward_recursion(t+1, s+1, softmax_mat, trg, blank)) +\
+       np.exp(self.backward_recursion(t+1, s+2, softmax_mat, trg, blank)))+\
+       np.log(softmax_mat[trg[s]][t].value())
+    self.cache_backward[t][s] = res
+    #print("t "+str(t)+" s "+str(s)+ " value "+str(self.cache_backward[t][s]))
+    return res   
+
+  def rescale_forward_backward_mat(self,mat):
+    where_are_nans=np.isnan(mat)
+    where_are_ninf=np.isinf(mat)
+    mat[where_are_nans]=0
+    mat[where_are_ninf]=0
+    #print("zero out mat",mat)
+    exp_mat=np.where(mat<0,np.exp(mat),mat)
+    Z=np.log(np.sum(exp_mat,axis=1))
+    #print("normalize",Z)
+    mat=np.log(exp_mat)-Z[:,None]
+    mat[where_are_nans]=0
+    mat[where_are_ninf]=0
+    return mat
+
+  def prep_trg_input(self,trg,blank):
+    input_trg=[blank]
+    for x in trg:
+      if x!=1:
+        input_trg.append(x)
+        input_trg.append(blank)
+    return SimpleSentenceInput(input_trg)
+    
+  def calc_loss_helper(self,softmax_mat:'dy.expression',
+      trg: xnmt.input.Input,
+      blank:int):
+
+    input_trg=self.prep_trg_input(trg,blank)
+    _,T =softmax_mat.dim()[0]
+
+    #self.cache_forward=np.zeros((T,input_trg.sent_len()))+1
+    #self.cache_backward=np.zeros((T,input_trg.sent_len()))+1
+  
+    self.cache_forward=np.full((T,input_trg.sent_len()),np.nan)
+    self.cache_backward=np.full((T,input_trg.sent_len()),np.nan)
+
+    #perform forward and backward algorithm
+    np.set_printoptions(precision=3,edgeitems=50)    
+
+    forward_loss=self.forward_recursion(T-1,input_trg.sent_len()-1,softmax_mat,input_trg,blank)+\
+      self.forward_recursion(T-1,input_trg.sent_len()-2,softmax_mat,input_trg,blank)
+    
+    backward_loss=self.backward_recursion(0,0,softmax_mat,input_trg,blank)+\
+       self.backward_recursion(0,1,softmax_mat,input_trg,blank)
+    #print("forward",self.cache_forward)
+    #print("backward",self.cache_backward)
+
+    #perform rescaling of forward and backward cache
+    self.cache_forward=self.rescale_forward_backward_mat(self.cache_forward)
+    #print("rescale forward",self.cache_forward)
+
+    self.cache_backward=self.rescale_forward_backward_mat(self.cache_backward)
+    #print("rescale backward",self.cache_backward)
+
+    self.cache_sum=self.cache_forward+self.cache_backward
+    #print("sum",self.cache_sum)
+    where_are_ninf=np.isinf(self.cache_sum)
+    self.cache_sum[where_are_ninf]=np.log(1e-8)
+
+    # self.cache_para=self.param_collection.add_lookup_parameters(self.cache_forward.shape,\
+    #  init=self.cache_sum)
+    ctc_loss=dy.zeros((1,))
+
+    # for t in range(T):
+    #   num_selected_s=np.squeeze(np.argwhere(self.cache_sum[t,:]<0))
+    #   if num_selected_s.shape==():
+    #     num_selected_s=num_selected_s.reshape((1,))
+    #   den_selected_s=np.asarray(input_trg)[num_selected_s]
+    #   unique_labels,indexes,counts=np.unique(den_selected_s,\
+    #     return_inverse=True,return_counts=True)
+    #   #print("unique"+str(unique_labels)+"indexes"+str(indexes)+"counts"+str(counts))
+    #   for i in range(len(counts)):
+    #     if counts[i]>1:
+    #       #print("curr count"+str(counts[i]))
+    #       all_repeated_indexes=np.argwhere(indexes==i)
+    #       sum_forward_backward=np.sum(self.cache_sum[t][num_selected_s[all_repeated_indexes]])
+    #       #print("sum_forward_backward"+str(sum_forward_backward))
+    #       for s in num_selected_s[all_repeated_indexes]:
+    #         self.cache_sum[t][s]=sum_forward_backward
+
+    for t in range(T):
+      num_selected_s=np.squeeze(np.argwhere(self.cache_sum[t,:]<0))
+      if num_selected_s.shape==():
+        num_selected_s=num_selected_s.reshape((1,))
+      den_selected_s=np.asarray(input_trg)[num_selected_s]
+      for i in range(len(num_selected_s)):
+        s=int(num_selected_s[i])
+        #cross entropy loss
+        #ctc_loss-=(self.cache_para[t][s])*dy.log(softmax_mat[int(den_selected_s[i])][t])
+        
+        #maximum likelihood loss
+        ctc_loss -= (dy.constant((1,),self.cache_sum[t][s])-dy.log(softmax_mat[int(den_selected_s[i])][t]))
+        #print("gamma t"+str(self.cache_sum[t][s])+"softmax mat"\
+        #  +str(dy.log(softmax_mat[int(den_selected_s[i])][t]).value()))
+    print("ctc loss "+str(ctc_loss.value()))
+    return ctc_loss
+
+  def calc_loss(self, translator: 'translator.AutoRegressiveTranslator',
+                hidden_embeddings: 'dy.expression_sequence',
+                trg: Union[xnmt.input.Input, 'batcher.Batch']):
+
+    losses = []
+    batch_size = hidden_embeddings.dim()[1]
+    #print("hidden",hidden_embeddings.dim())
+
+    for i in range(batch_size):
+      probs=translator.scorer.calc_probs(dy.pick_batch_elem(hidden_embeddings,i))    
+      blank_idx=translator.trg_reader.vocab_size()-1
+      
+      ctc_loss=0.1*self.calc_loss_helper(probs,trg[i],blank_idx)
+      losses.append(ctc_loss)
+
+    if self.truncate_dec_batches:
+      loss_expr = dy.esum([dy.sum_batches(wl) for wl in losses])
+    else:
+      loss_expr = dy.esum(losses)
+    print("avg batch ctc loss "+str(loss_expr.value()/batch_size))
+    return FactoredLossExpr({"ctc": loss_expr})
+
 class AutoRegressiveClusterLoss(Serializable, LossCalculator):
   """
   Max likelihood loss calculator for autoregressive models.
@@ -99,25 +323,31 @@ class AutoRegressiveClusterLoss(Serializable, LossCalculator):
     truncate_dec_batches: whether the decoder drops batch elements as soon as these are masked at some time step.
   """
   yaml_tag = '!AutoRegressiveClusterLoss'
+
   @serializable_init
-  def __init__(self, truncate_dec_batches: bool = Ref("exp_global.truncate_dec_batches", default=False)) -> None:
+  def __init__(self, truncate_dec_batches: bool = Ref("exp_global.truncate_dec_batches", default=False),\
+     evaluate_mode: bool =False) -> None:
     self.truncate_dec_batches = truncate_dec_batches
+    self.evaluate_mode=evaluate_mode
 
   def calc_loss(self, translator: 'translator.AutoRegressiveTranslator',
                 initial_state: 'translator.AutoRegressiveDecoderState',
                 src: Union[xnmt.input.Input, 'batcher.Batch'],
                 trg: Union[xnmt.input.Input, 'batcher.Batch']):
+
     dec_state = initial_state
     trg_mask = trg.mask if xnmt.batcher.is_batched(trg) else None
     word_losses = []
     cluster_losses=[]
+    batch_indexes=[]
+    char_indexes=[]
+    cluster_data_all=np.asarray([])
     seq_len = trg.sent_len()
     if xnmt.batcher.is_batched(src):
       for j, single_trg in enumerate(trg):
         assert single_trg.sent_len() == seq_len # assert consistent length
         assert 1==len([i for i in range(seq_len) if (trg_mask is None or trg_mask.np_arr[j,i]==0) and single_trg[i]==Vocab.ES]) # assert exactly one unmasked ES token
     input_word = None
-
     for i in range(seq_len):
       ref_word = AutoRegressiveClusterLoss._select_ref_words(trg, i, truncate_masked=self.truncate_dec_batches)
       length=len(list(ref_word))
@@ -132,20 +362,42 @@ class AutoRegressiveClusterLoss(Serializable, LossCalculator):
 
       if self.truncate_dec_batches and xnmt.batcher.is_batched(ref_word):
         dec_state.rnn_state, ref_word = xnmt.batcher.truncate_batches(dec_state.rnn_state, ref_word)
-      dec_state, word_loss, cluster_loss = translator.calc_loss_one_step(dec_state, ref_word, ref_word_prev,ref_word_later,input_word, i)
-
+      #dec_state, word_loss, cluster_loss = translator.calc_loss_one_step(dec_state, ref_word, ref_word_prev,ref_word_later,input_word, i)
+      dec_state, word_loss, cluster_data, batch_idx, char_idx=translator.calc_loss_one_step(dec_state,src,True,\
+           ref_word, ref_word_prev,ref_word_later,input_word, i, self.evaluate_mode)
+      if len(batch_idx)!=0:
+        batch_indexes+=(batch_idx)
+        char_indexes+=(char_idx)        
+        if cluster_data_all.shape==(0,):
+          cluster_data_all=cluster_data
+        else:
+          cluster_data_all=np.vstack((cluster_data_all,cluster_data))
       if not self.truncate_dec_batches and xnmt.batcher.is_batched(src) and trg_mask is not None:
         word_loss = trg_mask.cmult_by_timestep_expr(word_loss, i, inverse=True)
       word_losses.append(word_loss)
-      cluster_losses.append(cluster_loss)
+      if translator.cluster_type==0:
+        cluster_losses.append(cluster_loss)
       input_word = ref_word
+
     # if self.truncate_dec_batches:
     #   loss_expr_word = dy.esum([dy.sum_batches(wl) for wl in losses])
     # else:
     #   loss_expr_word = dy.esum(losses)
-    loss_expr_word=0.9*dy.esum(word_losses)
-    loss_expr_cluster=0.1*dy.esum(cluster_losses)
-    translator.cluster.query_cluster()
+    loss_expr_cluster=dy.zeros((1,))
+
+    #translator.cluster.initialize_centroid(cluster_data_all)
+    translator.cluster.initialize_threshold(translator.task_id)
+    if self.evaluate_mode:
+      translator.cluster.evaluate(cluster_data_all,char_indexes)
+    else:
+      translator.cluster.fit(cluster_data_all,char_indexes)
+    cluster_loss=translator.cluster.calc_loss(cluster_data_all)
+    
+    cluster_losses.append(cluster_loss)
+
+    loss_expr_word=dy.esum(word_losses)
+    loss_expr_cluster=dy.esum(cluster_losses)
+    #translator.cluster.split_cluster()
     return FactoredLossExpr({"mle": loss_expr_word, "cluster":loss_expr_cluster})
 
   @staticmethod
@@ -167,7 +419,6 @@ class AutoRegressiveClusterLoss(Serializable, LossCalculator):
     else:
       if not xnmt.batcher.is_batched(sent): return sent[index]
       else: return xnmt.batcher.mark_as_batch([single_trg[index] for single_trg in sent])
-
 
 class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
   """
@@ -191,7 +442,6 @@ class AutoRegressiveKMeansLoss(Serializable, LossCalculator):
       translator.cluster.split_cluster()
       translator.cluster.initalize_cluster_counting()
 
-#This is for clustering hidden nodes
   def calc_loss(self, translator: 'translator.AutoRegressiveTranslator',
                 initial_state: 'translator.AutoRegressiveDecoderState',
                 src: Union[xnmt.input.Input, 'batcher.Batch'],
@@ -398,3 +648,4 @@ class MinRiskLoss(Serializable, LossCalculator):
     ### End debug
 
     return FactoredLossExpr({"risk": risk})
+

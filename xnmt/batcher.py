@@ -247,6 +247,7 @@ class Batcher(object):
       self._add_single_batch(src_curr, trg_curr, src_ret, trg_ret, sort_by_trg_len=self.sort_within_by_trg_len)
     else:
       raise RuntimeError("Illegal granularity specification {}".format(self.granularity))
+
     if trg:
       return src_ret, trg_ret
     else:
@@ -358,6 +359,7 @@ class SortBatcher(Batcher):
       order = np.argsort([self.sort_key(x) + random.uniform(-SortBatcher.__tiebreaker_eps, SortBatcher.__tiebreaker_eps) for x in zip(src,trg)])
     else:
       order = np.argsort([self.sort_key(x) for x in zip(src,trg)])
+      #np.set_printoptions(edgeitems=50)
     return self._pack_by_order(src, trg, order)
 
   def is_random(self):

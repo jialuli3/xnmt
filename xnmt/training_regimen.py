@@ -93,7 +93,7 @@ class SimpleTrainingRegimen(training_task.SimpleTrainingTask, TrainingRegimen, S
                loss_calculator: LossCalculator = bare(AutoRegressiveMLELoss),
                trainer: optimizer.XnmtOptimizer = bare(optimizer.SimpleSGDTrainer, e0=0.1),
                run_for_epochs: Optional[int] = None, lr_decay: float = 1.0, lr_decay_times: int = 3, patience: int = 1,
-               initial_patience: Optional[int] = None, dev_tasks: Sequence[eval_task.EvalTask] = None,
+               initial_patience: Optional[int] = None, dev_tasks: Union[None,Sequence[eval_task.EvalTask]] = None,
                dev_combinator: Optional[str] = None, restart_trainer: bool = False,
                reload_command: Optional[str] = None, name: str = "{EXP}", sample_train_sents: Optional[int] = None,
                max_num_train_sents: Optional[int] = None, max_src_len: Optional[int] = None,

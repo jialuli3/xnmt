@@ -40,7 +40,7 @@ class XnmtOptimizer(object):
         # for subcol in ParamManager.param_col.subcols.values():
         #   for param in subcol.parameters_list():
         #     sum_grad+=np.linalg.norm(param.grad_as_array())
-        #     print(str(param)+" "+str(np.linalg.norm(param.grad_as_array())))
+        #     #print(str(param)+" "+str(np.linalg.norm(param.grad_as_array())))
         # print("sum_grad",sum_grad)
         self.optimizer.update()
       else:

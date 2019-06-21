@@ -67,7 +67,6 @@ class Vocab(Serializable):
           else:
             raise RuntimeError(f"Vocab file {vocab_file} contains a reserved word: {word}")
         vocab.append(word)
-    #print(vocab)
     return vocab
 
   def convert(self, w: str) -> int:

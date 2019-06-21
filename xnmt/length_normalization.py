@@ -88,7 +88,9 @@ class PolynomialNormalization(LengthNormalization, Serializable):
     if self.apply_during_search:
       return [hyp.score for hyp in completed_hyps]
     else:
-      return [(hyp.score / pow(len(hyp.output.word_ids), self.m)) for hyp in completed_hyps]
+      #return [(hyp.score / pow(len(hyp.output.word_ids), self.m)) for hyp in completed_hyps]
+      return [(hyp.score / pow(src_length/8, self.m)) for hyp in completed_hyps]
+
   def normalize_partial_topk(self, score_so_far, score_to_add, new_len):
     if self.apply_during_search:
       self.update_pows(new_len)

@@ -33,7 +33,7 @@ class Inference(object):
   """
   def __init__(self, src_file: Optional[str] = None, trg_file: Optional[str] = None, ref_file: Optional[str] = None,
                max_src_len: Optional[int] = None, max_num_sents: Optional[int] = None,
-               mode: str = "onebest",
+               mode: str = "onebest", encoding: str="utf-8",
                batcher: xnmt.batcher.InOrderBatcher = bare(xnmt.batcher.InOrderBatcher, batch_size=1),
                reporter: Union[None, reports.Reporter, Sequence[reports.Reporter]] = None):
     self.src_file = src_file
@@ -44,6 +44,7 @@ class Inference(object):
     self.mode = mode
     self.batcher = batcher
     self.reporter = reporter
+    self.encoding=encoding
 
   def generate_one(self, generator: model_base.GeneratorModel, src: xnmt.input.Input, src_i: int, forced_ref_ids) -> List[output.Output]:
     # TODO: src should probably a batch of inputs for consistency with return values being a batch of outputs
@@ -103,7 +104,7 @@ class Inference(object):
       assert_scores: if given, raise exception if the scores for generated outputs don't match the given scores
     """
     #with open(trg_file, 'wt', encoding='utf-8') as fp:  # Saving the translated output to a trg file
-    with open(trg_file, 'wt', encoding='gbk') as fp:  # Saving the translated output to a trg file
+    with open(trg_file, 'wt', encoding=self.encoding) as fp:  # Saving the translated output to a trg file
       if forced_ref_corpus:
         src_batches, ref_batches = batcher.pack(src_corpus, forced_ref_corpus)
       else:
@@ -114,11 +115,16 @@ class Inference(object):
       for batch_i, src_batch in enumerate(src_batches):
         batch_size = src_batch.batch_size()
         src_len = src_batch.sent_len()
-        if max_src_len is not None and src_len > max_src_len:
+        if (max_src_len is not None and src_len > max_src_len):
           output_txt = "\n".join([NO_DECODING_ATTEMPTED] * batch_size)
           fp.write(f"{output_txt}\n")
         else:
-          if forced_ref_corpus: ref_batch = ref_batches[batch_i]
+          if forced_ref_corpus:
+              ref_batch = ref_batches[batch_i]
+              if src_len/8 < ref_batch.sent_len():
+                output_txt = "\n".join([NO_DECODING_ATTEMPTED] * batch_size)
+                fp.write(f"{output_txt}\n")
+                continue
           dy.renew_cg(immediate_compute=settings.IMMEDIATE_COMPUTE, check_validity=settings.CHECK_VALIDITY)
           outputs = self.generate_one(generator, src_batch, range(cur_sent_i,cur_sent_i+batch_size), ref_batch)
           if self.reporter: self._create_report()
@@ -130,9 +136,7 @@ class Inference(object):
                 raise ValueError(
                   f'Forced decoding score {outputs[0].score} and loss {assert_scores[cur_sent_i + i]} do not match at '
                   f'sentence {cur_sent_i + i}')
-            #print(outputs[i])
             output_txt = outputs[i].apply_post_processor(self.post_processor)
-            #print(output_txt)
             fp.write(f"{output_txt}\n")
         cur_sent_i += batch_size
         if self.max_num_sents and cur_sent_i >= self.max_num_sents: break
@@ -187,7 +191,6 @@ class Inference(object):
       ref_corpus = []
       with open(ref_file, "r", encoding="utf-8") as fp:
         for line in fp:
-          print(line)
           if mode == "score":
             nbest = line.split("|||")
             assert len(nbest) > 1, "When performing scoring, ref_file must have nbest format 'index ||| hypothesis'"
@@ -285,11 +288,11 @@ class AutoRegressiveInference(Inference, Serializable):
                max_src_len: Optional[int] = None, max_num_sents: Optional[int] = None,
                post_process: Union[str, output.OutputProcessor] = bare(output.PlainTextOutputProcessor),
                search_strategy: search_strategy.SearchStrategy = bare(search_strategy.BeamSearch),
-               mode: str = "onebest",
+               mode: str = "onebest", encoding: str ="utf-8",
                batcher: xnmt.batcher.InOrderBatcher = bare(xnmt.batcher.InOrderBatcher, batch_size=1),
                reporter: Union[None, reports.Reporter, Sequence[reports.Reporter]] = None):
     super().__init__(src_file=src_file, trg_file=trg_file, ref_file=ref_file, max_src_len=max_src_len,
-                     max_num_sents=max_num_sents, mode=mode, batcher=batcher, reporter=reporter)
+                     max_num_sents=max_num_sents, mode=mode, encoding=encoding, batcher=batcher, reporter=reporter)
 
     self.post_processor = output.OutputProcessor.get_output_processor(post_process)
     self.search_strategy = search_strategy
@@ -302,4 +305,55 @@ class AutoRegressiveInference(Inference, Serializable):
   def compute_losses_one(self, generator: model_base.GeneratorModel, src: xnmt.input.Input,
                          ref: xnmt.input.Input) -> loss.FactoredLossExpr:
     loss_expr = generator.calc_loss(src, ref, loss_calculator=loss_calculator.AutoRegressiveMLELoss())
+    return loss_expr
+
+class CTCInference(Inference, Serializable):
+  """
+  Performs inference for auto-regressive models that expand based on their own previous outputs.
+
+  Assumes that generator.generate() takes arguments src, idx, search_strategy, forced_trg_ids
+
+  Args:
+    src_file: path of input src file to be translated
+    trg_file: path of file where trg translatons will be written
+    ref_file: path of file with reference translations, e.g. for forced decoding
+    max_src_len: Remove sentences from data to decode that are longer than this on the source side
+    max_num_sents: Stop decoding after the first n sentences.
+    post_process: post-processing of translation outputs
+                  (available string shortcuts:  ``none``,``join-char``,``join-bpe``,``join-piece``)
+    search_strategy: a search strategy used during decoding.
+    mode: type of decoding to perform.
+
+            * ``onebest``: generate one best.
+            * ``forced``: perform forced decoding.
+            * ``forceddebug``: perform forced decoding, calculate training loss, and make sure the scores are identical
+              for debugging purposes.
+            * ``score``: output scores, useful for rescoring
+    batcher: inference batcher, needed e.g. in connection with ``pad_src_token_to_multiple``
+  """
+
+  yaml_tag = '!CTCInference'
+
+  @serializable_init
+  def __init__(self, src_file: Optional[str] = None, trg_file: Optional[str] = None, ref_file: Optional[str] = None,
+               max_src_len: Optional[int] = None, max_num_sents: Optional[int] = None,
+               post_process: Union[str, output.OutputProcessor] = bare(output.PlainTextOutputProcessor),
+               search_strategy: search_strategy.SearchStrategy = bare(search_strategy.CTCBeamSearch),
+               mode: str = "onebest", encoding: str ="utf-8",
+               batcher: xnmt.batcher.InOrderBatcher = bare(xnmt.batcher.InOrderBatcher, batch_size=1),
+               reporter: Union[None, reports.Reporter, Sequence[reports.Reporter]] = None):
+    super().__init__(src_file=src_file, trg_file=trg_file, ref_file=ref_file, max_src_len=max_src_len,
+                     max_num_sents=max_num_sents, mode=mode, encoding = encoding, batcher=batcher, reporter=reporter)
+
+    self.post_processor = output.OutputProcessor.get_output_processor(post_process)
+    self.search_strategy = search_strategy
+
+  def generate_one(self, generator: model_base.GeneratorModel, src: xnmt.input.Input, src_i: int, forced_ref_ids)\
+          -> List[output.Output]:
+    outputs = generator.generate(src, src_i, forced_trg_ids=forced_ref_ids, search_strategy=self.search_strategy)
+    return outputs
+
+  def compute_losses_one(self, generator: model_base.GeneratorModel, src: xnmt.input.Input,
+                         ref: xnmt.input.Input) -> loss.FactoredLossExpr:
+    loss_expr = generator.calc_loss(src, ref, loss_calculator=loss_calculator.CTCLoss())
     return loss_expr

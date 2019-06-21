@@ -12,6 +12,7 @@ from xnmt.cluster import Cluster, ClusterAdapt,KMeans
 from xnmt.decoder import Decoder, AutoRegressiveDecoder, AutoRegressiveDecoderState
 from xnmt.embedder import Embedder, SimpleWordEmbedder
 from xnmt.events import register_xnmt_event_assign, handle_xnmt_event, register_xnmt_handler
+from xnmt.expression_sequence import ExpressionSequence
 from xnmt import model_base
 import xnmt.inference
 from xnmt.input import Input, SimpleSentenceInput
@@ -25,7 +26,7 @@ import xnmt.plot
 from xnmt.reports import Reportable
 from xnmt.scorer import Scorer, Softmax
 from xnmt.persistence import serializable_init, Serializable, bare, Ref
-from xnmt.search_strategy import BeamSearch, SearchStrategy
+from xnmt.search_strategy import BeamSearch, CTCBeamSearch, SearchStrategy
 from xnmt import transducer
 from xnmt.vocab import Vocab
 from xnmt.constants import EPSILON
@@ -275,8 +276,8 @@ class DefaultCTCTranslator(AutoRegressiveTranslator, Serializable, Reportable, m
                encoder: transducer.SeqTransducer=bare(BiLSTMSeqTransducer),
                scorer: Scorer = bare(Softmax),
                #decoder: Decoder=bare(AutoRegressiveDecoder),
-               inference: xnmt.inference.AutoRegressiveInference=bare(xnmt.inference.AutoRegressiveInference),
-               search_strategy: SearchStrategy=bare(BeamSearch),
+               inference: xnmt.inference.CTCInference=bare(xnmt.inference.CTCInference),
+               search_strategy: SearchStrategy=bare(CTCBeamSearch),
                compute_report: bool = Ref("exp_global.compute_report", default=False),
                calc_global_fertility: bool=False,
                calc_attention_entropy: bool=False):
@@ -310,6 +311,70 @@ class DefaultCTCTranslator(AutoRegressiveTranslator, Serializable, Reportable, m
     model_loss = FactoredLossExpr()
     model_loss.add_factored_loss_expr(loss_calculator.calc_loss(self, encodings, trg))
     return model_loss
+
+  def calc_mle_ctc_loss(self,src,trg,loss_calculator):
+    """
+    Calculate MLE loss of ctc
+    """
+    self.start_sent(src)
+    encodings = self._encode_src(src).as_tensor()
+
+    # Compose losses
+    model_loss = FactoredLossExpr()
+    model_loss.add_factored_loss_expr(loss_calculator.calc_mle_ctc_loss(self, encodings, trg))
+    return model_loss
+
+  def generate(self, src: Batch, idx: Sequence[int], search_strategy: SearchStrategy, forced_trg_ids: Batch=None):
+    if src.batch_size()!=1:
+      raise NotImplementedError("batched decoding not implemented for DefaultTranslator. "
+                                "Specify inference batcher with batch size 1.")
+    assert src.batch_size() == len(idx), f"src: {src.batch_size()}, idx: {len(idx)}"
+    # Generating outputs
+    self.start_sent(src)
+    outputs = []
+    cur_forced_trg = None
+    sent = src[0]
+    sent_mask = None
+    if src.mask: sent_mask = Mask(np_arr=src.mask.np_arr[0:1])
+    sent_batch = mark_as_batch([sent], mask=sent_mask)
+    all_state = self._encode_src(sent_batch)
+    if forced_trg_ids is  not None: cur_forced_trg = forced_trg_ids[0]
+    search_outputs = search_strategy.generate_output(self, all_state,
+                                                     src_length=[sent.sent_len()],
+                                                     forced_trg_ids=cur_forced_trg)
+    sorted_outputs = sorted(search_outputs, key=lambda x: x.score[0], reverse=True)
+    assert len(sorted_outputs) >= 1
+    for curr_output in sorted_outputs:
+      output_actions = [x for x in curr_output.word_ids[0]]
+      score = curr_output.score[0]
+      if len(sorted_outputs) == 1:
+        outputs.append(TextOutput(actions=output_actions,
+                                  vocab=getattr(self.trg_reader, "vocab", None),
+                                  score=score))
+      else:
+        outputs.append(NbestOutput(TextOutput(actions=output_actions,
+                                              vocab=getattr(self.trg_reader, "vocab", None),
+                                              score=score),
+                                   nbest_id=idx[0]))
+    if self.compute_report:
+      self.add_sent_for_report({"idx": idx[0],
+                                "src": sent,
+                                "src_vocab": getattr(self.src_reader, "vocab", None),
+                                "trg_vocab": getattr(self.trg_reader, "vocab", None),
+                                "output": outputs[0]})
+    #print(outputs)
+    return outputs
+
+  def generate_one_step(self, current_word: Any, all_state: ExpressionSequence, curr_input_time: int) -> TranslatorOutput:
+    if current_word is not None:
+      if type(current_word) == int:
+        current_word = [current_word]
+      if type(current_word) == list or type(current_word) == np.ndarray:
+        current_word = xnmt.batcher.mark_as_batch(current_word)
+
+    curr_state=all_state[curr_input_time]
+    next_logsoftmax = self.scorer.calc_log_probs(curr_state)
+    return TranslatorOutput(all_state, next_logsoftmax, None)
 
 
 class DefaultClusterTranslator(AutoRegressiveTranslator, Serializable, Reportable, model_base.EventTrigger):

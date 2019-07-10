@@ -2,6 +2,7 @@ from collections import namedtuple
 import math
 from typing import Callable, List, Optional, Sequence
 import numbers
+from collections import defaultdict
 
 import dynet as dy
 import numpy as np
@@ -132,20 +133,14 @@ class BeamSearch(Serializable, SearchStrategy):
 
   def generate_output(self,
                       translator: 'xnmt.models.translators.AutoRegressiveTranslator',
-                      initial_state,
-                      src_length: Optional[numbers.Integral] = None) -> List[SearchOutput]:
+                      initial_state: 'decoders.AutoRegressiveDecoderState',
+                      src_length: Optional[numbers.Integral] = None,
+                      forced_trg_ids = None) -> List[SearchOutput]:
     active_hyp = [self.Hypothesis(0, None, None, None)]
     completed_hyp = []
     for length in range(self.max_len):
       if len(completed_hyp) >= self.beam_size:
-        completed_hyp = sorted(completed_hyp, key=lambda hyp: hyp.score, reverse=True)
-        completed_hyp = completed_hyp[:self.beam_size]
-        worst_complete_hyp_score = completed_hyp[-1].score
-        active_hyp = [hyp for hyp in active_hyp if hyp.score >= worst_complete_hyp_score]
-        # Assumption: each additional word will always *decrease* the total score.
-        if len(active_hyp) == 0:
-          break
-
+        break
       # Expand hyp
       new_set = []
       for hyp in active_hyp:
@@ -163,13 +158,16 @@ class BeamSearch(Serializable, SearchStrategy):
           continue
 
         # Find the k best words at the next time step
-        current_output = translator.add_input(prev_word, prev_state)
-        top_words, top_scores = translator.best_k(current_output.state, self.beam_size, normalize_scores=True)
-
+        current_output = translator.generate_one_step(prev_word, prev_state)
+        score = current_output.logsoftmax.npvalue().transpose()
+        
+        if forced_trg_ids is None:
+          top_words = np.argpartition(score, max(-len(score),-self.beam_size))[-self.beam_size:]
+        else:
+          top_words = [forced_trg_ids[length]]
         # Queue next states
-        for cur_word, score in zip(top_words, top_scores):
-          assert len(score.shape) == 0
-          new_score = self.len_norm.normalize_partial_topk(hyp.score, score, length + 1)
+        for cur_word in top_words:
+          new_score = self.len_norm.normalize_partial_topk(hyp.score, score[cur_word], length + 1)
           new_set.append(self.Hypothesis(new_score, current_output, hyp, cur_word))
 
       # Next top hypothesis
@@ -193,6 +191,7 @@ class BeamSearch(Serializable, SearchStrategy):
       word_ids = []
       attentions = []
       states = []
+      logsoftmaxes = []
       current = end_hyp
       while current.parent is not None:
         word_ids.append(current.word)
@@ -200,7 +199,7 @@ class BeamSearch(Serializable, SearchStrategy):
         states.append(current.output.state)
         current = current.parent
       results.append(SearchOutput([list(reversed(word_ids))], [list(reversed(attentions))],
-                                  [score], list(reversed(states)), [1 for _ in word_ids]))
+                                  [score], list(reversed(states)),[], [1 for _ in word_ids]))
     return results
 
 class CTCBestPathSearch(Serializable, SearchStrategy):
@@ -234,7 +233,7 @@ class CTCBestPathSearch(Serializable, SearchStrategy):
     print("trg_ids "+str(forced_trg_ids))
     prev_word = None
     for length in range(int(src_length[0]/8)):
-        current_output = translator.generate_one_step(prev_word, all_state, length)
+        current_output = translator.generate_one_step(all_state, length)
         score = current_output.logsoftmax.npvalue().transpose() # all S at current t
         self.blank_index = score.shape[0]-1
         if self.scores_proc:
@@ -242,24 +241,24 @@ class CTCBestPathSearch(Serializable, SearchStrategy):
         cur_word = np.argmax(score)
         completed_hyp.append(self.Hypothesis(score[cur_word],current_output,cur_word))
         prev_word = cur_word 
-        print(cur_word)
     prev_word = None 
     decoded_seq = []
-    final_score = 0 
+    final_score = 0
+    all_seq = [] 
     #remove duplicate chars
     for t in range(len(completed_hyp)):
       cur_word = completed_hyp[t].word 
       final_score += completed_hyp[t].score
+      all_seq.append(cur_word)
       if prev_word != cur_word:
         decoded_seq.append(cur_word)
       prev_word = cur_word
-    print("before decoding"+str(decoded_seq))
     #remove blank
     decoded_seq_final = []
     for s in decoded_seq:
       if s!=self.blank_index:
         decoded_seq_final.append(s)  
-    print("after decoding"+str(decoded_seq_final))
+    print("decoding"+str(decoded_seq_final))
     #remove blank
 
     results = []
@@ -286,7 +285,7 @@ class CTCBeamSearch(Serializable, SearchStrategy):
   Hypothesis = namedtuple('Hypothesis', ['score_b', 'score_nb', 'score', 'output', 'parent', 'word'])
 
   @serializable_init
-  def __init__(self, beam_size: int = 1, max_len: int = 100, len_norm: LengthNormalization = bare(NoNormalization),
+  def __init__(self, beam_size: int = 1, max_len: int = 100, prune: float = 0.001, len_norm: LengthNormalization = bare(NoNormalization),
                one_best: bool = True, scores_proc: Optional[Callable[[np.ndarray], None]] = None, vocab: Optional[Vocab] = None):
     self.beam_size = beam_size
     self.max_len = max_len
@@ -294,108 +293,102 @@ class CTCBeamSearch(Serializable, SearchStrategy):
     self.one_best = one_best
     self.scores_proc = scores_proc
     self.end_ss =1
+    self.start_ss=0
+    self.prune = np.log(prune)
+
+  def logsumexp(self,a,b):
+    A = max(a,b)
+    if np.isinf(A):
+      return -np.Inf
+    return A + np.log(np.exp(a-A)+np.exp(b-A))
 
   def generate_output(self, translator, all_state, src_length=None, forced_trg_ids=None):
     # TODO(philip30): can only do single decoding, not batched
     if forced_trg_ids is not None and forced_trg_ids.sent_len() > self.max_len:
       logger.warning("Forced decoding with a target longer than max_len. "
                      "Increase max_len to avoid unexpected behavior.")
-    active_hyp = [self.Hypothesis(0, 0, 0, None, None, None)]
-    completed_hyp = []
-    print("trg_ids "+str(forced_trg_ids))
-    for length in range(int(src_length[0]/8)):
-      # Expand hyp
-      new_set = []
-      for hyp in active_hyp:
-        if length > 0:
-          prev_word = hyp.word
-        else:
-          prev_word = None
-        if length>=src_length[0]/8:
-          break
-        current_output = translator.generate_one_step(prev_word, all_state, length)
-        score = current_output.logsoftmax.npvalue().transpose()
-        self.blank_index = score.shape[0]-1
-        if self.scores_proc:
-          self.scores_proc(score)
-        # Next Words
-        #if forced_trg_ids is None:
-        top_words = np.argpartition(score, max(-len(score),-self.beam_size))[-self.beam_size:]
-        #else:
-          #top_words = [forced_trg_ids[length]]
-        # Queue next states
-        ### Know last entry, needs to determine either copy or extend  
-        for cur_word in top_words: 
-          #ending with blank          
-          if cur_word == self.blank_index: #copy beam
-            score_b = self.len_norm.normalize_partial_topk(hyp.score, score[self.blank_index], length + 1)
-            score_nb = hyp.score_nb
-          else: 
-            score_b = hyp.score_b
-            score_nb = self.len_norm.normalize_partial_topk(hyp.score_nb, score[cur_word], length + 1)
-          new_set.append(self.Hypothesis(score_b,score_nb,score_b+score_nb,\
-            current_output,hyp,cur_word))          
-          
-          #extend
-          for s in range(self.blank_index-1):
-            new_top_word = (cur_word, s)
-            if s == cur_word: # extend the same char and add a blank in between
-              score_nb = self.len_norm.normalize_partial_topk(hyp.score_b,score[s],length+1)
-            else:
-              score_nb = self.len_norm.normalize_partial_topk(hyp.score,score[s],length+1)
+    _, T = all_state.dim()[0]
+    for t in range(T):
+      ctc_out = translator.generate_one_step(all_state,t)
+      if t == 0:
+        ctc = ctc_out.logsoftmax.npvalue()
+      else:
+        ctc = np.vstack((ctc,ctc_out.logsoftmax.npvalue()))
+    T, S = ctc.shape
+    blank_idx = S-1
+    ctc = np.vstack((np.zeros(S,),ctc))
+    ctc = np.where(ctc >0, np.log(ctc),-np.Inf)
+    O = self.start_ss
+    Pb, Pnb = defaultdict(lambda: defaultdict(lambda: -np.Inf)), defaultdict(lambda: defaultdict(lambda: -np.Inf))
+    Pb[0][O] = np.log(1)
+    Pnb[0][O] = -np.Inf
+    A_prev = [(O,)]
+    
+    for t in range(1, T):
+      #print("t "+str(t))
+      pruned_alphabet = np.where(ctc[t] > self.prune)[0]
+      for l in A_prev:
+        #print("l "+str(l))
+        if not isinstance(l,int) and l[-1] == self.end_ss:
+          Pb[t][l] = Pb[t - 1][l]
+          Pnb[t][l] = Pnb[t - 1][l]
+          continue
 
-            new_set.append(self.Hypothesis(0,score_nb,score_nb,\
-              current_output,hyp,new_top_word))
-          #new_score = self.len_norm.normalize_partial_topk(hyp.score, score[cur_word], length + 1)
-          #new_set.append(self.Hypothesis(new_score, current_output, hyp, cur_word))
-      # Next top hypothesis
-      active_hyp = sorted(new_set, key=lambda x: x.score, reverse=True)[:self.beam_size]
-    # There is no hyp reached </s>
-    if len(completed_hyp) == 0:
-      completed_hyp = active_hyp
-    # Length Normalization
-    normalized_scores = self.len_norm.normalize_completed(completed_hyp, src_length[0])
-    hyp_and_score = sorted(list(zip(completed_hyp, normalized_scores)), key=lambda x: x[1], reverse=True)
-    if self.one_best:
-      hyp_and_score = [hyp_and_score[0]]
-    # Backtracing + Packing outputs
-    results = []
-    for end_hyp, score in hyp_and_score:
-      logsoftmaxes = []
-      word_ids = []
-      states = []
-      current = end_hyp
-      while current.parent is not None:
-        if isinstance(current.word,tuple):
-          word_ids.append(current.word[0])
-          word_ids.append(current.word[1])
-        else:
-          word_ids.append(current.word)
-        # TODO(philip30): This should probably be uncommented.
-        # These 2 statements are an overhead because it is need only for reinforce and minrisk
-        # Furthermore, the attentions is only needed for report.
-        # We should have a global flag to indicate whether this is needed or not?
-        # The global flag is modified if certain objects is instantiated.
-        #logsoftmaxes.append(dy.pick(current.output.logsoftmax, current.word))
-        #states.append(translator.get_nobp_state(current.output.state))
-        current = current.parent
-      print("before decoding"+str(word_ids))
-      prev_word=word_ids[0]
-      decoded_seq = [prev_word]
-      for i in range(1,len(word_ids)):
-        curr_word = word_ids[i]
-        if prev_word == self.blank_index:
-          if curr_word != self.blank_index: # ignore
-            decoded_seq.append(curr_word)
-        else:
-          if curr_word != prev_word:
-            decoded_seq.append(curr_word)
-        prev_word = curr_word
-      decoded_seq = list(reversed(decoded_seq))
-      decoded_seq.append(self.end_ss)
-      print("decoded_seq"+str(decoded_seq))            
-      results.append(CTCSearchOutput([decoded_seq],
-                                  [score], list(reversed(logsoftmaxes)), list(reversed(states)), None))
+        for c in pruned_alphabet:
+        # END: STEP 2
+
+        # STEP 3: “Extending” with a blank
+          if c == blank_idx:
+            #print("extend blank")
+            Pb[t][l] = self.logsumexp(Pb[t][l], ctc[t][-1]+self.logsumexp(Pb[t-1][l],Pnb[t-1][l]))
+        # END: STEP 3
+
+        # STEP 4: Extending with the end character
+          else:
+            l_plus = l + (c,)
+            #print("l_plus "+str(l_plus))
+            if len(l) > 0 and c == l[-1]:
+              Pnb[t][l_plus] = self.logsumexp(Pnb[t][l_plus], (ctc[t][c]+Pb[t-1][l]))
+              Pnb[t][l] = self.logsumexp(ctc[t][c], (ctc[t][c]+Pnb[t-1][l]))
+              # END: STEP 4
+
+              # STEP 5: Extending with any other non-blank character and LM constraints
+              # elif len(l.replace(' ', '')) > 0 and c in (' ', '>'):
+              #   lm_prob = lm(l_plus.strip(' >')) ** alpha
+              #   Pnb[t][l_plus] += lm_prob * ctc[t][c] * (Pb[t - 1][l] + Pnb[t - 1][l])
+            else:
+              Pnb[t][l_plus] = self.logsumexp(ctc[t][c],ctc[t][c]+self.logsumexp(Pb[t-1][l],Pnb[t-1][l]))
+              # END: STEP 5
+
+          # STEP 6: Make use of discarded prefixes
+          if l_plus not in A_prev:
+            Pb[t][l_plus] = self.logsumexp(Pb[t][l_plus], ctc[t][-1]+self.logsumexp(Pb[t-1][l_plus],Pnb[t-1][l_plus]))
+            Pnb[t][l_plus] = self.logsumexp(Pnb[t][l_plus],ctc[t][c]+Pnb[t-1][l_plus])
+          # END: STEP 6
+
+        # STEP 7: Select most probable prefixes
+        #A_next = Pb[t] + Pnb[t]
+        A_next = defaultdict()
+        all_prefixes = set(list(Pb[t].keys())+list(Pnb[t].keys()))
+        for l in all_prefixes:
+          A_next[l] = self.logsumexp(Pb[t][l],Pnb[t][l])
+          if np.isinf(A_next[l]):
+            del A_next[l]
+        sorter = lambda l: A_next[l] 
+        A_prev = sorted(A_next, key=sorter, reverse=True)[:self.beam_size]
+        # END: STEP 7
+    best_out = A_prev[0]
+    best_score = A_next[best_out]
+    best_out = list(best_out)[1:]
+    if best_out[-1]!=self.end_ss:
+      best_out.append(self.end_ss)
+    print("trg ids"+str(forced_trg_ids))
+    print("best out"+str(best_out))
+    results= []
+    logsoftmaxes = []
+    states = []
+    results.append(CTCSearchOutput([best_out],
+                                  [best_score], list(reversed(logsoftmaxes)), list(reversed(states)), None))
     #print(results)
     
     return results

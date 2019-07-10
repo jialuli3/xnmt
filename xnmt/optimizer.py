@@ -41,7 +41,7 @@ class XnmtOptimizer(object):
         #   for param in subcol.parameters_list():
         #     sum_grad+=np.linalg.norm(param.grad_as_array())
         #     #print(str(param)+" "+str(np.linalg.norm(param.grad_as_array())))
-        # print("sum_grad",sum_grad)
+        # print("sum_grad "+str(sum_grad))
         self.optimizer.update()
       else:
         logger.info("skipping noisy update")

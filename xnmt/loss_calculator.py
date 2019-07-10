@@ -64,14 +64,14 @@ class AutoRegressiveMLELoss(Serializable, LossCalculator):
       dec_state, word_loss = translator.calc_loss_one_step(dec_state, ref_word, input_word)
       if not self.truncate_dec_batches and xnmt.batcher.is_batched(src) and trg_mask is not None:
         word_loss = trg_mask.cmult_by_timestep_expr(word_loss, i, inverse=True)
-      losses.append(0.8*word_loss)
+      losses.append(0.5*word_loss)
       input_word = ref_word
 
     if self.truncate_dec_batches:
       loss_expr = dy.esum([dy.sum_batches(wl) for wl in losses])
     else:
       loss_expr = dy.esum(losses)
-    #print("las_loss "+str(loss_expr.value()))
+    print("las_loss "+str(loss_expr.npvalue().sum()))
     return FactoredLossExpr({"mle": loss_expr})
 
   @staticmethod
@@ -122,7 +122,7 @@ class CTCLoss(Serializable, LossCalculator):
             res = np.log(softmax_mat[blank][0].value())
             #print("initial t "+str(t)+" s "+str(s)+ " value "+str(res))
         elif s == 1:
-            res = np.log(softmax_mat[trg[1]][0].value())
+            res = np.log(softmax_mat[trg[s]][0].value())
             #print("initial t "+str(t)+" s "+str(s)+ " value "+str(res))
         else:
             res = -np.Inf
@@ -215,22 +215,18 @@ class CTCLoss(Serializable, LossCalculator):
     return res   
 
   def rescale_forward_backward_mat(self,mat):
-    where_are_nans=np.isnan(mat)
-    where_are_ninf=np.isinf(mat)
-    mat[where_are_nans]=0
-    mat[where_are_ninf]=0
-    # #print("zero out mat",mat)
-    # A=np.amax(np.where(mat<0,mat,-np.Inf),axis=1)
-    # #print("A",A)
-    # #exp_mat=np.where(mat<0,np.exp(mat),mat)
-    # sum_exp_mat=np.exp(mat-A[:,None])
-    # sum_exp_mat[where_are_nans]=0
-    # sum_exp_mat[where_are_ninf]=0    
-    # Z=A+np.log(np.sum(sum_exp_mat,axis=1))
-    # #print("normalize",Z)
-    # mat-=Z[:,None]
-    # mat[where_are_nans]=0
-    # mat[where_are_ninf]=0
+    #print("mat",mat)
+    zeros_idx = np.where(mat==0)
+    A=np.amax(np.where(mat<0,mat,-np.Inf),axis=1)
+    #print("A",A)
+    sum_exp_mat=np.exp(mat-A[:,None])
+    sum_exp_mat[zeros_idx]=0 
+    #print("sum exp mat", sum_exp_mat) 
+    Z=A+np.log(np.sum(sum_exp_mat,axis=1))
+    #print("normalize",Z)
+    mat-=Z[:,None]
+    mat[zeros_idx] = 0
+    #print("after normalize mat",mat)
     return mat
 
   def prep_trg_input(self,trg,blank):
@@ -243,7 +239,8 @@ class CTCLoss(Serializable, LossCalculator):
     
   def calc_loss_helper(self,softmax_mat:'dy.expression',
     trg: xnmt.input.Input,
-    blank:int):
+    blank:int,
+    loss_type: str):
     """
     If inference mode, forward loss will be returned,
     else, cross-entropy loss will be returned
@@ -264,60 +261,54 @@ class CTCLoss(Serializable, LossCalculator):
     #perform forward and backward algorithm
     #np.set_printoptions(precision=3,edgeitems=50)    
 
-    forward_loss=self.forward_recursion(T-1,input_trg.sent_len()-1,softmax_mat,input_trg,blank)+\
+    self.forward_recursion(T-1,input_trg.sent_len()-1,softmax_mat,input_trg,blank)+\
       self.forward_recursion(T-1,input_trg.sent_len()-2,softmax_mat,input_trg,blank)
 
-    backward_loss=self.backward_recursion(0,0,softmax_mat,input_trg,blank)+\
+    self.backward_recursion(0,0,softmax_mat,input_trg,blank)+\
         self.backward_recursion(0,1,softmax_mat,input_trg,blank)
 
     #perform rescaling of forward and backward cache
-    self.cache_forward_rescale=self.rescale_forward_backward_mat(self.cache_forward)
-    #print("rescale forward",self.cache_forward)
+    #self.cache_forward_rescale=self.rescale_forward_backward_mat(self.cache_forward)
     
-    self.cache_backward_rescale=self.rescale_forward_backward_mat(self.cache_backward)
-    #print("rescale backward",self.cache_backward)
+    #self.cache_backward_rescale=self.rescale_forward_backward_mat(self.cache_backward)
+    self.cache_sum=self.cache_forward+self.cache_backward
+    self.cache_sum[np.isinf(self.cache_sum)]=0
+    self.cache_sum[np.isnan(self.cache_sum)]=0
+    self.cache_sum = self.rescale_forward_backward_mat(self.cache_sum)
+    #print("cache sum", self.cache_sum)
 
-    self.cache_sum=self.cache_forward_rescale+self.cache_backward_rescale
-
-    # self.cache_para=self.param_collection.add_lookup_parameters(self.cache_forward.shape,\
-    #  init=self.cache_sum)
-    # for t in range(T):
-    #   num_selected_s=np.squeeze(np.argwhere(self.cache_sum[t,:]<0))
-    #   if num_selected_s.shape==():
-    #     num_selected_s=num_selected_s.reshape((1,))
-    #   den_selected_s=np.asarray(input_trg)[num_selected_s]
-    #   unique_labels,indexes,counts=np.unique(den_selected_s,\
-    #     return_inverse=True,return_counts=True)
-    #   #print("unique"+str(unique_labels)+"indexes"+str(indexes)+"counts"+str(counts))
-    #   for i in range(len(counts)):
-    #     if counts[i]>1:
-    #       #print("curr count"+str(counts[i]))
-    #       all_repeated_indexes=np.argwhere(indexes==i)
-    #       sum_forward_backward=np.sum(self.cache_sum[t][num_selected_s[all_repeated_indexes]])
-    #       #print("sum_forward_backward"+str(sum_forward_backward))
-    #       for s in num_selected_s[all_repeated_indexes]:
-    #         self.cache_sum[t][s]=sum_forward_backward
+    #print(input_trg)
     for t in range(T):
       num_selected_s=np.squeeze(np.argwhere(self.cache_sum[t,:]<0))
       if num_selected_s.shape==():
         num_selected_s=num_selected_s.reshape((1,))      
       den_selected_s=np.asarray(input_trg)[num_selected_s]
+      argmax = dy.select_cols(softmax_mat,[t]).npvalue().argmax()
+      #print("t" + str(t)+" argmax char "+str(argmax)+" "+str(softmax_mat[int(argmax)][t].value()))
+
       for i in range(len(num_selected_s)):
         s=int(num_selected_s[i])
         #cross entropy loss
-        #ctc_loss -= dy.exp(dy.constant((1,),self.cache_sum[t][s]))*dy.log(softmax_mat[int(den_selected_s[i])][t])
-
-        #maximum likelihood loss
-        ctc_loss += (dy.constant((1,),self.cache_sum[t][s])-dy.log(softmax_mat[int(den_selected_s[i])][t]))
+        if loss_type == "ce":
+          ctc_loss -= dy.exp(dy.constant((1,),self.cache_sum[t][s]))*dy.log(softmax_mat[int(den_selected_s[i])][t])
+        else:
+          #maximum likelihood loss
+          ctc_loss += (dy.constant((1,),self.cache_sum[t][s])-dy.log(softmax_mat[int(den_selected_s[i])][t]))
+        
+        #if int(den_selected_s[i]) == blank:
+        #  ctc_loss += dy.log(dy.constant((1,),0.001)) #penalize blank transition
+        #if int(den_selected_s[i])!=argmax:
+          #print("current char"+str(den_selected_s[i])+" "+str(softmax_mat[int(den_selected_s[i])][t].value()))
         # print("gamma t"+str(self.cache_sum[t][s])+" softmax mat "\
         #   +str((softmax_mat[int(den_selected_s[i])][t]).value()))
         if t==0:
-          mle_loss = -dy.constant((1,),self.cache_sum[t][s]-np.log(softmax_mat[int(den_selected_s[i])][t].value()))      
+          mle_loss = dy.constant((1,),self.cache_sum[t][s])-np.log(softmax_mat[int(den_selected_s[i])][t].value()) 
     return ctc_loss, mle_loss
 
   def calc_loss(self, translator: 'translator.AutoRegressiveTranslator',
                 hidden_embeddings: 'dy.expression_sequence',
-                trg: Union[xnmt.input.Input, 'batcher.Batch']):
+                trg: Union[xnmt.input.Input, 'batcher.Batch'],
+                loss_type: str = 'mle'):
 
     losses = []
     mle_losses =[]
@@ -327,7 +318,7 @@ class CTCLoss(Serializable, LossCalculator):
     for i in range(batch_size):
       probs=translator.scorer.calc_probs(dy.pick_batch_elem(hidden_embeddings,i))    
       blank_idx=translator.trg_reader.vocab_size()-1
-      ctc_loss, mle_loss =self.calc_loss_helper(probs,trg[i],blank_idx)
+      ctc_loss, mle_loss =self.calc_loss_helper(probs,trg[i],blank_idx,loss_type)
       mle_losses.append(mle_loss)
       losses.append(ctc_loss)
 
@@ -336,7 +327,6 @@ class CTCLoss(Serializable, LossCalculator):
     else:
       loss_expr = dy.esum(losses)
     mle_loss_expr = dy.esum(mle_losses)
-    print("avg batch ctc loss "+str(loss_expr.value()/batch_size))
     print("avg batch mle loss "+str(mle_loss_expr.value()/batch_size))
     return FactoredLossExpr({"ctc": loss_expr, "mle": mle_loss_expr})
 
